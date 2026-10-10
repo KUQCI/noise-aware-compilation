@@ -1,0 +1,1036 @@
+{
+ "case": {
+  "case_id": "jakarta-C-N2",
+  "circuit": {
+   "basis": "Z",
+   "distance": 2,
+   "label": "C",
+   "rounds": 3
+  },
+  "condition": "N2",
+  "device": "jakarta",
+  "variant": "base"
+ },
+ "config_file_sha256": "77d7eb91691396c303970382c283faa9f63e0069f9dc0011595f34fbe4d24d16",
+ "decoder": {
+  "construction": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+  "decoder": "pymatching",
+  "decoder_model": "approximate",
+  "reason": "K1: Nove's Experiment.to_detector_model() raises for calibrated two-qubit Pauli channels with more than one non-zero term, so no exact DEM exists; Stim's approximate_disjoint_errors model is used instead."
+ },
+ "interaction_edges": [
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   2
+  ]
+ ],
+ "num_detectors": 4,
+ "placements": [
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": true,
+   "mapping": [
+    0,
+    1,
+    2
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      373778423663649580,
+      4924139411707920864
+     ],
+     "detector_fires": 89670,
+     "detector_fires_sq": 137564,
+     "logical_failures": 35295,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      7612195202330026126,
+      6317093723899113555
+     ],
+     "detector_fires": 89665,
+     "detector_fires_sq": 138029,
+     "logical_failures": 34507,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      2073267219029298546,
+      6855952928637359178
+     ],
+     "detector_fires": 89190,
+     "detector_fires_sq": 136996,
+     "logical_failures": 34782,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     0,
+     1,
+     2
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.41533528643360856
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    0,
+    1,
+    3
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      1019471490992714700,
+      6387303631030513545
+     ],
+     "detector_fires": 93121,
+     "detector_fires_sq": 142333,
+     "logical_failures": 34766,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      7169523814552798413,
+      4484284471570873996
+     ],
+     "detector_fires": 92731,
+     "detector_fires_sq": 141675,
+     "logical_failures": 34520,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      1299924232312660669,
+      8384693418842012466
+     ],
+     "detector_fires": 93474,
+     "detector_fires_sq": 143068,
+     "logical_failures": 34736,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     0,
+     1,
+     3
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.44191440462755094
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    1,
+    3,
+    5
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      8363216975816158443,
+      4230126905925936563
+     ],
+     "detector_fires": 86931,
+     "detector_fires_sq": 137567,
+     "logical_failures": 24959,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      4957303280024756362,
+      3987918896894097026
+     ],
+     "detector_fires": 87234,
+     "detector_fires_sq": 137742,
+     "logical_failures": 24771,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      9007950480471458150,
+      6008094780674147837
+     ],
+     "detector_fires": 86717,
+     "detector_fires_sq": 137067,
+     "logical_failures": 24963,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     1,
+     3,
+     5
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.39045042223360404
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    2,
+    1,
+    0
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      508158559605113604,
+      8510765957163101714
+     ],
+     "detector_fires": 88958,
+     "detector_fires_sq": 136594,
+     "logical_failures": 24199,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      6740992344005055829,
+      606899956564394237
+     ],
+     "detector_fires": 89272,
+     "detector_fires_sq": 136940,
+     "logical_failures": 24170,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      6831654881538460233,
+      7902833333085783815
+     ],
+     "detector_fires": 89116,
+     "detector_fires_sq": 137014,
+     "logical_failures": 24112,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     2,
+     1,
+     0
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.4154267606679525
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    2,
+    1,
+    3
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      2282822845001468388,
+      5019985265222953055
+     ],
+     "detector_fires": 82533,
+     "detector_fires_sq": 127827,
+     "logical_failures": 23967,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      6582915534453892129,
+      7566854441556941295
+     ],
+     "detector_fires": 82841,
+     "detector_fires_sq": 128191,
+     "logical_failures": 24231,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      106622053111580476,
+      1913792422492018273
+     ],
+     "detector_fires": 83127,
+     "detector_fires_sq": 128825,
+     "logical_failures": 24049,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     2,
+     1,
+     3
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.3761374611327988
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    3,
+    1,
+    0
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      2850001133622819879,
+      8575496274994701272
+     ],
+     "detector_fires": 93486,
+     "detector_fires_sq": 143022,
+     "logical_failures": 28791,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      4716554886736520083,
+      9044222252020662300
+     ],
+     "detector_fires": 92736,
+     "detector_fires_sq": 141654,
+     "logical_failures": 28731,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      3939240317492178694,
+      6610888482719345268
+     ],
+     "detector_fires": 93734,
+     "detector_fires_sq": 143540,
+     "logical_failures": 28867,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     3,
+     1,
+     0
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.44198041522697173
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": true,
+   "is_fixed": false,
+   "mapping": [
+    3,
+    1,
+    2
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      3028527788990810794,
+      4275116124781092115
+     ],
+     "detector_fires": 82354,
+     "detector_fires_sq": 126840,
+     "logical_failures": 28707,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      2262013206191929063,
+      8992715872550128351
+     ],
+     "detector_fires": 82889,
+     "detector_fires_sq": 128553,
+     "logical_failures": 28595,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      9138162528088601707,
+      3796885813292160778
+     ],
+     "detector_fires": 82630,
+     "detector_fires_sq": 127080,
+     "logical_failures": 28845,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     3,
+     1,
+     2
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.37611199749787566
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    3,
+    5,
+    4
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      6144785394059904769,
+      399313240606978469
+     ],
+     "detector_fires": 123290,
+     "detector_fires_sq": 217842,
+     "logical_failures": 27925,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      6801280436316531327,
+      5456512914800719939
+     ],
+     "detector_fires": 123060,
+     "detector_fires_sq": 217244,
+     "logical_failures": 27906,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      8671822659746347855,
+      5430971325741271024
+     ],
+     "detector_fires": 123052,
+     "detector_fires_sq": 217404,
+     "logical_failures": 27952,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     3,
+     5,
+     4
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.5341681674912845
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    3,
+    5,
+    6
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      7804805481338741334,
+      2331706553874985576
+     ],
+     "detector_fires": 121183,
+     "detector_fires_sq": 211709,
+     "logical_failures": 28085,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      512929388727953958,
+      7054977464285019835
+     ],
+     "detector_fires": 121744,
+     "detector_fires_sq": 212820,
+     "logical_failures": 28056,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      7078852906298140775,
+      4955391668000854578
+     ],
+     "detector_fires": 121229,
+     "detector_fires_sq": 212143,
+     "logical_failures": 28119,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     3,
+     5,
+     6
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.5271343921790358
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    4,
+    5,
+    3
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      5826437056587229168,
+      1857805159238116261
+     ],
+     "detector_fires": 123940,
+     "detector_fires_sq": 219682,
+     "logical_failures": 32797,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      6790761008311660398,
+      5981657707915972683
+     ],
+     "detector_fires": 123223,
+     "detector_fires_sq": 217679,
+     "logical_failures": 32951,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      6889174211033844502,
+      802330461936733455
+     ],
+     "detector_fires": 124038,
+     "detector_fires_sq": 218834,
+     "logical_failures": 33045,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     4,
+     5,
+     3
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.5341727758733908
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    4,
+    5,
+    6
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      8044863355304938648,
+      7400275680035974365
+     ],
+     "detector_fires": 127936,
+     "detector_fires_sq": 224764,
+     "logical_failures": 33074,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      4360172414405581125,
+      9088737637195972400
+     ],
+     "detector_fires": 128485,
+     "detector_fires_sq": 226283,
+     "logical_failures": 33105,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      3939303717585052022,
+      7469727945221098095
+     ],
+     "detector_fires": 127883,
+     "detector_fires_sq": 224893,
+     "logical_failures": 32802,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     4,
+     5,
+     6
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.5679126897209942
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    5,
+    3,
+    1
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      892115108493135891,
+      6861130982551169165
+     ],
+     "detector_fires": 86910,
+     "detector_fires_sq": 137168,
+     "logical_failures": 28931,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      2854781154315098528,
+      6143036678845056401
+     ],
+     "detector_fires": 86265,
+     "detector_fires_sq": 135901,
+     "logical_failures": 28732,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      6078132850538226130,
+      5127064233259712409
+     ],
+     "detector_fires": 86286,
+     "detector_fires_sq": 136190,
+     "logical_failures": 28681,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     5,
+     3,
+     1
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.390456820240889
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    6,
+    5,
+    3
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      8132547538620551883,
+      4956455573916806835
+     ],
+     "detector_fires": 120920,
+     "detector_fires_sq": 212130,
+     "logical_failures": 32902,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      5331284735314158290,
+      6710180883788243270
+     ],
+     "detector_fires": 121501,
+     "detector_fires_sq": 212843,
+     "logical_failures": 33174,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      3374962334963868268,
+      7867671079194380408
+     ],
+     "detector_fires": 121189,
+     "detector_fires_sq": 212209,
+     "logical_failures": 33165,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     6,
+     5,
+     3
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.5270837338444958
+  },
+  {
+   "contains_fault": null,
+   "is_chosen": false,
+   "is_fixed": false,
+   "mapping": [
+    6,
+    5,
+    4
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261011,
+     "chunk_seeds": [
+      4622516604188222131,
+      4068298779737344849
+     ],
+     "detector_fires": 128149,
+     "detector_fires_sq": 225697,
+     "logical_failures": 33064,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261012,
+     "chunk_seeds": [
+      6570063829578242597,
+      2361024873640473227
+     ],
+     "detector_fires": 127377,
+     "detector_fires_sq": 223469,
+     "logical_failures": 33194,
+     "num_detectors": 4,
+     "shots": 200000
+    },
+    {
+     "base_seed": 20261013,
+     "chunk_seeds": [
+      3867243579689471733,
+      8203379381088659588
+     ],
+     "detector_fires": 128740,
+     "detector_fires_sq": 226186,
+     "logical_failures": 33547,
+     "num_detectors": 4,
+     "shots": 200000
+    }
+   ],
+   "run_config": {
+    "backend": "stim",
+    "base_seeds": [
+     20261011,
+     20261012,
+     20261013
+    ],
+    "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+    "decoder_rule": "pymatching.Matching.from_detector_error_model on the placement's own Stim DEM, built with approximate_disjoint_errors=True, decompose_errors=True, ignore_decomposition_failures=True; decode_batch on detection events",
+    "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+    "mapping": [
+     6,
+     5,
+     4
+    ],
+    "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+    "shots_per_seed": 200000
+   },
+   "score": 0.5678574230043478
+  }
+ ],
+ "planted_fault": null,
+ "provenance": {
+  "calibration_snapshot_sha256": "4345667cf8c9281d936e725ffaf0dd817b7c9bde8f9ef95530122567c2c4a6c5",
+  "circuit_sha256": "108ffb8735ff03bfdd8a48f9bedf798a1cafc56f22af5718b97484f3004f0244",
+  "device_sha256": "19ee1b4883ffb5f091f7d5636839b64a08d6e056ac91bddf9b7c65880ba7a907",
+  "noise_model_calibration_hash": "4345667cf8c9281d936e725ffaf0dd817b7c9bde8f9ef95530122567c2c4a6c5",
+  "noise_model_sha256": "0d42bb30433b789c95da66e80f6fb12d2695797bc06bb3e05b9607ae56f40384",
+  "nove_commit": "485b413dfc0a61683b835c7874507a40cbb687cf",
+  "nove_version": "0.1.0",
+  "numpy_version": "2.5.3",
+  "package_source_sha256": "b1e318c992050a1b70683b664304b8cf901cfd73784e080ff303d0d402253357",
+  "package_version": "0.1.0",
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "pymatching_version": "2.4.0",
+  "python_version": "3.13.16",
+  "qiskit_ibm_runtime_installed_at_runtime": "0.50.0",
+  "qiskit_ibm_runtime_version": "0.50.0",
+  "source_files": {
+   "conf_jakarta.json": "15b25bc0c7fdf72a4db606cfd20dfc4363a20c5233c6325cfd3d8115ea859d0b",
+   "props_jakarta.json": "29a90998e66c95580125b41456202ba0893a2ec37f467d15caa6aa8be3b34b43"
+  },
+  "stim_version": "1.16.0"
+ },
+ "schema": "noise-aware-compilation.run/1",
+ "seeds": {
+  "base_seeds": [
+   20261011,
+   20261012,
+   20261013
+  ],
+  "evaluation_seed_rule": "sha256('eval|<base_seed>|<case_id>|<mapping>|<chunk>')[:8] & (2**63-1)",
+  "selection_seeds": []
+ },
+ "selection": {
+  "chosen_mapping": [
+   3,
+   1,
+   2
+  ],
+  "chosen_score": 0.37611199749787566,
+  "fixed_mapping": [
+   0,
+   1,
+   2
+  ],
+  "num_candidates": 14,
+  "score_method": "Total probability of fault mechanisms in Stim's approximate detector error model (approximate_disjoint_errors=True) of the relabelled circuit lowered with the Nove hardware noise model: the expected number of detector-visible faults per shot.",
+  "selection_seeds": [],
+  "tie_break_rule": "Scores are rounded to 12 significant digits; the lowest rounded score wins and ties go to the lexicographically smallest mapping (circuit qubit order).",
+  "wall_clock_seconds": 0.30655089900005805
+ },
+ "shots": {
+  "adaptive": true,
+  "chunk_shots": 100000,
+  "rounds": [
+   {
+    "shots_per_seed": 200000,
+    "worst_relative_halfwidth": 0.006858959574044559
+   }
+  ],
+  "shots_per_seed": 200000
+ },
+ "wall_clock_seconds": 1.4161502599999949,
+ "workers": 4
+}

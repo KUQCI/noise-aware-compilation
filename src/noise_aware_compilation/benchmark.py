@@ -234,8 +234,10 @@ def _evaluate_task(args: tuple[str, str, str, tuple[int, ...], int, list[int]]) 
     device = nove.DeviceModel.from_json(device_json)
     noise = nove.HardwareNoiseModel.from_dict(json.loads(noise_json))
     evaluator = PlacementEvaluator(circuit, device, noise, mapping)
-    counts = [evaluator.run_chunk(min(CHUNK_SHOTS, shots - i * CHUNK_SHOTS), s)
-              for i, s in enumerate(seeds)]
+    counts = [
+        evaluator.run_chunk(min(CHUNK_SHOTS, shots - i * CHUNK_SHOTS), s)
+        for i, s in enumerate(seeds)
+    ]
     total = counts[0]
     for c in counts[1:]:
         total = total + c
@@ -264,9 +266,7 @@ def run_case(
     fixed = enumerate_placements(circuit, device)[0]
     edges = sorted(interaction_edges(circuit))
 
-    committed_fixed = config.get("_fixed_baselines", {}).get(
-        f"{spec.device}-{spec.circuit_label}"
-    )
+    committed_fixed = config.get("_fixed_baselines", {}).get(f"{spec.device}-{spec.circuit_label}")
     if committed_fixed is not None and tuple(committed_fixed) != fixed:
         raise RuntimeError(f"fixed baseline for {spec.case_id} differs from the committed one")
     if fault is not None and all(fault.contained_in(m, edges) for m in mappings):
@@ -296,8 +296,10 @@ def run_case(
             keys = []
             for mi, mapping in enumerate(mappings):
                 for si, base in enumerate(base_seeds):
-                    seeds = [chunk_seed(base, spec.case_id, mapping, k)
-                             for k in range(first_chunk, last_chunk)]
+                    seeds = [
+                        chunk_seed(base, spec.case_id, mapping, k)
+                        for k in range(first_chunk, last_chunk)
+                    ]
                     seeds_used.setdefault((mi, si), []).extend(seeds)
                     tasks.append((circuit_text, device_json, noise_json, mapping, new_shots, seeds))
                     keys.append((mi, si))
@@ -327,7 +329,9 @@ def run_case(
                 "score": cand.score,
                 "is_chosen": cand.mapping == result.mapping,
                 "is_fixed": cand.mapping == fixed,
-                "contains_fault": None if fault is None else fault.contained_in(cand.mapping, edges),
+                "contains_fault": None
+                if fault is None
+                else fault.contained_in(cand.mapping, edges),
                 "run_config": {
                     "circuit_sha256": circuit.sha256,
                     "device_sha256": device.sha256,

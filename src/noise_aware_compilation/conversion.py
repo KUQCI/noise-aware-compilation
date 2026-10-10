@@ -69,9 +69,7 @@ def _qubit_fields(entries: Sequence[Mapping[str, Any]]) -> dict[str, tuple[float
 
 
 def _gate_fields(gate: Mapping[str, Any]) -> dict[str, tuple[float, str]]:
-    return {
-        str(p["name"]): (float(p["value"]), str(p.get("unit", ""))) for p in gate["parameters"]
-    }
+    return {str(p["name"]): (float(p["value"]), str(p.get("unit", ""))) for p in gate["parameters"]}
 
 
 def cx_probabilities(gate_error: float) -> tuple[tuple[float, ...], bool]:
