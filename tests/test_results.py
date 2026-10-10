@@ -215,7 +215,7 @@ def test_t_p4_precision(summaries: dict[str, CaseSummary]) -> None:
 @pytest.mark.xfail(
     strict=True,
     reason=(
-        "Reported unmet (REPORT.md section 5, DECISIONS.md D15): on FakeHanoiV2 the chosen-vs-"
+        "Reported unmet (REPORT.md section 5, DECISIONS.md D14): on FakeHanoiV2 the chosen-vs-"
         "fixed verdict is indistinguishable at 1 round and better at 3 and 5 rounds. The pass "
         "criterion is kept unchanged (X6); strict=True makes this test fail if it starts passing."
     ),
