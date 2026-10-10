@@ -1,0 +1,46 @@
+{
+  "schema": "noise-aware-compilation.config/1",
+  "description": "v1 benchmark (SPEC.md Benchmark specification). Committed before any N2 run (R-F4, X5).",
+  "base_seeds": [20261011, 20261012, 20261013],
+  "min_shots_per_seed": 200000,
+  "max_shots_per_seed": 25600000,
+  "precision_rule": {
+    "conditions": ["N2", "N3-qubit", "N3-connection"],
+    "target_relative_halfwidth": 0.10,
+    "description": "Shots per seed start at min_shots_per_seed and are doubled for every placement of the case together until each placement's pooled Wilson 95% half-width <= 10% of its P_L, or max_shots_per_seed is reached."
+  },
+  "fixed_baselines_file": "fixed_baselines.json",
+  "planted_faults": {
+    "jakarta": {"qubit": 0, "connection": [0, 1]},
+    "hanoi": {"qubit": 1, "connection": [1, 2]}
+  },
+  "sensitivity": {
+    "conditions": ["N2"],
+    "variants": ["L1-cx-min", "L1-cx-max", "L1-reset-readout"]
+  },
+  "devices": [
+    {
+      "name": "jakarta",
+      "circuits": [
+        {"label": "A1", "distance": 3, "rounds": 1, "basis": "Z"},
+        {"label": "A3", "distance": 3, "rounds": 3, "basis": "Z"},
+        {"label": "A5", "distance": 3, "rounds": 5, "basis": "Z"},
+        {"label": "B", "distance": 3, "rounds": 3, "basis": "X"},
+        {"label": "C", "distance": 2, "rounds": 3, "basis": "Z"}
+      ],
+      "conditions": ["N0", "N1", "N2", "N3-qubit", "N3-connection"]
+    },
+    {
+      "name": "hanoi",
+      "circuits": [
+        {"label": "A1", "distance": 3, "rounds": 1, "basis": "Z"},
+        {"label": "A3", "distance": 3, "rounds": 3, "basis": "Z"},
+        {"label": "A5", "distance": 3, "rounds": 5, "basis": "Z"},
+        {"label": "B", "distance": 3, "rounds": 3, "basis": "X"},
+        {"label": "D5", "distance": 5, "rounds": 3, "basis": "Z"},
+        {"label": "D7", "distance": 7, "rounds": 3, "basis": "Z"}
+      ],
+      "conditions": ["N1", "N2", "N3-qubit", "N3-connection"]
+    }
+  ]
+}
