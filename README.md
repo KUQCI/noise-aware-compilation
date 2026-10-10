@@ -71,4 +71,5 @@ specification.
 python scripts/fetch_device_files.py           # copy device files from qiskit-ibm-runtime 0.50.0
 python scripts/build_device_snapshots.py       # convert them into the package's stored snapshots
 python scripts/write_fixed_baselines.py configs/benchmark.json   # R-B1 fixed placements
+bash scripts/check_no_qiskit.sh                 # T-I8: fresh venv without Qiskit runs a case
 ```
