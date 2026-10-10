@@ -33,7 +33,9 @@ def noise_sha256(noise: nove.HardwareNoiseModel) -> str:
 
 def _elementwise_median(channels: Iterable[nove.PauliChannel]) -> nove.PauliChannel:
     vectors = [c.probabilities for c in channels]
-    return nove.PauliChannel(tuple(statistics.median(column) for column in zip(*vectors, strict=True)))
+    return nove.PauliChannel(
+        tuple(statistics.median(column) for column in zip(*vectors, strict=True))
+    )
 
 
 def _gate_names(noise: nove.HardwareNoiseModel) -> list[str]:
@@ -55,9 +57,12 @@ def zero_noise(noise: nove.HardwareNoiseModel) -> nove.HardwareNoiseModel:
 
     defaults = {}
     for gate in _gate_names(noise):
-        arity = 15 if any(
-            len(k.targets) == 2 for k in noise.gate_channels if k.gate == gate
-        ) or (gate in noise.gate_defaults and noise.gate_defaults[gate].arity == 2) else 3
+        arity = (
+            15
+            if any(len(k.targets) == 2 for k in noise.gate_channels if k.gate == gate)
+            or (gate in noise.gate_defaults and noise.gate_defaults[gate].arity == 2)
+            else 3
+        )
         defaults[gate] = nove.PauliChannel((0.0,) * arity)
     return nove.HardwareNoiseModel(
         gate_defaults=defaults,
@@ -74,8 +79,7 @@ def uniform_median(
 
     qubits = device_qubits(device)
     defaults = {
-        gate: _elementwise_median(_channels_for(noise, device, gate))
-        for gate in _gate_names(noise)
+        gate: _elementwise_median(_channels_for(noise, device, gate)) for gate in _gate_names(noise)
     }
     rates = [noise.idle_rate_for(q) for q in qubits]
     known_rates = [r for r in rates if r is not None]

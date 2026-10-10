@@ -110,8 +110,13 @@ def _average(placements: Sequence[PlacementSummary], metric: str) -> tuple[Inter
         return est.interval, est.variance
     k = len(placements)
     mean = sum(p.detection.estimate for p in placements) / k
-    var = sum(((p.detection.high - p.detection.low) / (2 * 1.959963984540054)) ** 2
-              for p in placements) / k**2
+    var = (
+        sum(
+            ((p.detection.high - p.detection.low) / (2 * 1.959963984540054)) ** 2
+            for p in placements
+        )
+        / k**2
+    )
     half = 1.959963984540054 * math.sqrt(var)
     return Interval(mean, mean - half, mean + half), var
 
@@ -134,8 +139,10 @@ def _compare_average(
         half = 1.959963984540054 * math.sqrt(var)
         absolute = Interval(d, d - half, d + half)
         m = average.estimate
-        relative = Interval(d / m, (d - half) / m, (d + half) / m) if m else Interval(
-            float("nan"), float("nan"), float("nan")
+        relative = (
+            Interval(d / m, (d - half) / m, (d + half) / m)
+            if m
+            else Interval(float("nan"), float("nan"), float("nan"))
         )
     ci = _metric_interval(chosen, metric)
     return Comparison("average", absolute, relative, verdict(ci, average), ci, average)
@@ -161,8 +168,7 @@ def summarize_placement(raw: dict[str, Any], rounds: int, num_detectors: int) ->
         detection=detection_rate_interval(fires, fires_sq, shots, num_detectors),
         per_seed=tuple((int(s["logical_failures"]), int(s["shots"])) for s in seeds),
         per_seed_detection=tuple(
-            (int(s["detector_fires"]), int(s["detector_fires_sq"]), int(s["shots"]))
-            for s in seeds
+            (int(s["detector_fires"]), int(s["detector_fires_sq"]), int(s["shots"])) for s in seeds
         ),
     )
 

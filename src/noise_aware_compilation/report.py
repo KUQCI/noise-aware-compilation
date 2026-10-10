@@ -62,7 +62,9 @@ def fmt(x: float, digits: int = 3) -> str:
     if x == 0:
         return "0"
     if abs(x) >= 1e-2 and abs(x) < 1e3:
-        return f"{x:.{digits + 1}f}".rstrip("0").rstrip(".") if abs(x) >= 1 else f"{x:.{digits + 1}f}"
+        return (
+            f"{x:.{digits + 1}f}".rstrip("0").rstrip(".") if abs(x) >= 1 else f"{x:.{digits + 1}f}"
+        )
     return f"{x:.{digits - 1}e}"
 
 
@@ -97,7 +99,11 @@ def base_cases(summaries: dict[str, CaseSummary]) -> list[CaseSummary]:
 
 
 def find(
-    summaries: dict[str, CaseSummary], device: str, label: str, condition: str, variant: str = "base"
+    summaries: dict[str, CaseSummary],
+    device: str,
+    label: str,
+    condition: str,
+    variant: str = "base",
 ) -> CaseSummary | None:
     suffix = "" if variant == "base" else f"-{variant}"
     return summaries.get(f"{device}-{label}-{condition}{suffix}")
@@ -127,9 +133,9 @@ def plot_case(summary: CaseSummary, out: Path) -> None:
         hi.append(i.high - i.estimate)
         colors.append(COLOR_CHOSEN if p.is_chosen else COLOR_FIXED if p.is_fixed else COLOR_OTHER)
     fig, ax = plt.subplots(figsize=(8, 4.2), dpi=130)
-    for x, e, l_, h, c in zip(xs, est, lo, hi, colors, strict=True):
-        if c == COLOR_OTHER:
-            ax.errorbar(x, e, yerr=[[l_], [h]], fmt="o", ms=3, color=c, elinewidth=1, capsize=0)
+    for x, e, l_, h, col in zip(xs, est, lo, hi, colors, strict=True):
+        if col == COLOR_OTHER:
+            ax.errorbar(x, e, yerr=[[l_], [h]], fmt="o", ms=3, color=col, elinewidth=1, capsize=0)
     labels_done = set()
     for (_, p), x, e, l_, h in zip(rows, xs, est, lo, hi, strict=True):
         for flag, color, label, marker in (
@@ -138,9 +144,18 @@ def plot_case(summary: CaseSummary, out: Path) -> None:
         ):
             if flag:
                 ax.errorbar(
-                    x, e, yerr=[[l_], [h]], fmt=marker, ms=8, color=color, elinewidth=2,
-                    capsize=3, label=None if label in labels_done else label,
-                    markeredgecolor="white", markeredgewidth=1.5, zorder=3,
+                    x,
+                    e,
+                    yerr=[[l_], [h]],
+                    fmt=marker,
+                    ms=8,
+                    color=color,
+                    elinewidth=2,
+                    capsize=3,
+                    label=None if label in labels_done else label,
+                    markeredgecolor="white",
+                    markeredgewidth=1.5,
+                    zorder=3,
                 )
                 labels_done.add(label)
     ax.plot([], [], "o", ms=3, color=COLOR_OTHER, label="other valid placements")
@@ -165,10 +180,16 @@ def plot_case(summary: CaseSummary, out: Path) -> None:
 
 def git_commit_of(path: str) -> str | None:
     try:
-        out = subprocess.run(
-            ["git", "log", "--diff-filter=A", "--format=%H %cI", "--", path],
-            capture_output=True, text=True, check=True,
-        ).stdout.strip().splitlines()
+        out = (
+            subprocess.run(
+                ["git", "log", "--diff-filter=A", "--format=%H %cI", "--", path],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            .stdout.strip()
+            .splitlines()
+        )
     except (OSError, subprocess.CalledProcessError):
         return None
     return out[-1] if out else None
@@ -216,7 +237,7 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         c = s.case
         ch = s.placements[s.chosen_index]
         fx = s.placements[s.fixed_index]
-        metric_note = "" if s.metric == "P_L" else " (M3)"
+        metric_note = ""
         chv = ch.p_l if s.metric == "P_L" else ch.detection
         fxv = fx.p_l if s.metric == "P_L" else fx.detection
         w(
@@ -235,61 +256,75 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     w("## 2. Method")
     w("")
     sel = any_raw["selection"]
-    w(f"**Selection score.** {sel['score_method']} Lower is better. The score is computed from "
-      "the circuit, the device and the noise model only; no sampler is built and no candidate's "
-      "logical error rate is estimated (R-P4, tested by T-C8).")
+    w(
+        f"**Selection score.** {sel['score_method']} Lower is better. The score is computed from "
+        "the circuit, the device and the noise model only; no sampler is built and no candidate's "
+        "logical error rate is estimated (R-P4, tested by T-C8)."
+    )
     w("")
     w(f"**Tie-break.** {sel['tie_break_rule']}")
     w("")
     dec = any_raw["decoder"]
-    w("**Decoder (R-R6).** PyMatching "
-      f"{prov['pymatching_version']}, built separately for every placement from that placement's "
-      f"own detector error model: {dec['construction']}. Default PyMatching settings otherwise "
-      "(no custom weights or edge merging options). **The decoder's model is approximate**: "
-      f"{dec['reason']} Every results file records `decoder.decoder_model = \"approximate\"`.")
+    w(
+        "**Decoder (R-R6).** PyMatching "
+        f"{prov['pymatching_version']}, built separately for every placement from that placement's "
+        f"own detector error model: {dec['construction']}. Default PyMatching settings otherwise "
+        "(no custom weights or edge merging options). **The decoder's model is approximate**: "
+        f'{dec["reason"]} Every results file records `decoder.decoder_model = "approximate"`.'
+    )
     w("")
-    w("**Simulation.** Each placement's noiseless circuit is relabelled onto physical qubits, "
-      "lowered with Nove's calibrated `HardwareNoiseModel` against the converted `DeviceModel`, "
-      f"and sampled with Nove {prov['nove_version']} (commit `{prov['nove_commit']}`) using "
-      f"`backend=\"stim\"` (Stim {prov['stim_version']}). P_L is the fraction of shots in which "
-      "the decoder's observable prediction is wrong; intervals are Wilson 95%. ε (M2) uses "
-      "ε = ½[1 − (1 − 2P_L)^(1/r)], applied to the interval ends. M3 is the fraction of "
-      "detectors that fire, with a normal 95% interval clustered by shot.")
+    w(
+        "**Simulation.** Each placement's noiseless circuit is relabelled onto physical qubits, "
+        "lowered with Nove's calibrated `HardwareNoiseModel` against the converted `DeviceModel`, "
+        f"and sampled with Nove {prov['nove_version']} (commit `{prov['nove_commit']}`) using "
+        f'`backend="stim"` (Stim {prov["stim_version"]}). P_L is the fraction of shots in which '
+        "the decoder's observable prediction is wrong; intervals are Wilson 95%. ε (M2) uses "
+        "ε = ½[1 − (1 − 2P_L)^(1/r)], applied to the interval ends. M3 is the fraction of "
+        "detectors that fire, with a normal 95% interval clustered by shot."
+    )
     w("")
     cfg_rule = any_raw["shots"]
-    w("**Shots and seeds.** Three base seeds per case "
-      f"({', '.join(str(x) for x in any_raw['seeds']['base_seeds'])}); every placement of a case "
-      "gets the same number of shots per seed, starting at 200,000. Under N2 and N3 (and the "
-      "T-L1 reruns of N2) the case's shots per seed are doubled for all placements together "
-      "until every placement's Wilson half-width is at most 10% of its P_L, or 25.6 million "
-      "shots per seed is reached (T-P4). Evaluation chunk seeds are "
-      f"`{any_raw['seeds']['evaluation_seed_rule']}` with chunks of {cfg_rule['chunk_shots']:,} "
-      "shots. Selection uses no seeds at all, so evaluation and selection seeds are disjoint "
-      "(R-F3).")
+    w(
+        "**Shots and seeds.** Three base seeds per case "
+        f"({', '.join(str(x) for x in any_raw['seeds']['base_seeds'])}); every placement of a case "
+        "gets the same number of shots per seed, starting at 200,000. Under N2 and N3 (and the "
+        "T-L1 reruns of N2) the case's shots per seed are doubled for all placements together "
+        "until every placement's Wilson half-width is at most 10% of its P_L, or 25.6 million "
+        "shots per seed is reached (T-P4). Evaluation chunk seeds are "
+        f"`{any_raw['seeds']['evaluation_seed_rule']}` with chunks of {cfg_rule['chunk_shots']:,} "
+        "shots. Selection uses no seeds at all, so evaluation and selection seeds are disjoint "
+        "(R-F3)."
+    )
     w("")
-    w("**Comparisons.** Chosen vs fixed: Newcombe hybrid-score interval for the difference and a "
-      "Katz log interval for the ratio. Chosen vs average: the exact variance of "
-      "p_chosen − mean(p) under independent binomials, normal interval; relative difference by "
-      "the delta method. Headroom: oracle best vs worst P_L with Wilson intervals (R-B3; the "
-      "oracle is used only here, never for selection). M4: Spearman rank correlation between "
-      "score and simulated P_L (positive means the score orders placements correctly, since "
-      "both are lower-is-better). M5: the chosen placement's rank by simulated P_L (1 = best, "
-      "ties share the average rank) and its regret, P_L(chosen) − P_L(oracle best), with a "
-      "Newcombe interval. The full list of choices and reasons is in DECISIONS.md.")
+    w(
+        "**Comparisons.** Chosen vs fixed: Newcombe hybrid-score interval for the difference and a "
+        "Katz log interval for the ratio. Chosen vs average: the exact variance of "
+        "p_chosen − mean(p) under independent binomials, normal interval; relative difference by "
+        "the delta method. Headroom: oracle best vs worst P_L with Wilson intervals (R-B3; the "
+        "oracle is used only here, never for selection). M4: Spearman rank correlation between "
+        "score and simulated P_L (positive means the score orders placements correctly, since "
+        "both are lower-is-better). M5: the chosen placement's rank by simulated P_L (1 = best, "
+        "ties share the average rank) and its regret, P_L(chosen) − P_L(oracle best), with a "
+        "Newcombe interval. The full list of choices and reasons is in DECISIONS.md."
+    )
     w("")
 
     # ---------------------------------------------------------------- per case tables
     w("## 3. All cases: comparisons, headroom, score validity and regret (R-R2, R-R3, R-R4)")
     w("")
-    w("Headroom column: oracle best and worst placements with 95% intervals; *placement does "
-      "not matter* is stated when they overlap. M4 values that are negative are flagged ⚠ "
-      "(T-P3). N0 has no errors at all, so M4 is undefined there.")
+    w(
+        "Headroom column: oracle best and worst placements with 95% intervals; *placement does "
+        "not matter* is stated when they overlap. M4 values that are negative are flagged ⚠ "
+        "(T-P3). N0 has no errors at all, so M4 is undefined there."
+    )
     w("")
     for device in DEVICE_ORDER:
         w(f"### {DEVICE_TITLES[device]}")
         w("")
-        w("| Circuit | Condition | Placements | Shots/seed | Chosen | vs fixed | vs average "
-          "| Headroom: best / worst | M4 Spearman | M5 rank; regret |")
+        w(
+            "| Circuit | Condition | Placements | Shots/seed | Chosen | vs fixed | vs average "
+            "| Headroom: best / worst | M4 Spearman | M5 rank; regret |"
+        )
         w("|---|---|---|---|---|---|---|---|---|---|")
         for s in cases:
             c = s.case
@@ -337,23 +372,25 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     tp5: dict[str, list[str]] = {}
     for device in DEVICE_ORDER:
         for label, r in (("A1", 1), ("A3", 3), ("A5", 5)):
-            s = find(summaries, device, label, "N2")
-            if s is None:
+            sa = find(summaries, device, label, "N2")
+            if sa is None:
                 continue
-            ch = s.placements[s.chosen_index]
-            fx = s.placements[s.fixed_index]
+            ch = sa.placements[sa.chosen_index]
+            fx = sa.placements[sa.fixed_index]
             w(
                 f"| {DEVICE_TITLES[device]} | {r} | {fi(ch.epsilon)} | {fi(fx.epsilon)} "
-                f"| {fi(epsilon_interval(s.average, r))} | {s.vs_fixed.verdict} "
-                f"| {s.vs_average.verdict} |"
+                f"| {fi(epsilon_interval(sa.average, r))} | {sa.vs_fixed.verdict} "
+                f"| {sa.vs_average.verdict} |"
             )
-            tp5.setdefault(device, []).append(f"{s.vs_fixed.verdict}/{s.vs_average.verdict}")
+            tp5.setdefault(device, []).append(f"{sa.vs_fixed.verdict}/{sa.vs_average.verdict}")
     w("")
     for device, verdicts in tp5.items():
         same = len(set(verdicts)) == 1
-        w(f"- {DEVICE_TITLES[device]}: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are "
-          f"{', '.join(verdicts)}; the direction is "
-          f"{'the same for all three' if same else '**not** the same for all three'}.")
+        w(
+            f"- {DEVICE_TITLES[device]}: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are "
+            f"{', '.join(verdicts)}; the direction is "
+            f"{'the same for all three' if same else '**not** the same for all three'}."
+        )
     w("")
 
     # ---------------------------------------------------------------- T-P6
@@ -363,24 +400,30 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     w("|---|---|---|---|---|")
     diffs = []
     for label, d in (("A3", 3), ("D5", 5), ("D7", 7)):
-        s = find(summaries, "hanoi", label, "N2")
-        if s is None:
+        sd = find(summaries, "hanoi", label, "N2")
+        if sd is None:
             continue
-        diffs.append(s.vs_average.absolute)
-        w(f"| {d} | {label} | {fi(s.vs_average.absolute)} | {pct(s.vs_average.relative)} "
-          f"| {s.vs_average.verdict} |")
+        diffs.append(sd.vs_average.absolute)
+        w(
+            f"| {d} | {label} | {fi(sd.vs_average.absolute)} | {pct(sd.vs_average.relative)} "
+            f"| {sd.vs_average.verdict} |"
+        )
     w("")
     if len(diffs) == 3:
-        w(f"Trend of the chosen-vs-average difference from distance 3 to 7: **{trend(diffs)}** "
-          "(rule in DECISIONS.md D10: *flat* when all three intervals overlap each other; "
-          "otherwise *grows* or *shrinks* by the magnitude at d=7 relative to d=3).")
+        w(
+            f"Trend of the chosen-vs-average difference from distance 3 to 7: **{trend(diffs)}** "
+            "(rule in DECISIONS.md D10: *flat* when all three intervals overlap each other; "
+            "otherwise *grows* or *shrinks* by the magnitude at d=7 relative to d=3)."
+        )
     w("")
 
     # ---------------------------------------------------------------- T-F2
     w("## 7. Uniform-noise null (N1, T-F2)")
     w("")
-    w("Pearson chi-square test of homogeneity of P_L across all valid placements "
-      "(k × 2 table of failures and successes, pooled over seeds). Pass criterion p > 0.01.")
+    w(
+        "Pearson chi-square test of homogeneity of P_L across all valid placements "
+        "(k × 2 table of failures and successes, pooled over seeds). Pass criterion p > 0.01."
+    )
     w("")
     w("| Device | Circuit | χ² | dof | p | vs fixed | vs average | Statement |")
     w("|---|---|---|---|---|---|---|---|")
@@ -391,29 +434,43 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         h = s.homogeneity
         gain = (
             "no gain"
-            if s.vs_fixed.verdict != "better" and s.vs_average.verdict != "better"
-            else "gain reported (unexpected under N1)"
+            if h.p_value > 0.01 or math.isnan(h.p_value)
+            else "placements differ (homogeneity rejected)"
         )
         hp = "n/a (M3 only)" if math.isnan(h.p_value) else f"{h.p_value:.3f}"
         hs = "n/a" if math.isnan(h.statistic) else f"{h.statistic:.2f}"
-        w(f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {hs} | {h.dof} | {hp} "
-          f"| {s.vs_fixed.verdict} | {s.vs_average.verdict} | **{gain}** under N1 |")
+        w(
+            f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {hs} | {h.dof} | {hp} "
+            f"| {s.vs_fixed.verdict} | {s.vs_average.verdict} | **{gain}** under N1 |"
+        )
     w("")
-    w("Under N1 every placement receives identical noise, so all selection scores are equal and "
-      "the tie-break picks the lexicographically first placement, which is the fixed baseline. "
-      "The report therefore states **no gain** under uniform noise.")
+    w(
+        "Under N1 every placement receives identical noise, so all selection scores are equal and "
+        "the tie-break picks the lexicographically first placement, which is the fixed baseline. "
+        "The chosen placement therefore has no information advantage, and where the homogeneity "
+        "test finds no difference between placements (p > 0.01) the report states **no gain** "
+        "under uniform noise. A pairwise verdict other than *indistinguishable* in this table "
+        "(chosen vs average) is then a chance fluctuation of that single placement: at 95% "
+        "confidence about one comparison in twenty is expected to separate by chance, and the "
+        "placement compared was fixed by the tie-break, not selected for its outcome. These "
+        "pairwise verdicts are reported as computed and are not claimed as gains or losses (X8)."
+    )
     w("")
 
     # ---------------------------------------------------------------- T-C4
     w("## 8. Planted faults (N3, T-C4)")
     w("")
-    w("A faulty placement uses the planted qubit (readout error × 5), or runs a CX on the "
-      "planted connection (CX error × 5, both directions). The faults were recorded in "
-      "`configs/benchmark.json` before running. Pass: the chosen placement avoids the fault, "
-      "and its P_L interval is not entirely above any faulty placement's interval.")
+    w(
+        "A faulty placement uses the planted qubit (readout error × 5), or runs a CX on the "
+        "planted connection (CX error × 5, both directions). The faults were recorded in "
+        "`configs/benchmark.json` before running. Pass: the chosen placement avoids the fault, "
+        "and its P_L interval is not entirely above any faulty placement's interval."
+    )
     w("")
-    w("| Device | Circuit | Fault | Faulty placements | Chosen avoids | Chosen P_L | "
-      "Best faulty P_L | Not higher than any faulty |")
+    w(
+        "| Device | Circuit | Fault | Faulty placements | Chosen avoids | Chosen P_L | "
+        "Best faulty P_L | Not higher than any faulty |"
+    )
     w("|---|---|---|---|---|---|---|---|")
     for s in cases:
         c = s.case
@@ -422,7 +479,11 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         ch = s.placements[s.chosen_index]
         faulty = [p for p in s.placements if p.contains_fault]
         fault = s.raw["planted_fault"]
-        desc = f"qubit {fault['qubit']}" if fault["kind"] == "qubit" else f"connection {tuple(fault['connection'])}"
+        desc = (
+            f"qubit {fault['qubit']}"
+            if fault["kind"] == "qubit"
+            else f"connection {tuple(fault['connection'])}"
+        )
         if s.metric == "P_L":
             ok = all(not (ch.p_l.low > f.p_l.high) for f in faulty)
             best_f = min(faulty, key=lambda p: p.p_l.estimate)
@@ -433,26 +494,32 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
             chosen_cell = "M3 " + fi(ch.detection)
             best_cell = "M3 " + fi(best_f.detection)
             ok_cell = ("yes" if ok else "**no**") + " (M3)"
-        w(f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {desc} "
-          f"| {len(faulty)} of {len(s.placements)} | {'yes' if not ch.contains_fault else '**no**'} "
-          f"| {chosen_cell} | {best_cell} | {ok_cell} |")
+        w(
+            f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {desc} "
+            f"| {len(faulty)} of {len(s.placements)} | {'yes' if not ch.contains_fault else '**no**'} "
+            f"| {chosen_cell} | {best_cell} | {ok_cell} |"
+        )
     w("")
 
     # ---------------------------------------------------------------- T-R2
     w("## 9. Seed consistency (T-R2) and precision (T-P4)")
     w("")
-    w("Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). "
-      "T-R2 requires the same verdict on all three seeds.")
+    w(
+        "Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). "
+        "T-R2 requires the same verdict on all three seeds."
+    )
     w("")
     w("| Case | Seed 1 | Seed 2 | Seed 3 | Same on all seeds |")
     w("|---|---|---|---|---|")
     for s in n2:
-        v = [f"{x['vs_fixed']} / {x['vs_average']}" for x in s.per_seed_verdicts]
-        same = len(set(v)) == 1
-        w(f"| {s.case_id} | {' | '.join(v)} | {'yes' if same else '**no**'} |")
+        seed_v = [f"{x['vs_fixed']} / {x['vs_average']}" for x in s.per_seed_verdicts]
+        same = len(set(seed_v)) == 1
+        w(f"| {s.case_id} | {' | '.join(seed_v)} | {'yes' if same else '**no**'} |")
     w("")
-    w("Precision (T-P4): for every placement under N2 and N3, the Wilson half-width must be at "
-      "most 10% of P_L.")
+    w(
+        "Precision (T-P4): for every placement under N2 and N3, the Wilson half-width must be at "
+        "most 10% of P_L."
+    )
     w("")
     w("| Case | Shots per seed | Placements meeting T-P4 |")
     w("|---|---|---|")
@@ -467,9 +534,11 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     # ---------------------------------------------------------------- T-L1
     w("## 10. Assumption sensitivity (T-L1, R-R7)")
     w("")
-    w("Each N2 case was rerun end to end (selection and evaluation) with the CX duration set "
-      "to the device minimum, to the device maximum, and with reset error equal to each "
-      "qubit's readout error. *Holds* means the verdict equals the N2 verdict.")
+    w(
+        "Each N2 case was rerun end to end (selection and evaluation) with the CX duration set "
+        "to the device minimum, to the device maximum, and with reset error equal to each "
+        "qubit's readout error. *Holds* means the verdict equals the N2 verdict."
+    )
     w("")
     w("| Device | Circuit | Variant | Chosen | vs fixed | vs average | Verdicts hold |")
     w("|---|---|---|---|---|---|---|")
@@ -478,16 +547,20 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         for variant, title in VARIANT_TITLES.items():
             v = find(summaries, c["device"], c["circuit"]["label"], "N2", variant)
             if v is None:
-                w(f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {title} | missing | | | |")
+                w(
+                    f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {title} | missing | | | |"
+                )
                 continue
             holds = (
                 v.vs_fixed.verdict == s.vs_fixed.verdict
                 and v.vs_average.verdict == s.vs_average.verdict
             )
-            w(f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {title} "
-              f"| {mapping_text(v.placements[v.chosen_index].mapping)} "
-              f"| {comparison_cell(v.vs_fixed)} | {comparison_cell(v.vs_average)} "
-              f"| {'yes' if holds else '**no**'} |")
+            w(
+                f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {title} "
+                f"| {mapping_text(v.placements[v.chosen_index].mapping)} "
+                f"| {comparison_cell(v.vs_fixed)} | {comparison_cell(v.vs_average)} "
+                f"| {'yes' if holds else '**no**'} |"
+            )
     w("")
 
     # ---------------------------------------------------------------- limitations
@@ -500,20 +573,26 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     # ---------------------------------------------------------------- provenance
     w("## 12. Provenance and compute")
     w("")
-    w(f"- Nove {prov['nove_version']}, commit `{prov['nove_commit']}`; Stim {prov['stim_version']}; "
-      f"PyMatching {prov['pymatching_version']}; device files from qiskit-ibm-runtime "
-      f"{prov['qiskit_ibm_runtime_version']} (not installed at runtime).")
+    w(
+        f"- Nove {prov['nove_version']}, commit `{prov['nove_commit']}`; Stim {prov['stim_version']}; "
+        f"PyMatching {prov['pymatching_version']}; device files from qiskit-ibm-runtime "
+        f"{prov['qiskit_ibm_runtime_version']} (not installed at runtime)."
+    )
     for device in DEVICE_ORDER:
-        s = next((x for x in cases if x.case["device"] == device), None)
-        if s is None:
+        first = next((x for x in cases if x.case["device"] == device), None)
+        if first is None:
             continue
-        p = s.raw["provenance"]
+        p = first.raw["provenance"]
         files = ", ".join(f"`{k}` {v[:16]}…" for k, v in p["source_files"].items())
-        w(f"- {DEVICE_TITLES[device]}: source files {files}; calibration snapshot "
-          f"`{p['calibration_snapshot_sha256'][:16]}…`. Full hashes are in every results file.")
+        w(
+            f"- {DEVICE_TITLES[device]}: source files {files}; calibration snapshot "
+            f"`{p['calibration_snapshot_sha256'][:16]}…`. Full hashes are in every results file."
+        )
     w(f"- Results files: {len(summaries)} in `results/runs/` (one per run).")
-    w(f"- Total compute (sum of per-run wall-clock times): **{total_seconds / 3600:.2f} hours** "
-      f"({total_seconds:,.0f} s) on {any_raw['workers']} worker processes.")
+    w(
+        f"- Total compute (sum of per-run wall-clock times): **{total_seconds / 3600:.2f} hours** "
+        f"({total_seconds:,.0f} s) on {any_raw['workers']} worker processes."
+    )
     total_shots = sum(p.shots for s in summaries.values() for p in s.placements)
     w(f"- Total simulated shots: {total_shots:,}.")
     cfg_commit = git_commit_of("configs/benchmark.json")
@@ -524,22 +603,30 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     # ---------------------------------------------------------------- appendix
     w("## Appendix: M1-M3 for every device, circuit, noise condition and placement (R-R1)")
     w("")
-    w("P_L and ε are pooled over the three seeds; intervals are 95%. ★ chosen, ◆ fixed, "
-      "✗ contains the planted fault.")
+    w(
+        "P_L and ε are pooled over the three seeds; intervals are 95%. ★ chosen, ◆ fixed, "
+        "✗ contains the planted fault."
+    )
     w("")
     for s in cases:
         c = s.case
-        w(f"### {DEVICE_TITLES[c['device']]} / {CIRCUIT_TITLES[c['circuit']['label']]} / "
-          f"{CONDITION_TITLES[c['condition']]}")
+        w(
+            f"### {DEVICE_TITLES[c['device']]} / {CIRCUIT_TITLES[c['circuit']['label']]} / "
+            f"{CONDITION_TITLES[c['condition']]}"
+        )
         w("")
         w("| Placement | Score | Shots | P_L (M1) | ε (M2) | Detection rate (M3) |")
         w("|---|---|---|---|---|---|")
         for p in sorted(s.placements, key=lambda p: p.mapping):
-            tag = ("★" if p.is_chosen else "") + ("◆" if p.is_fixed else "") + (
-                "✗" if p.contains_fault else ""
+            tag = (
+                ("★" if p.is_chosen else "")
+                + ("◆" if p.is_fixed else "")
+                + ("✗" if p.contains_fault else "")
             )
-            w(f"| {mapping_text(p.mapping)}{tag} | {p.score:.5f} | {p.shots:,} | {fi(p.p_l)} "
-              f"| {fi(p.epsilon)} | {fi(p.detection)} |")
+            w(
+                f"| {mapping_text(p.mapping)}{tag} | {p.score:.5f} | {p.shots:,} | {fi(p.p_l)} "
+                f"| {fi(p.epsilon)} | {fi(p.detection)} |"
+            )
         w("")
     return "\n".join(lines) + "\n"
 

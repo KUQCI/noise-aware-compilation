@@ -43,7 +43,7 @@ def epsilon_per_round(p_l: float, rounds: int) -> float:
 
     if not 0 <= p_l < 0.5:
         return float("nan")
-    return 0.5 * (1 - (1 - 2 * p_l) ** (1 / rounds))
+    return 0.5 * (1.0 - float((1 - 2 * p_l) ** (1 / rounds)))
 
 
 def epsilon_interval(p: Interval, rounds: int) -> Interval:
@@ -55,9 +55,7 @@ def epsilon_interval(p: Interval, rounds: int) -> Interval:
     return Interval(f(p.estimate), f(p.low), f(p.high))
 
 
-def newcombe_difference(
-    s1: int, n1: int, s2: int, n2: int, z: float = Z95
-) -> Interval:
+def newcombe_difference(s1: int, n1: int, s2: int, n2: int, z: float = Z95) -> Interval:
     """Newcombe hybrid score interval for p1 - p2 (independent samples)."""
 
     a = wilson(s1, n1, z)
@@ -88,9 +86,7 @@ class MeanEstimate:
     variance: float
 
 
-def mean_of_proportions(
-    counts: Sequence[tuple[int, int]], z: float = Z95
-) -> MeanEstimate:
+def mean_of_proportions(counts: Sequence[tuple[int, int]], z: float = Z95) -> MeanEstimate:
     """R-B2: mean P_L over placements; Var = sum p(1-p)/n / N^2."""
 
     k = len(counts)
@@ -101,9 +97,7 @@ def mean_of_proportions(
     return MeanEstimate(Interval(mean, max(0.0, mean - half), mean + half), var)
 
 
-def difference_from_mean(
-    counts: Sequence[tuple[int, int]], index: int, z: float = Z95
-) -> Interval:
+def difference_from_mean(counts: Sequence[tuple[int, int]], index: int, z: float = Z95) -> Interval:
     """p_index - mean(p), with the exact variance of that linear combination."""
 
     k = len(counts)
@@ -116,9 +110,7 @@ def difference_from_mean(
     return Interval(d, d - half, d + half)
 
 
-def relative_from_mean(
-    counts: Sequence[tuple[int, int]], index: int, z: float = Z95
-) -> Interval:
+def relative_from_mean(counts: Sequence[tuple[int, int]], index: int, z: float = Z95) -> Interval:
     """(p_index - mean) / mean with a delta-method interval."""
 
     k = len(counts)
