@@ -19,7 +19,12 @@ from noise_aware_compilation.decoder_graph import (
     matching_graph,
 )
 from noise_aware_compilation.devices import StoredDevice
-from noise_aware_compilation.placement import enumerate_placements, is_valid_placement, place
+from noise_aware_compilation.placement import (
+    V1_SCORER,
+    enumerate_placements,
+    is_valid_placement,
+    place,
+)
 from noise_aware_compilation.scoring import DEFAULT_SCORER, get_scorer
 
 
@@ -88,8 +93,11 @@ def test_repetition_code_cycles_have_code_distance(devices: dict[str, StoredDevi
         assert cycles and all(len(c) == distance for c in cycles)
 
 
-def test_r_g3_scorers_selectable_and_v1_default(devices: dict[str, StoredDevice]) -> None:
-    assert DEFAULT_SCORER == "v1"
+def test_r_g3_both_scorers_selectable(devices: dict[str, StoredDevice]) -> None:
+    # The default is set by R-G7 (checked against the held-out results in T2-G4); the v1
+    # score stays selectable, and place() itself still defaults to it.
+    assert DEFAULT_SCORER in ("v1", "decoder-graph")
+    assert get_scorer("v1") is V1_SCORER
     assert get_scorer("decoder-graph") is DECODER_GRAPH_SCORER
     jakarta = devices["jakarta"]
     circuit = circuit_for(3, "Z")
@@ -97,6 +105,7 @@ def test_r_g3_scorers_selectable_and_v1_default(devices: dict[str, StoredDevice]
     assert result.scorer == "decoder-graph"
     assert is_valid_placement(circuit, jakarta.device, result.mapping)
     assert len(result.candidates) == 8
+    assert place(circuit, jakarta.device, jakarta.noise).scorer == "v1"
 
 
 def test_t2_g1_selection_without_sampling(
