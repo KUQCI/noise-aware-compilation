@@ -8,9 +8,13 @@ changes.
 
 from __future__ import annotations
 
+from noise_aware_compilation.decoder_graph import DECODER_GRAPH_SCORER
 from noise_aware_compilation.placement import V1_SCORER, Scorer
 
-SCORERS: dict[str, Scorer] = {V1_SCORER.name: V1_SCORER}
+SCORERS: dict[str, Scorer] = {
+    V1_SCORER.name: V1_SCORER,
+    DECODER_GRAPH_SCORER.name: DECODER_GRAPH_SCORER,
+}
 DEFAULT_SCORER = V1_SCORER.name
 
 

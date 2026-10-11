@@ -48,3 +48,23 @@ Pauli probabilities for a gate, readout flip for a measurement, reset flip for a
 from the noise model the method is given. Sums use `math.fsum` (correctly rounded, so
 independent of operation order), which makes T2-B1's hand calculation match bit-exactly.
 Scores are compared exactly; ties go to the lexicographically smallest mapping.
+
+## V5. Decoder-graph score (R-G1, R-G2; not frozen yet)
+
+**Choice.** `decoder_graph.py` (module docstring has the full definition): from the placed
+circuit's decomposed approximate detector error model, build the matching graph, find
+every minimum-length closed path through the boundary that flips a logical observable, and
+add up, per path, the probability that the flipped edges outweigh half the path under the
+decoder's weights log((1 − p)/p), plus any undetectable logical error. That is the
+leading-order failure probability of a minimum-weight matching decoder (a union bound over
+logical paths). The graph is built in the package's own code, so `place` needs no decoder
+(R-I6).
+
+**Development.** Only on FakeJakartaV2 and FakeHanoiV2, against v1's committed N2
+measurements (`scripts/develop_decoder_graph_score.py`, output in
+`results_v2/development/decoder_graph.txt`). One variant was tried and dropped: adding paths
+up to 2 edges longer than the minimum overcounted (scores 1.5–4.8× the measured P_L instead
+of 0.4–1.0×) and lowered M4 on 8 of 10 cases. FakeAlgiers has not been converted or scored.
+
+**Freeze.** Waits for the spec owner's decision on the R-G7 rule (review issue 7) and on the
+order of freeze and final runs (review issue 8).
