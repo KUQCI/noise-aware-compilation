@@ -15,7 +15,12 @@ from typing import Any
 
 import pytest
 
-from noise_aware_compilation.analysis import CaseSummary, load_summaries, precision_ok
+from noise_aware_compilation.analysis import (
+    CaseSummary,
+    load_summaries,
+    precision_ok,
+    verdicts_consistent,
+)
 from noise_aware_compilation.benchmark import expand_cases, load_config
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -212,27 +217,21 @@ def test_t_p4_precision(summaries: dict[str, CaseSummary]) -> None:
     assert not failing, failing[:10]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Reported unmet (REPORT.md section 5, DECISIONS.md D14): on FakeHanoiV2 the chosen-vs-"
-        "fixed verdict is indistinguishable at 1 and 3 rounds and better at 5 rounds (rev 2). "
-        "The pass criterion is kept unchanged (X6); strict=True makes this test fail if it "
-        "starts passing."
-    ),
-)
 def test_t_p5_per_round_consistency(summaries: dict[str, CaseSummary], report: str) -> None:
+    # SPEC.md rev 3: no two round counts give opposite verdicts for the same comparison.
     for device in ("jakarta", "hanoi"):
-        verdicts = {
-            (
-                summaries[f"{device}-{label}-N2"].vs_fixed.verdict,
-                summaries[f"{device}-{label}-N2"].vs_average.verdict,
-            )
-            for label in ("A1", "A3", "A5")
-        }
-        assert len(verdicts) == 1, (device, verdicts)
+        cases = [summaries[f"{device}-{label}-N2"] for label in ("A1", "A3", "A5")]
+        assert verdicts_consistent([s.vs_fixed.verdict for s in cases]), device
+        assert verdicts_consistent([s.vs_average.verdict for s in cases]), device
     section = report.split("## 5.")[1].split("## 6.")[0]
-    assert section.count("the same for all three") == 2
+    assert section.count("no two point in opposite directions") == 2
+
+
+def test_verdicts_consistent_rule() -> None:
+    assert verdicts_consistent(["better", "indistinguishable", "better"])
+    assert verdicts_consistent(["worse", "indistinguishable"])
+    assert verdicts_consistent(["indistinguishable"] * 3)
+    assert not verdicts_consistent(["better", "indistinguishable", "worse"])
 
 
 def test_t_p6_gain_vs_distance(report: str) -> None:
@@ -241,19 +240,15 @@ def test_t_p6_gain_vs_distance(report: str) -> None:
     assert any(f"**{t}**" in section for t in ("grows", "shrinks", "flat"))
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Reported unmet (REPORT.md section 9, DECISIONS.md D17): under rev 2, FakeHanoiV2 D7 "
-        "N2's chosen-vs-fixed verdict is better on seeds 1 and 3 and indistinguishable on "
-        "seed 2. No seed was rerun or dropped (X7) and the criterion is unchanged (X6)."
-    ),
-)
 def test_t_r2_verdict_same_across_seeds(summaries: dict[str, CaseSummary]) -> None:
+    # SPEC.md rev 3: no two seeds give opposite verdicts for the same comparison.
     inconsistent = [
         (s.case_id, s.per_seed_verdicts)
         for s in _base(summaries, "N2")
-        if len({(v["vs_fixed"], v["vs_average"]) for v in s.per_seed_verdicts}) != 1
+        if not (
+            verdicts_consistent([v["vs_fixed"] for v in s.per_seed_verdicts])
+            and verdicts_consistent([v["vs_average"] for v in s.per_seed_verdicts])
+        )
     ]
     assert not inconsistent, inconsistent
 

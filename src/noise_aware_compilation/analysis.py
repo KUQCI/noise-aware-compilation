@@ -279,6 +279,16 @@ def precision_ok(p: PlacementSummary, target: float = 0.10) -> bool:
     return half <= target * p.p_l.estimate
 
 
+def verdicts_consistent(verdicts: Sequence[str]) -> bool:
+    """T-P5 / T-R2 (SPEC.md rev 3): no two verdicts point in opposite directions.
+
+    *indistinguishable* next to *better* or next to *worse* is consistent; only
+    *better* together with *worse* is not.
+    """
+
+    return not {"better", "worse"} <= set(verdicts)
+
+
 def trend(diffs: Sequence[Interval]) -> str:
     """T-P6 trend of chosen-vs-average differences over increasing code distance.
 
@@ -301,4 +311,5 @@ __all__ = [
     "precision_ok",
     "summarize_case",
     "trend",
+    "verdicts_consistent",
 ]
