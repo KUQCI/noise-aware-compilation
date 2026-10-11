@@ -47,7 +47,8 @@ the scorer, every valid candidate with its score, the SHA-256 of every input fil
 package version; `placed/placed_circuit.stim` is the relabelled circuit. To skip the
 conversion step, pass the IBM files directly (`--conf FILE --props FILE` instead of
 `--device`), or a shipped device by name (`--device jakarta` or `--device hanoi`).
-`--scorer` picks the selection score. Run `nac --help` or `nac COMMAND --help` for every
+`--scorer` picks the selection score: `decoder-graph` (the default, chosen by the held-out
+comparison in REPORT_V2.md section 4) or `v1`. Run `nac --help` or `nac COMMAND --help` for every
 option. Invalid input exits with code 1 and a one-line message; `nac --debug ...` shows the
 traceback.
 
@@ -74,6 +75,21 @@ Counts are bit-identical for the same config and seeds (T-R1). The runner refuse
 uncommitted changes to code, data or config (pass `--allow-dirty` for a scratch run), so
 every results file names the commit that produced it. `--workers N` sets the number
 of processes (default: all CPUs); `--only CASE_ID ...` runs selected cases.
+
+## Reproduce the v2 results (SPEC_V2.md)
+
+The v2 benchmark (drift robustness, the lowest-summed-error and Qiskit layout baselines, and
+the held-out FakeAlgiers comparison of the two scores) needs the `bench` extra
+(`pip install -e ".[bench]"`, which pins Qiskit 2.5.2). From the repository root:
+
+```bash
+python -m nac_bench.run_v2 configs_v2/benchmark_v2.json && python -m nac_bench.report_v2
+```
+
+This writes `results_v2/runs/*.json`, `results_v2/figures/`, `results_v2/summary.json` and
+REPORT_V2.md. v1's `configs/`, `results/` and REPORT.md are not touched. The runner has the
+same `--workers`, `--only` and `--allow-dirty` options as v1's. `tests/test_v2_results.py`
+checks the committed v2 results and REPORT_V2.md.
 
 ## Use
 
