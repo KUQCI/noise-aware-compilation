@@ -1,4 +1,4 @@
-"""Dev-only: copy the FakeJakartaV2 / FakeHanoiV2 files out of qiskit-ibm-runtime.
+"""Dev-only: copy the FakeJakartaV2 / FakeHanoiV2 / FakeAlgiers files out of qiskit-ibm-runtime.
 
 Requires the ``dev`` extra (``qiskit-ibm-runtime==0.50.0``). The package itself
 never imports Qiskit; it reads only the copies written here (R-D6, X3).
@@ -19,6 +19,8 @@ REQUIRED_VERSION = "0.50.0"
 FILES = {
     "jakarta": ("conf_jakarta.json", "props_jakarta.json"),
     "hanoi": ("conf_hanoi.json", "props_hanoi.json"),
+    # v2 held-out device (SPEC_V2.md R-G5), added after the decoder-graph freeze (R-G8)
+    "algiers": ("conf_algiers.json", "props_algiers.json"),
 }
 DEST = Path(__file__).resolve().parent.parent / "data" / "devices"
 
@@ -43,7 +45,7 @@ def main() -> int:
     (DEST / "SHA256SUMS").write_text("\n".join(lines) + "\n", encoding="utf-8")
     (DEST / "SOURCE.txt").write_text(
         f"Copied from qiskit-ibm-runtime=={version}, "
-        "package path qiskit_ibm_runtime/fake_provider/backends/{jakarta,hanoi}/\n",
+        "package path qiskit_ibm_runtime/fake_provider/backends/{jakarta,hanoi,algiers}/\n",
         encoding="utf-8",
     )
     print("\n".join(lines))
