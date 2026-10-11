@@ -178,15 +178,16 @@ and T-C7's condition then holds vacuously.
   Nove.
 * `nove` is pinned as `nove @ git+https://github.com/KUQCI/nove@485b413`.
 
-## D14. Reading of T-P5 ("the verdict's direction is the same for all three")
+## D14. Reading of T-P5 (superseded by SPEC.md rev 3)
 
-**Choice.** Read strictly: both verdicts (vs fixed and vs average) must be identical at 1, 3
-and 5 rounds of circuit A. On FakeHanoiV2 the chosen-vs-fixed verdict is *indistinguishable*
-at 1 round and *better* at 3 and 5 rounds, so T-P5 is reported as **unmet** there. No verdict
-points the opposite way (no *worse*). A looser reading ("no two verdicts point in opposite
-directions") would pass, but choosing it after seeing the result would weaken a pass
-criterion (X6). The test is kept and marked `xfail(strict=True)` so the suite stays runnable
-while recording the failure; it turns red if the criterion ever starts passing.
+**v1 and rev 2.** T-P5 ("the verdict's direction is the same for all three") was read
+strictly: both verdicts had to be identical at 1, 3 and 5 rounds. The looser reading was not
+chosen at the time because choosing it after seeing the data would have weakened a pass
+criterion (X6). Under the strict reading T-P5 failed on FakeHanoiV2 in v1 and in rev 2.
+
+**Rev 3.** The project owner changed the criterion in SPEC.md (see its Revision 3 note): no
+two round counts may give opposite verdicts. This is a post-hoc change by the spec owner,
+disclosed in SPEC.md and in REPORT.md section 5, which shows both readings.
 
 ## D15. N1 pairwise verdicts
 
@@ -209,13 +210,17 @@ that descends from the last commit touching `configs/`.
 and 26 runs recorded a source hash that matched no commit because the code was edited while
 the benchmark ran. With these fields, each number names the exact code that produced it.
 
-## D17. Unmet requirements under rev 2
+## D17. T-R2 and T-P5 under rev 2 and rev 3
 
-* **T-R2** (verdict the same on all three seeds) fails on FakeHanoiV2 D7 under N2: chosen vs
-  fixed is *better* on seeds 1 and 3 and *indistinguishable* on seed 2 (pooled: *better*,
-  −19%). Under rev 2 the d=7 fixed baseline no longer runs a dead gate, so the gap is small
-  enough that one seed's intervals overlap. No seed was rerun or dropped (X7); the test is
-  kept and marked `xfail(strict=True)`.
-* **T-P5** still fails on FakeHanoiV2, now *indistinguishable* at 1 and 3 rounds and *better*
-  at 5 rounds (D14).
+Under the strict rev 2 wording, two tests failed on the rev 2 results:
 
+* **T-R2** on FakeHanoiV2 D7 N2: chosen vs fixed was *better* on seeds 1 and 3 and
+  *indistinguishable* on seed 2 (pooled: *better*, −19%). Under rev 2 the d=7 fixed baseline
+  no longer runs a dead gate, so the gap is small enough that one seed's intervals overlap.
+* **T-P5** on FakeHanoiV2: chosen vs fixed was *indistinguishable* at 1 and 3 rounds and
+  *better* at 5 rounds.
+
+SPEC.md rev 3 (owner's decision, made after these results were known) changed both criteria
+to "no two verdicts point in opposite directions". Under it both pass on the same results; no
+seed, shot count or case was rerun or dropped (X7). REPORT.md sections 5 and 9 show the strict
+and the rev 3 readings side by side.

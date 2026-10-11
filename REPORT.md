@@ -158,8 +158,10 @@ Headroom column: oracle best and worst placements with 95% intervals; *placement
 | FakeHanoiV2 | 3 | 1.47e-03 [1.42e-03, 1.53e-03] | 1.51e-03 [1.46e-03, 1.57e-03] | 2.83e-03 [2.83e-03, 2.84e-03] | indistinguishable | better |
 | FakeHanoiV2 | 5 | 1.38e-03 [1.34e-03, 1.42e-03] | 1.63e-03 [1.58e-03, 1.68e-03] | 2.63e-03 [2.63e-03, 2.64e-03] | better | better |
 
-- FakeJakartaV2: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are better/better, better/better, better/better; the direction is the same for all three.
-- FakeHanoiV2: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are indistinguishable/better, indistinguishable/better, better/better; the direction is **not** the same for all three.
+T-P5 (SPEC.md rev 3) passes when no two round counts give opposite verdicts for the same comparison; *indistinguishable* next to *better* or next to *worse* is consistent. Whether the verdicts are also identical (the pre-rev 3 reading) is shown for transparency.
+
+- FakeJakartaV2: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are better/better, better/better, better/better; no two point in opposite directions (identical: yes).
+- FakeHanoiV2: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are indistinguishable/better, indistinguishable/better, better/better; no two point in opposite directions (identical: no).
 
 ## 6. Gain vs code distance on FakeHanoiV2 (T-P6)
 
@@ -222,21 +224,21 @@ A faulty placement uses the planted qubit (readout error × 5), or runs a CX on 
 
 ## 9. Seed consistency (T-R2) and precision (T-P4)
 
-Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). T-R2 requires the same verdict on all three seeds.
+Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). T-R2 (SPEC.md rev 3) passes when no two seeds give opposite verdicts for the same comparison; *indistinguishable* next to *better* or next to *worse* is consistent. Whether the verdicts are also identical (the pre-rev 3 reading) is shown for transparency.
 
-| Case | Seed 1 | Seed 2 | Seed 3 | Same on all seeds |
-|---|---|---|---|---|
-| jakarta-A1-N2 | better / better | better / better | better / better | yes |
-| jakarta-A3-N2 | better / better | better / better | better / better | yes |
-| jakarta-A5-N2 | better / better | better / better | better / better | yes |
-| jakarta-B-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes |
-| jakarta-C-N2 | better / better | better / better | better / better | yes |
-| hanoi-A1-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes |
-| hanoi-A3-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes |
-| hanoi-A5-N2 | better / better | better / better | better / better | yes |
-| hanoi-B-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes |
-| hanoi-D5-N2 | better / better | better / better | better / better | yes |
-| hanoi-D7-N2 | better / better | indistinguishable / better | better / better | **no** |
+| Case | Seed 1 | Seed 2 | Seed 3 | No opposite verdicts | Identical |
+|---|---|---|---|---|---|
+| jakarta-A1-N2 | better / better | better / better | better / better | yes | yes |
+| jakarta-A3-N2 | better / better | better / better | better / better | yes | yes |
+| jakarta-A5-N2 | better / better | better / better | better / better | yes | yes |
+| jakarta-B-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes | yes |
+| jakarta-C-N2 | better / better | better / better | better / better | yes | yes |
+| hanoi-A1-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes | yes |
+| hanoi-A3-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes | yes |
+| hanoi-A5-N2 | better / better | better / better | better / better | yes | yes |
+| hanoi-B-N2 | indistinguishable / better | indistinguishable / better | indistinguishable / better | yes | yes |
+| hanoi-D5-N2 | better / better | better / better | better / better | yes | yes |
+| hanoi-D7-N2 | better / better | indistinguishable / better | better / better | yes | no |
 
 Precision (T-P4): for every placement under N2 and N3, the Wilson half-width must be at most 10% of P_L.
 

@@ -4,6 +4,12 @@ Oct 11, 2026 · @Khaled Al Daqrouq
 
 **Revision 2 (Oct 11, 2026).** Approved by Khaled in the project thread after the v1 audit. The conversion rule now removes any coupler whose CX `gate_error` exceeds 0.8 in either direction (the largest value the CX rule can turn into a Pauli channel), instead of v1's cap at 1/15 per term. This changes the FakeHanoiV2 placement counts (benchmark table and T-C3) and adds one T-L1 variant. Nothing else changed.
 
+**Revision 3 (Oct 11, 2026). Pass criteria changed after seeing results.** Requested by Khaled in the project thread, with the project lead asking for the looser reading of T-P5. T-P5 previously required "the verdict's direction is the same for all three" round counts, and T-R2 required "the verdict is the same across all 3 seeds"; both were applied strictly (identical verdicts). Both now require only that no two verdicts for the same comparison point in opposite directions (*better* together with *worse*); *indistinguishable* next to either is consistent.
+
+- **Why:** a strict match turns a loss of statistical power into a failure. An *indistinguishable* verdict means the 95% intervals overlap, not that the effect changed sign, so it is not evidence against a *better* verdict elsewhere. The spec's own wording for T-P5 ("direction") supports this reading.
+- **Disclosure:** this change was made **after** the rev 2 results were known. Under the old wording, rev 2 failed T-R2 (FakeHanoiV2 d=7 N2: *better*, *indistinguishable*, *better* vs fixed across seeds) and T-P5 (FakeHanoiV2 circuit A vs fixed: *indistinguishable*, *indistinguishable*, *better* at 1, 3, 5 rounds). Under the new wording both pass. No result, seed, shot count or case was changed or rerun. The report shows both readings side by side.
+- **What the new criteria no longer check:** that a gain is large enough to be resolved on every seed or every round count. A gain that is resolved on one seed only now passes, as long as no seed points the other way.
+
 ## Goal and definition of done
 
 A separate Python package, built on Nove, that chooses a SWAP-free placement of a QEC circuit's qubits on a device using that device's calibrated noise. The package must also measure, in simulation, whether that choice lowers the decoded logical error rate compared with a fixed placement and with every other valid placement.
@@ -178,10 +184,10 @@ Every test has a mechanically checkable pass criterion. None requires the noise-
 | T-P2 | Performance | Regret | M5 is reported for every device, circuit and noise condition |
 | T-P3 | Performance | Score validity | M4 is reported, and a negative value is flagged |
 | T-P4 | Performance | Precision | Wilson interval half-width ≤ 10% of P\_L for every placement under N2 and N3 |
-| T-P5 | Performance | Per-round consistency | ε is reported for 1, 3 and 5 rounds of circuit A, and the verdict's direction is the same for all three |
+| T-P5 | Performance | Per-round consistency | ε is reported for 1, 3 and 5 rounds of circuit A, and no two round counts give opposite verdicts for the same comparison; *indistinguishable* next to *better* or next to *worse* is consistent (rev 3) |
 | T-P6 | Performance | Gain vs code distance | On FakeHanoiV2, the chosen-vs-average difference is reported with 95% intervals at distances 3, 5 and 7, with the trend stated: grows, shrinks or flat |
 | T-R1 | Reproducibility | Same seed | Re-running gives bit-identical failure counts |
-| T-R2 | Reproducibility | Different seeds | The verdict is the same across all 3 seeds |
+| T-R2 | Reproducibility | Different seeds | No two of the 3 seeds give opposite verdicts for the same comparison; *indistinguishable* next to *better* or next to *worse* is consistent (rev 3) |
 | T-R3 | Reproducibility | Provenance | Every results file records the Nove commit; Stim, PyMatching and qiskit-ibm-runtime versions; source file SHA-256; calibration and device hashes; and all seeds |
 | T-L1 | Limitations | Assumption sensitivity | N2 is rerun with CX duration at the device minimum and maximum, with reset error = readout error, and (rev 2) with every removed coupler restored, both directions at the CX rule applied to its lower raw `gate_error`; the report states whether the verdict holds |
 | T-L2 | Limitations | Scope statement | The report's limitations section covers every item under Constraints |

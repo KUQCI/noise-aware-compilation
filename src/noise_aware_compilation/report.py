@@ -21,6 +21,7 @@ from noise_aware_compilation.analysis import (
     load_summaries,
     precision_ok,
     trend,
+    verdicts_consistent,
 )
 from noise_aware_compilation.stats import Interval
 
@@ -370,7 +371,7 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     w("|---|---|---|---|---|---|---|")
     from noise_aware_compilation.stats import epsilon_interval
 
-    tp5: dict[str, list[str]] = {}
+    tp5: dict[str, list[tuple[str, str]]] = {}
     for device in DEVICE_ORDER:
         for label, r in (("A1", 1), ("A3", 3), ("A5", 5)):
             sa = find(summaries, device, label, "N2")
@@ -383,14 +384,26 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
                 f"| {fi(epsilon_interval(sa.average, r))} | {sa.vs_fixed.verdict} "
                 f"| {sa.vs_average.verdict} |"
             )
-            tp5.setdefault(device, []).append(f"{sa.vs_fixed.verdict}/{sa.vs_average.verdict}")
+            tp5.setdefault(device, []).append((sa.vs_fixed.verdict, sa.vs_average.verdict))
     w("")
-    for device, verdicts in tp5.items():
-        same = len(set(verdicts)) == 1
+    w(
+        "T-P5 (SPEC.md rev 3) passes when no two round counts give opposite verdicts for the same "
+        "comparison; *indistinguishable* next to *better* or next to *worse* is consistent. "
+        "Whether the verdicts are also identical (the pre-rev 3 reading) is shown for "
+        "transparency."
+    )
+    w("")
+    for device, pairs in tp5.items():
+        text = ", ".join(f"{f}/{a}" for f, a in pairs)
+        consistent = verdicts_consistent([f for f, _ in pairs]) and verdicts_consistent(
+            [a for _, a in pairs]
+        )
+        identical = len(set(pairs)) == 1
         w(
             f"- {DEVICE_TITLES[device]}: verdicts (vs fixed / vs average) at 1, 3, 5 rounds are "
-            f"{', '.join(verdicts)}; the direction is "
-            f"{'the same for all three' if same else '**not** the same for all three'}."
+            f"{text}; "
+            f"{'no two point in opposite directions' if consistent else '**two point in opposite directions**'}"
+            f" (identical: {'yes' if identical else 'no'})."
         )
     w("")
 
@@ -507,15 +520,24 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     w("")
     w(
         "Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). "
-        "T-R2 requires the same verdict on all three seeds."
+        "T-R2 (SPEC.md rev 3) passes when no two seeds give opposite verdicts for the same "
+        "comparison; *indistinguishable* next to *better* or next to *worse* is consistent. "
+        "Whether the verdicts are also identical (the pre-rev 3 reading) is shown for "
+        "transparency."
     )
     w("")
-    w("| Case | Seed 1 | Seed 2 | Seed 3 | Same on all seeds |")
-    w("|---|---|---|---|---|")
+    w("| Case | Seed 1 | Seed 2 | Seed 3 | No opposite verdicts | Identical |")
+    w("|---|---|---|---|---|---|")
     for s in n2:
         seed_v = [f"{x['vs_fixed']} / {x['vs_average']}" for x in s.per_seed_verdicts]
-        same = len(set(seed_v)) == 1
-        w(f"| {s.case_id} | {' | '.join(seed_v)} | {'yes' if same else '**no**'} |")
+        consistent = verdicts_consistent(
+            [x["vs_fixed"] for x in s.per_seed_verdicts]
+        ) and verdicts_consistent([x["vs_average"] for x in s.per_seed_verdicts])
+        identical = len(set(seed_v)) == 1
+        w(
+            f"| {s.case_id} | {' | '.join(seed_v)} | {'yes' if consistent else '**no**'} "
+            f"| {'yes' if identical else 'no'} |"
+        )
     w("")
     w(
         "Precision (T-P4): for every placement under N2 and N3, the Wilson half-width must be at "
