@@ -2,8 +2,11 @@
 
 Every scorer takes the circuit, device and noise model and a mapping, and
 returns a score where lower is better. None samples or simulates (R-P4,
-v2 R-G2). The default is the v1 score; v2 R-G7 alone decides whether that
-changes.
+v2 R-G2). The default was set by v2 R-G7 from the held-out FakeAlgiers
+results (REPORT_V2.md section 4): the decoder-graph score's mean relative
+regret was lower than the v1 score's, with the 95% interval of the difference
+below zero, so it is the default. The v1 score stays selectable (R-G3).
+``place()`` itself keeps the v1 score as its default, so v1 calls are unchanged.
 """
 
 from __future__ import annotations
@@ -15,7 +18,7 @@ SCORERS: dict[str, Scorer] = {
     V1_SCORER.name: V1_SCORER,
     DECODER_GRAPH_SCORER.name: DECODER_GRAPH_SCORER,
 }
-DEFAULT_SCORER = V1_SCORER.name
+DEFAULT_SCORER = DECODER_GRAPH_SCORER.name
 
 
 def scorer_names() -> tuple[str, ...]:

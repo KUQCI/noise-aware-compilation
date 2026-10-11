@@ -27,6 +27,7 @@ from noise_aware_compilation.api import (
 from noise_aware_compilation.cli import build_parser
 from noise_aware_compilation.devices import load_device, load_device_dir
 from noise_aware_compilation.placement import is_valid_placement
+from noise_aware_compilation.scoring import DEFAULT_SCORER
 
 ROOT = Path(__file__).resolve().parent.parent
 CIRCUIT, CONF, PROPS = EXAMPLE_FILES
@@ -65,7 +66,7 @@ def test_t2_i1_end_to_end_cli(tmp_path: Path) -> None:
     mapping = [record["mapping"][str(c)] for c in range(len(record["mapping"]))]
     circuit = nove.Circuit.from_stim_text((tmp_path / "ex" / CIRCUIT).read_text())
     assert is_valid_placement(circuit, stored.device, mapping)
-    assert record["candidates"] and record["scorer"] == "v1"
+    assert record["candidates"] and record["scorer"] == DEFAULT_SCORER
     for key in ("score", "package_version", "inputs", "calibration_snapshot_sha256"):
         assert key in record
     placed = nove.Circuit.from_stim_text((tmp_path / "placed" / PLACED_CIRCUIT_FILE).read_text())
