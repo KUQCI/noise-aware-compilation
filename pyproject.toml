@@ -17,6 +17,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# v2 benchmark only (nac_bench/, outside the package): the Qiskit layout baseline (X15)
+bench = [
+  "matplotlib>=3.7",
+  "qiskit==2.5.2",
+]
 report = [
   "matplotlib>=3.7",
 ]
@@ -42,6 +47,7 @@ noise_aware_compilation = ["device_data/*.json", "examples/*.json", "examples/*.
 
 [tool.pytest.ini_options]
 addopts = "--strict-config --strict-markers"
+pythonpath = ["."]
 testpaths = ["tests"]
 markers = [
   "results: checks on the committed benchmark results files (needs results/runs)",
@@ -51,18 +57,18 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["data", "results", "src/noise_aware_compilation/examples/*.json"]
+extend-exclude = ["data", "results", "results_v2", "src/noise_aware_compilation/examples/*.json"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
 [tool.mypy]
 strict = true
-files = ["src", "tests", "scripts"]
+files = ["src", "tests", "scripts", "nac_bench"]
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["stim", "pymatching", "networkx", "scipy", "matplotlib", "matplotlib.*"]
+module = ["stim", "pymatching", "networkx", "scipy", "matplotlib", "matplotlib.*", "qiskit", "qiskit.*"]
 ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
