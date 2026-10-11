@@ -79,6 +79,11 @@ class CaseSummary:
     def case_id(self) -> str:
         return str(self.case["case_id"])
 
+    def seed_verdicts(self, comparison: str) -> list[str]:
+        """Per-seed verdicts for ``comparison`` ("vs_fixed" or "vs_average")."""
+
+        return [v[comparison] for v in self.per_seed_verdicts]
+
     @property
     def num_detectors(self) -> int:
         return int(self.raw["num_detectors"])
@@ -289,6 +294,41 @@ def verdicts_consistent(verdicts: Sequence[str]) -> bool:
     return not {"better", "worse"} <= set(verdicts)
 
 
+def seed_breakdown(pooled: str, seeds: Sequence[str]) -> str:
+    """R-R2 (SPEC.md rev 4): per-seed tally next to the pooled verdict.
+
+    Names the pooled verdict when it is *better* or *worse*; when it is
+    *indistinguishable*, names whichever direction any seed gave (both if
+    seeds conflict), else *indistinguishable*. For example
+    "better (2/3 seeds), pooled: better".
+    """
+
+    n = len(seeds)
+    if pooled in ("better", "worse"):
+        named = [pooled]
+    else:
+        named = [v for v in ("better", "worse") if v in seeds] or ["indistinguishable"]
+    tally = ", ".join(f"{v} ({seeds.count(v)}/{n} seeds)" for v in named)
+    return f"{tally}, pooled: {pooled}"
+
+
+def evidence(pooled: str, seeds: Sequence[str]) -> str:
+    """X8 (SPEC.md rev 4): what the report may claim from one comparison.
+
+    A gain is claimed only when the pooled verdict is *better*. It is *weak
+    evidence* when not every seed shows *better* on its own; likewise for a
+    loss. With a pooled *indistinguishable*, nothing is claimed, and seeds that
+    disagree are flagged as mixed.
+    """
+
+    unanimous = all(v == pooled for v in seeds)
+    if pooled == "better":
+        return "gain" if unanimous else "gain, weak evidence"
+    if pooled == "worse":
+        return "loss" if unanimous else "loss, weak evidence"
+    return "no gain shown" if unanimous else "no gain shown, seeds mixed"
+
+
 def trend(diffs: Sequence[Interval]) -> str:
     """T-P6 trend of chosen-vs-average differences over increasing code distance.
 
@@ -306,9 +346,11 @@ __all__ = [
     "CaseSummary",
     "Comparison",
     "PlacementSummary",
+    "evidence",
     "load_runs",
     "load_summaries",
     "precision_ok",
+    "seed_breakdown",
     "summarize_case",
     "trend",
     "verdicts_consistent",

@@ -10,6 +10,15 @@ Oct 11, 2026 · @Khaled Al Daqrouq
 - **Disclosure:** this change was made **after** the rev 2 results were known. Under the old wording, rev 2 failed T-R2 (FakeHanoiV2 d=7 N2: *better*, *indistinguishable*, *better* vs fixed across seeds) and T-P5 (FakeHanoiV2 circuit A vs fixed: *indistinguishable*, *indistinguishable*, *better* at 1, 3, 5 rounds). Under the new wording both pass. No result, seed, shot count or case was changed or rerun. The report shows both readings side by side.
 - **What the new criteria no longer check:** that a gain is large enough to be resolved on every seed or every round count. A gain that is resolved on one seed only now passes, as long as no seed points the other way.
 
+**Revision 4 (Oct 11, 2026). Analysis and reporting rule added after seeing results.** Requested by Khaled in the project thread. Three changes, all to how verdicts are reported and claimed (R-R2, T-P1, X8):
+
+1. **Pooled verdict.** Each comparison's verdict is the one computed from all three seeds' shots combined. This is a recalculation from the saved counts, not a rerun (X7 is unaffected). The analysis code already computed the headline verdicts this way in v1 and rev 2; rev 4 makes it the stated rule and names it in the report.
+2. **Seed breakdown.** Next to each pooled verdict the report shows how many seeds give it on their own shots, e.g. "better (2/3 seeds), pooled: better".
+3. **What may be claimed (X8 made specific).** A gain is claimed only when the pooled verdict is *better*. When not every seed shows *better* on its own, the report labels it **weak evidence**. A pooled *worse* is reported the same way as a loss. A pooled *indistinguishable* claims nothing; if some seed alone resolves a difference, it is labelled *seeds mixed*.
+
+- **Why:** pooling gives one estimate with a tighter interval, which is the direct answer to "is there a gain?"; the per-seed tally shows how fragile that answer is.
+- **Disclosure:** added **after** the rev 2 results were known. No result, seed, shot count or case was changed or rerun. On the rev 2 N2 results it labels one headline as weak evidence (FakeHanoiV2 d=7 vs fixed: better on 2 of 3 seeds, pooled better, −19%) and changes no verdict.
+
 ## Goal and definition of done
 
 A separate Python package, built on Nove, that chooses a SWAP-free placement of a QEC circuit's qubits on a device using that device's calibrated noise. The package must also measure, in simulation, whether that choice lowers the decoded logical error rate compared with a fixed placement and with every other valid placement.
@@ -180,7 +189,7 @@ Every test has a mechanically checkable pass criterion. None requires the noise-
 | T-F2 | Fairness | Uniform-noise null (N1) | A homogeneity test across placements gives p > 0.01, and the report states no gain |
 | T-F3 | Fairness | Seed separation | Logged evaluation seeds share no value with seeds used during selection |
 | T-F4 | Fairness | Baseline committed first | The commit holding the fixed baseline and benchmark config predates the first N2 results |
-| T-P1 | Performance | Main comparison | Chosen vs fixed and vs the all-placement average, as absolute and relative differences with 95% intervals and one verdict: better, indistinguishable or worse |
+| T-P1 | Performance | Main comparison | Chosen vs fixed and vs the all-placement average, as absolute and relative differences with 95% intervals and one verdict: better, indistinguishable or worse, computed from all seeds' shots pooled (rev 4) |
 | T-P2 | Performance | Regret | M5 is reported for every device, circuit and noise condition |
 | T-P3 | Performance | Score validity | M4 is reported, and a negative value is flagged |
 | T-P4 | Performance | Precision | Wilson interval half-width ≤ 10% of P\_L for every placement under N2 and N3 |
@@ -199,7 +208,7 @@ The report states every result as holding "under this noise model", never as a c
 | ID | Requirement |
 | --- | --- |
 | R-R1 | M1–M3 with intervals for every device, circuit, noise condition and placement |
-| R-R2 | One verdict per comparison: better, indistinguishable or worse; overlapping 95% intervals are reported as indistinguishable, not as a loss |
+| R-R2 | One verdict per comparison: better, indistinguishable or worse; overlapping 95% intervals are reported as indistinguishable, not as a loss. The verdict is computed from all seeds' shots pooled, and the number of seeds giving the same verdict alone is shown next to it, e.g. "better (2/3 seeds), pooled: better" (rev 4) |
 | R-R3 | Headroom per case: oracle best vs worst with intervals; where they overlap, the report states that placement does not matter for that case |
 | R-R4 | M4 and M5 for every case |
 | R-R5 | For each device and circuit under N2, a plot of all placements sorted by P\_L with interval bars, with the chosen and fixed placements marked |
@@ -244,7 +253,7 @@ The implementer must not:
 | X5 | View N2 results before the fixed baseline and benchmark config are committed (R-F4), or change either afterwards |
 | X6 | Change the settled decisions, the noise conversion rules or any pass criterion; an unmet requirement is reported, not weakened |
 | X7 | Drop or rerun placements, seeds or cases because of their results |
-| X8 | Present results as hardware claims, or claim a gain the intervals do not support |
+| X8 | Present results as hardware claims, or claim a gain the intervals do not support. A gain is claimed only when the pooled verdict is *better*, and is labelled *weak evidence* when not every seed shows *better* alone (rev 4) |
 | X9 | Add anything listed as out of scope for v1 |
 | X10 | Push to a shared remote branch |
 

@@ -18,8 +18,10 @@ from typing import Any
 from noise_aware_compilation.analysis import (
     CaseSummary,
     Comparison,
+    evidence,
     load_summaries,
     precision_ok,
+    seed_breakdown,
     trend,
     verdicts_consistent,
 )
@@ -113,6 +115,35 @@ def find(
 
 def comparison_cell(c: Comparison) -> str:
     return f"**{c.verdict}**; Δ {fi(c.absolute)}; rel {pct(c.relative)}"
+
+
+def summary_cell(s: CaseSummary, comparison: str) -> str:
+    """Seed tally, pooled verdict, evidence label and pooled Δ (SPEC.md rev 4)."""
+
+    c: Comparison = getattr(s, comparison)
+    seeds = s.seed_verdicts(comparison)
+    tally = seed_breakdown(c.verdict, seeds).replace(
+        f"pooled: {c.verdict}", f"pooled: **{c.verdict}**"
+    )
+    return f"{tally}; *{evidence(c.verdict, seeds)}*; Δ {fi(c.absolute)}; rel {pct(c.relative)}"
+
+
+def claim_lines(cases: Sequence[CaseSummary]) -> list[str]:
+    """Bullets for the gains (and losses) the report claims under N2 (SPEC.md rev 4, X8)."""
+
+    out: list[str] = []
+    for s in cases:
+        for comparison, ref in (("vs_fixed", "fixed"), ("vs_average", "average")):
+            c: Comparison = getattr(s, comparison)
+            if c.verdict == "indistinguishable":
+                continue
+            seeds = s.seed_verdicts(comparison)
+            out.append(
+                f"- {DEVICE_TITLES[s.case['device']]} {s.case['circuit']['label']} vs {ref}: "
+                f"**{evidence(c.verdict, seeds)}**, rel {pct(c.relative)} "
+                f"({seed_breakdown(c.verdict, seeds)})"
+            )
+    return out
 
 
 def plot_case(summary: CaseSummary, out: Path) -> None:
@@ -228,9 +259,13 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         "Chosen = the noise-aware placement. Fixed = the first valid placement in lexicographic "
         "order (R-B1). Average = mean P_L over every valid placement (R-B2). A verdict is "
         "*better* or *worse* only when the two 95% intervals do not overlap; overlapping "
-        "intervals are *indistinguishable* (R-R2). Δ is chosen minus reference (negative means "
-        "the chosen placement has the lower P_L), with its 95% interval; rel is Δ relative to "
-        "the reference."
+        "intervals are *indistinguishable* (R-R2). The verdict that counts is the *pooled* one, "
+        "computed from all three seeds' shots combined; next to it is how many seeds give that "
+        "verdict on their own shots (SPEC.md rev 4). A gain is claimed only when the pooled "
+        "verdict is *better*, and is labelled *weak evidence* when not every seed shows it on "
+        "its own; *seeds mixed* marks a pooled *indistinguishable* that some seed alone "
+        "resolves. Δ (pooled) is chosen minus reference (negative means the chosen placement "
+        "has the lower P_L), with its 95% interval; rel is Δ relative to the reference."
     )
     w("")
     w("| Device | Circuit | Chosen P_L | Fixed P_L | Average P_L | vs fixed | vs average |")
@@ -244,9 +279,16 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         fxv = fx.p_l if s.metric == "P_L" else fx.detection
         w(
             f"| {DEVICE_TITLES[c['device']]} | {CIRCUIT_TITLES[c['circuit']['label']]}{metric_note} "
-            f"| {fi(chv)} | {fi(fxv)} | {fi(s.average)} | {comparison_cell(s.vs_fixed)} "
-            f"| {comparison_cell(s.vs_average)} |"
+            f"| {fi(chv)} | {fi(fxv)} | {fi(s.average)} | {summary_cell(s, 'vs_fixed')} "
+            f"| {summary_cell(s, 'vs_average')} |"
         )
+    w("")
+    w(
+        "Claims under N2 (pooled verdict *better* or *worse*; every other comparison is "
+        "*indistinguishable* and claims nothing):"
+    )
+    w("")
+    lines.extend(claim_lines(n2))
     w("")
     w(
         "For circuit C (distance 2) the code detects but cannot correct errors, so its rows "
@@ -346,7 +388,7 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
                 f"| {c['circuit']['label']}{' (M3)' if s.metric != 'P_L' else ''} "
                 f"| {CONDITION_TITLES[c['condition']]} | {len(s.placements)} | {s.shots_per_seed:,} "
                 f"| {mapping_text(s.placements[s.chosen_index].mapping)} "
-                f"| {comparison_cell(s.vs_fixed)} | {comparison_cell(s.vs_average)} | {head} "
+                f"| {summary_cell(s, 'vs_fixed')} | {summary_cell(s, 'vs_average')} | {head} "
                 f"| {m4} | {fmt(s.chosen_rank, 3)} of {len(s.placements)}; {fi(s.regret)} |"
             )
         w("")
@@ -381,13 +423,15 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
             fx = sa.placements[sa.fixed_index]
             w(
                 f"| {DEVICE_TITLES[device]} | {r} | {fi(ch.epsilon)} | {fi(fx.epsilon)} "
-                f"| {fi(epsilon_interval(sa.average, r))} | {sa.vs_fixed.verdict} "
-                f"| {sa.vs_average.verdict} |"
+                f"| {fi(epsilon_interval(sa.average, r))} "
+                f"| {seed_breakdown(sa.vs_fixed.verdict, sa.seed_verdicts('vs_fixed'))} "
+                f"| {seed_breakdown(sa.vs_average.verdict, sa.seed_verdicts('vs_average'))} |"
             )
             tp5.setdefault(device, []).append((sa.vs_fixed.verdict, sa.vs_average.verdict))
     w("")
     w(
-        "T-P5 (SPEC.md rev 3) passes when no two round counts give opposite verdicts for the same "
+        "T-P5 uses the pooled verdicts. It (SPEC.md rev 3) passes when no two round counts give "
+        "opposite verdicts for the same "
         "comparison; *indistinguishable* next to *better* or next to *worse* is consistent. "
         "Whether the verdicts are also identical (the pre-rev 3 reading) is shown for "
         "transparency."
@@ -420,7 +464,7 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         diffs.append(sd.vs_average.absolute)
         w(
             f"| {d} | {label} | {fi(sd.vs_average.absolute)} | {pct(sd.vs_average.relative)} "
-            f"| {sd.vs_average.verdict} |"
+            f"| {seed_breakdown(sd.vs_average.verdict, sd.seed_verdicts('vs_average'))} |"
         )
     w("")
     if len(diffs) == 3:
@@ -523,11 +567,12 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         "T-R2 (SPEC.md rev 3) passes when no two seeds give opposite verdicts for the same "
         "comparison; *indistinguishable* next to *better* or next to *worse* is consistent. "
         "Whether the verdicts are also identical (the pre-rev 3 reading) is shown for "
-        "transparency."
+        "transparency. Pooled is the verdict from all three seeds' shots combined, the one "
+        "the report's claims rest on (SPEC.md rev 4)."
     )
     w("")
-    w("| Case | Seed 1 | Seed 2 | Seed 3 | No opposite verdicts | Identical |")
-    w("|---|---|---|---|---|---|")
+    w("| Case | Seed 1 | Seed 2 | Seed 3 | Pooled | No opposite verdicts | Identical |")
+    w("|---|---|---|---|---|---|---|")
     for s in n2:
         seed_v = [f"{x['vs_fixed']} / {x['vs_average']}" for x in s.per_seed_verdicts]
         consistent = verdicts_consistent(
@@ -535,7 +580,8 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
         ) and verdicts_consistent([x["vs_average"] for x in s.per_seed_verdicts])
         identical = len(set(seed_v)) == 1
         w(
-            f"| {s.case_id} | {' | '.join(seed_v)} | {'yes' if consistent else '**no**'} "
+            f"| {s.case_id} | {' | '.join(seed_v)} "
+            f"| {s.vs_fixed.verdict} / {s.vs_average.verdict} | {'yes' if consistent else '**no**'} "
             f"| {'yes' if identical else 'no'} |"
         )
     w("")
@@ -585,7 +631,7 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
             w(
                 f"| {DEVICE_TITLES[c['device']]} | {c['circuit']['label']} | {title} "
                 f"| {mapping_text(v.placements[v.chosen_index].mapping)} "
-                f"| {comparison_cell(v.vs_fixed)} | {comparison_cell(v.vs_average)} "
+                f"| {summary_cell(v, 'vs_fixed')} | {summary_cell(v, 'vs_average')} "
                 f"| {'yes' if holds else '**no**'} |"
             )
     w("")
@@ -751,6 +797,10 @@ def summary_json(summaries: dict[str, CaseSummary]) -> dict[str, Any]:
             "regret": s.regret.to_dict(),
             "homogeneity_p": s.homogeneity.p_value,
             "per_seed_verdicts": s.per_seed_verdicts,
+            "evidence": {
+                k: evidence(getattr(s, k).verdict, s.seed_verdicts(k))
+                for k in ("vs_fixed", "vs_average")
+            },
             "shots_per_seed": s.shots_per_seed,
             "wall_clock_seconds": s.wall_clock_seconds,
         }
