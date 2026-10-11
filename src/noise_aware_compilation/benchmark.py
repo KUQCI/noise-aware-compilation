@@ -29,11 +29,13 @@ import importlib.metadata
 import json
 import os
 import platform
+import subprocess
 import sys
 import time
 from collections.abc import Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +49,7 @@ from noise_aware_compilation.conditions import (
     noise_sha256,
     plant_fault,
     reset_equals_readout,
+    restore_removed_couplers,
     uniform_median,
     with_cx_duration,
     zero_noise,
@@ -81,7 +84,7 @@ class CaseSpec:
     rounds: int
     basis: str
     condition: str  # N0, N1, N2, N3-qubit, N3-connection
-    variant: str  # "base", "L1-cx-min", "L1-cx-max", "L1-reset-readout"
+    variant: str  # "base", "L1-cx-min", "L1-cx-max", "L1-reset-readout", "L1-coupler-better"
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -162,6 +165,8 @@ def build_case_models(
         device = with_cx_duration(device, float(device.metadata["cx_duration_max"]))
     elif spec.variant == "L1-reset-readout":
         noise = reset_equals_readout(noise, device)
+    elif spec.variant == "L1-coupler-better":
+        device, noise = restore_removed_couplers(device, noise)
     elif spec.variant != "base":
         raise ValueError(f"unknown variant {spec.variant!r}")
     return circuit, device, noise, fault
@@ -193,6 +198,30 @@ def nove_commit() -> str | None:
     return str(commit) if commit else None
 
 
+def package_git_state() -> tuple[str | None, bool | None]:
+    """Commit of the checkout the package runs from, and whether its tracked inputs are dirty.
+
+    Results and the generated report are excluded from the dirty check, since a
+    benchmark run writes them. Returns ``(None, None)`` outside a git checkout.
+    """
+
+    root = Path(__file__).resolve().parent.parent.parent
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True
+        ).stdout.strip()
+        status = subprocess.run(
+            ["git", "status", "--porcelain", "--", ".", ":!results", ":!REPORT.md"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None, None
+    return commit, bool(status)
+
+
 def provenance(
     stored_snapshot: nove.CalibrationSnapshot,
     device: nove.DeviceModel,
@@ -200,6 +229,7 @@ def provenance(
     circuit: nove.Circuit,
 ) -> dict[str, Any]:
     snap_prov = dict(stored_snapshot.to_dict()["provenance"])
+    git_commit, git_dirty = package_git_state()
     try:
         qiskit_installed: str | None = importlib.metadata.version("qiskit-ibm-runtime")
     except importlib.metadata.PackageNotFoundError:
@@ -214,6 +244,9 @@ def provenance(
         "qiskit_ibm_runtime_installed_at_runtime": qiskit_installed,
         "package_version": __version__,
         "package_source_sha256": _package_source_sha256(),
+        "package_git_commit": git_commit,
+        "package_git_dirty": git_dirty,
+        "written_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source_files": {
             snap_prov["conf_file"]: snap_prov["conf_sha256"],
             snap_prov["props_file"]: snap_prov["props_sha256"],
@@ -266,7 +299,9 @@ def run_case(
     fixed = enumerate_placements(circuit, device)[0]
     edges = sorted(interaction_edges(circuit))
 
-    committed_fixed = config.get("_fixed_baselines", {}).get(f"{spec.device}-{spec.circuit_label}")
+    committed = config.get("_fixed_baselines", {})
+    base_key = f"{spec.device}-{spec.circuit_label}"
+    committed_fixed = committed.get(f"{base_key}-{spec.variant}", committed.get(base_key))
     if committed_fixed is not None and tuple(committed_fixed) != fixed:
         raise RuntimeError(f"fixed baseline for {spec.case_id} differs from the committed one")
     if fault is not None and all(fault.contained_in(m, edges) for m in mappings):
@@ -411,7 +446,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=Path("results/runs"))
     parser.add_argument("--workers", type=int, default=os.cpu_count() or 1)
     parser.add_argument("--skip-existing", action="store_true")
+    parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="run even when tracked code, data or config differ from the checked-out commit",
+    )
     args = parser.parse_args(argv)
+    _, dirty = package_git_state()
+    if dirty and not args.allow_dirty:
+        parser.error(
+            "uncommitted changes to code, data or config; commit them first so every results "
+            "file names the commit that produced it (or pass --allow-dirty)"
+        )
 
     config = load_config(args.config)
     config["_config_sha256"] = hashlib.sha256(args.config.read_bytes()).hexdigest()

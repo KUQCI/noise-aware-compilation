@@ -25,10 +25,6 @@
       7
     ],
     [
-      5,
-      8
-    ],
-    [
       6,
       7
     ],
@@ -86,10 +82,6 @@
     ],
     [
       19,
-      20
-    ],
-    [
-      19,
       22
     ],
     [
@@ -115,12 +107,12 @@
   ],
   "device_id": "ibm_hanoi",
   "gate_durations": {
-    "CX": 383.8095238095238,
+    "CX": 377.09401709401703,
     "H": 32.0
   },
   "measurement_duration": 817.7777777777778,
   "metadata": {
-    "calibration_sha256": "48df6cac8a287f54623e1f2e5859d62e47c992e36e324bbcadf22bfde3b4613b",
+    "calibration_sha256": "d77b31ce6f3f91116e38ff881f611540f916e8ac8631092d27319eb9c3b5ae96",
     "cx_duration_max": 728.8888888888888,
     "cx_duration_min": 181.33333333333331,
     "num_qubits": 27,
@@ -129,8 +121,8 @@
       "conf_file": "conf_hanoi.json",
       "conf_sha256": "9345ac086f406de1a3cc4684a93b1171aecebc82c7c0188ead165cfc158c44ea",
       "conversion_notes": [
-        "CX(19, 20): gate_error=1.0 gives 1.25*e > 1; 15 terms capped at 1/15 each (DECISIONS.md D3)",
-        "CX(5, 8): gate_error=1.0 gives 1.25*e > 1; 15 terms capped at 1/15 each (DECISIONS.md D3)",
+        "CX pair (5, 8): gate_error 1.0 / 0.009020371498925428 (directions 5->8 / 8->5); a value above 0.8 has no Pauli-channel representation, so the pair is removed from connectivity in both directions (SPEC.md rev 2, DECISIONS.md D3)",
+        "CX pair (19, 20): gate_error 1.0 / 0.004448040292188232 (directions 19->20 / 20->19); a value above 0.8 has no Pauli-channel representation, so the pair is removed from connectivity in both directions (SPEC.md rev 2, DECISIONS.md D3)",
         "qubit 2: T2=214775.4 ns > 2*T1=169789.0 ns gives a negative Z rate; clamped at 0 (DECISIONS.md D4)",
         "qubit 5: T2=212425.7 ns > 2*T1=183090.0 ns gives a negative Z rate; clamped at 0 (DECISIONS.md D4)",
         "qubit 10: T2=338866.5 ns > 2*T1=321776.7 ns gives a negative Z rate; clamped at 0 (DECISIONS.md D4)",
@@ -142,7 +134,37 @@
       "props_sha256": "17db2080056d895f74012ed0f45ae2cb8e93be564641640fadbd0ae4c28a5211",
       "source_package": "qiskit-ibm-runtime",
       "source_package_version": "0.50.0"
-    }
+    },
+    "removed_couplers": [
+      {
+        "gate_error": {
+          "5,8": 1.0,
+          "8,5": 0.009020371498925428
+        },
+        "gate_length_ns": {
+          "5,8": 593.7777777777777,
+          "8,5": 561.7777777777777
+        },
+        "pair": [
+          5,
+          8
+        ]
+      },
+      {
+        "gate_error": {
+          "19,20": 1.0,
+          "20,19": 0.004448040292188232
+        },
+        "gate_length_ns": {
+          "19,20": 380.4444444444444,
+          "20,19": 348.4444444444444
+        },
+        "pair": [
+          19,
+          20
+        ]
+      }
+    ]
   },
   "qubit_coordinates": {},
   "reset_duration": 849.7777777777778,

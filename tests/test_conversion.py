@@ -11,7 +11,12 @@ from typing import Any
 import nove
 import pytest
 
-from noise_aware_compilation.conversion import TWO_QUBIT_LABELS, convert_fake_backend
+from noise_aware_compilation.conditions import restore_removed_couplers
+from noise_aware_compilation.conversion import (
+    TWO_QUBIT_LABELS,
+    convert_fake_backend,
+    cx_probabilities,
+)
 from noise_aware_compilation.devices import StoredDevice, load_device, stored_hashes
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -60,19 +65,30 @@ def test_t_i1_every_rule_exactly(name: str, devices: dict[str, StoredDevice]) ->
     snap = devices[name].snapshot
     device = devices[name].device
     noise = devices[name].noise
-    # connectivity: every listed pair
-    assert set(device.connectivity) == {(min(a, b), max(a, b)) for a, b in conf["coupling_map"]}
+
+    # connectivity: every listed pair, except pairs with gate_error > 0.8 in either
+    # direction, which are removed in both directions (SPEC.md rev 2)
+    def representable(a: int, b: int) -> bool:
+        return _gate(props, "cx", [a, b])["gate_error"] <= 0.8
+
+    removed = {
+        (min(a, b), max(a, b))
+        for a, b in conf["coupling_map"]
+        if not (representable(a, b) and representable(b, a))
+    }
+    listed = {(min(a, b), max(a, b)) for a, b in conf["coupling_map"]}
+    assert set(device.connectivity) == listed - removed
+    assert {tuple(e["pair"]) for e in device.metadata["removed_couplers"]} == removed
     cx_lengths = []
     for a, b in conf["coupling_map"]:
         g = _gate(props, "cx", [a, b])
-        cx_lengths.append(g["gate_length"])
         ch = noise.gate_channel_for(nove.OperationKey("CX", (a, b)))
+        if (min(a, b), max(a, b)) in removed:
+            assert nove.OperationKey("CX", (a, b)) not in snap.operation_parameters
+            continue
+        cx_lengths.append(g["gate_length"])
         assert ch is not None
-        each = 1.25 * g["gate_error"] / 15
-        if each * 15 <= 1:
-            assert ch.probabilities == (each,) * 15
-        else:  # DECISIONS.md D3
-            assert ch.probabilities == (1 / 15,) * 15
+        assert ch.probabilities == (1.25 * g["gate_error"] / 15,) * 15
     sx_lengths, ro_lengths, reset_lengths = [], [], []
     for q in range(conf["n_qubits"]):
         sx = _gate(props, "sx", [q])
@@ -110,9 +126,38 @@ def test_hanoi_spot_checks(devices: dict[str, StoredDevice]) -> None:
 
 def test_departures_are_recorded(devices: dict[str, StoredDevice]) -> None:
     notes = devices["hanoi"].snapshot.provenance["conversion_notes"]
-    assert sum("capped" in n for n in notes) == 2
+    assert sum("removed from connectivity" in n for n in notes) == 2
     assert sum("clamped" in n for n in notes) == 5
     assert devices["jakarta"].snapshot.provenance["conversion_notes"] == ()
+    removed = devices["hanoi"].device.metadata["removed_couplers"]
+    assert sorted(tuple(e["pair"]) for e in removed) == [(5, 8), (19, 20)]
+    assert devices["jakarta"].device.metadata["removed_couplers"] == ()
+
+
+def test_unrepresentable_cx_error_is_rejected() -> None:
+    assert cx_probabilities(0.8) == (1.25 * 0.8 / 15,) * 15
+    with pytest.raises(ValueError, match="removed"):
+        cx_probabilities(0.81)
+
+
+def test_l1_coupler_better_restores_removed_pairs(devices: dict[str, StoredDevice]) -> None:
+    stored = devices["hanoi"]
+    device, noise = restore_removed_couplers(stored.device, stored.noise)
+    _, props = _raw("hanoi")
+    for a, b in ((5, 8), (19, 20)):
+        assert device.is_connected(a, b)
+        better = min(
+            _gate(props, "cx", [a, b])["gate_error"], _gate(props, "cx", [b, a])["gate_error"]
+        )
+        for pair in ((a, b), (b, a)):
+            ch = noise.gate_channel_for(nove.OperationKey("CX", pair))
+            assert ch is not None and ch.probabilities == (1.25 * better / 15,) * 15
+    assert set(device.connectivity) - set(stored.device.connectivity) == {(5, 8), (19, 20)}
+    assert device.gate_durations == stored.device.gate_durations
+    jakarta = devices["jakarta"]
+    jakarta_noise = jakarta.noise
+    same_device, same_noise = restore_removed_couplers(jakarta.device, jakarta_noise)
+    assert same_device is jakarta.device and same_noise is jakarta_noise
 
 
 @pytest.mark.parametrize("name", ["jakarta", "hanoi"])

@@ -45,6 +45,7 @@ VARIANT_TITLES = {
     "L1-cx-min": "CX duration = device minimum",
     "L1-cx-max": "CX duration = device maximum",
     "L1-reset-readout": "reset error = readout error",
+    "L1-coupler-better": "removed couplers restored at their better direction's error",
 }
 DEVICE_ORDER = ["jakarta", "hanoi"]
 CIRCUIT_ORDER = ["A1", "A3", "A5", "B", "C", "D5", "D7"]
@@ -536,8 +537,12 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     w("")
     w(
         "Each N2 case was rerun end to end (selection and evaluation) with the CX duration set "
-        "to the device minimum, to the device maximum, and with reset error equal to each "
-        "qubit's readout error. *Holds* means the verdict equals the N2 verdict."
+        "to the device minimum, to the device maximum, with reset error equal to each "
+        "qubit's readout error, and with every coupler the converter removed (SPEC.md rev 2) "
+        "put back with both directions at the CX rule applied to its better direction's "
+        "gate_error. That last variant changes the set of valid placements, so its fixed "
+        "baseline and average are taken over that larger set. On a device with no removed "
+        "coupler it equals the base run. *Holds* means the verdict equals the N2 verdict."
     )
     w("")
     w("| Device | Circuit | Variant | Chosen | vs fixed | vs average | Verdicts hold |")
@@ -660,12 +665,20 @@ LIMITATIONS = [
     "Both are realistic noise profiles, not live-device measurements.",
     "**K8 – no surface code.** Both devices have at most 3 neighbours per qubit, so no surface "
     "code fits SWAP-free; v1 covers repetition codes only.",
-    "**Conversion departures forced by the data (DECISIONS.md D3, D4).** On FakeHanoiV2 two "
-    "directed CX entries (CX(19,20) and CX(5,8)) have `gate_error` = 1, for which the rule "
-    "1.25·e/15 per term sums to 1.25 > 1; these are capped at 1/15 per term (total 1). Five "
-    "FakeHanoiV2 qubits (2, 5, 10, 11, 13) have T2 > 2·T1, for which the rule gives a negative "
-    "Z idle rate that Nove rejects; it is clamped to 0. These are reported departures from the "
-    "conversion rules, not silent changes.",
+    "**Removed couplers (SPEC.md rev 2, DECISIONS.md D3).** The CX rule 1.25·e/15 per term is "
+    "a Pauli channel only for e ≤ 0.8. On FakeHanoiV2, CX(19,20) and CX(5,8) report "
+    "`gate_error` = 1 while their reverse directions report 0.0044 and 0.0090 (every other "
+    "pair reports the same value in both directions), which reads as a failed calibration. "
+    "Both pairs are removed from the device in both directions, so FakeHanoiV2 has 80, 102 "
+    "and 74 valid placements at distance 3, 5 and 7 instead of 100, 164 and 178, and its "
+    "mean CX duration is taken over the remaining pairs. v1 instead capped these entries at "
+    "1/15 per term, which left one perfect and one always-failing direction per pair and "
+    "inflated v1's FakeHanoiV2 gains. T-L1 reruns N2 with the pairs restored at their "
+    "better direction's error.",
+    "**Negative idle Z rate (DECISIONS.md D4).** Five FakeHanoiV2 qubits (2, 5, 10, 11, 13) "
+    "have T2 > 2·T1, for which the rule gives a negative Z idle rate that Nove rejects; it is "
+    "clamped to 0. This is a reported departure from the conversion rules, not a silent "
+    "change.",
     "**Reset error is 0 in the main runs** because the snapshots carry no reset error; T-L1 "
     "reruns N2 with reset error = readout error.",
     "**Selection score is a heuristic.** It is the expected number of detector-visible faults "

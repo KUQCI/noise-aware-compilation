@@ -34,7 +34,9 @@ REPORT.md from `configs/benchmark.json` and its seeds:
 python -m noise_aware_compilation.benchmark configs/benchmark.json && python -m noise_aware_compilation.report
 ```
 
-Counts are bit-identical for the same config and seeds (T-R1). `--workers N` sets the number
+Counts are bit-identical for the same config and seeds (T-R1). The runner refuses to run with
+uncommitted changes to code, data or config (pass `--allow-dirty` for a scratch run), so
+every results file names the commit that produced it. `--workers N` sets the number
 of processes (default: all CPUs); `--only CASE_ID ...` runs selected cases.
 
 ## Use

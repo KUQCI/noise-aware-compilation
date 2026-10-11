@@ -1,6 +1,6 @@
 {
   "schema": "noise-aware-compilation.config/1",
-  "description": "v1 benchmark (SPEC.md Benchmark specification). Committed before any N2 run (R-F4, X5).",
+  "description": "Benchmark (SPEC.md rev 2 Benchmark specification). Rev 2 adds the L1-coupler-better sensitivity variant; committed before any rev 2 run (R-F4, X5).",
   "base_seeds": [20261011, 20261012, 20261013],
   "min_shots_per_seed": 200000,
   "max_shots_per_seed": 25600000,
@@ -16,7 +16,7 @@
   },
   "sensitivity": {
     "conditions": ["N2"],
-    "variants": ["L1-cx-min", "L1-cx-max", "L1-reset-readout"]
+    "variants": ["L1-cx-min", "L1-cx-max", "L1-reset-readout", "L1-coupler-better"]
   },
   "devices": [
     {

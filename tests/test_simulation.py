@@ -79,7 +79,7 @@ def test_t_i8_imports_and_runs_with_qiskit_blocked(tmp_path: Path) -> None:
         sys.meta_path.insert(0, Block())
         from noise_aware_compilation.benchmark import main
         rc = main([{str(ROOT / "configs" / "benchmark.json")!r}, '--only', 'jakarta-A1-N1',
-                   '--out', {str(tmp_path)!r}, '--workers', '1'])
+                   '--out', {str(tmp_path)!r}, '--workers', '1', '--allow-dirty'])
         assert rc == 0
         assert not any(m.startswith('qiskit') for m in sys.modules)
         """
