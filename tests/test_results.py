@@ -17,8 +17,10 @@ import pytest
 
 from noise_aware_compilation.analysis import (
     CaseSummary,
+    evidence,
     load_summaries,
     precision_ok,
+    seed_breakdown,
     verdicts_consistent,
 )
 from noise_aware_compilation.benchmark import expand_cases, load_config
@@ -232,6 +234,50 @@ def test_verdicts_consistent_rule() -> None:
     assert verdicts_consistent(["worse", "indistinguishable"])
     assert verdicts_consistent(["indistinguishable"] * 3)
     assert not verdicts_consistent(["better", "indistinguishable", "worse"])
+
+
+def test_seed_breakdown_and_evidence_rule() -> None:
+    mixed = ["better", "indistinguishable", "better"]
+    assert seed_breakdown("better", mixed) == "better (2/3 seeds), pooled: better"
+    assert evidence("better", mixed) == "gain, weak evidence"
+    assert evidence("better", ["better"] * 3) == "gain"
+    assert (
+        seed_breakdown("better", ["indistinguishable"] * 3) == "better (0/3 seeds), pooled: better"
+    )
+    assert evidence("better", ["indistinguishable"] * 3) == "gain, weak evidence"
+    assert evidence("worse", ["worse", "indistinguishable", "worse"]) == "loss, weak evidence"
+    assert evidence("indistinguishable", ["indistinguishable"] * 3) == "no gain shown"
+    assert evidence("indistinguishable", mixed) == "no gain shown, seeds mixed"
+    assert (
+        seed_breakdown("indistinguishable", ["better", "worse", "indistinguishable"])
+        == "better (1/3 seeds), worse (1/3 seeds), pooled: indistinguishable"
+    )
+
+
+def test_rev4_claims_rest_on_pooled_verdicts(
+    summaries: dict[str, CaseSummary], report: str
+) -> None:
+    """SPEC.md rev 4: seed tally next to every headline verdict; gains only from pooled *better*."""
+
+    headline = report.split("## 1.")[1].split("## 2.")[0]
+    claims = [line for line in headline.splitlines() if line.startswith("- Fake")]
+    expected = 0
+    for s in _base(summaries, "N2"):
+        for comparison in ("vs_fixed", "vs_average"):
+            pooled = getattr(s, comparison).verdict
+            seeds = s.seed_verdicts(comparison)
+            assert (
+                seed_breakdown(pooled, seeds).replace(f"pooled: {pooled}", f"pooled: **{pooled}**")
+                in headline
+            )
+            if pooled != "indistinguishable":
+                expected += 1
+    assert len(claims) == expected
+    for line in claims:
+        label = line.split("**")[1]
+        pooled = line.split("pooled: ")[1].rstrip(")")
+        assert label.startswith("gain") == (pooled == "better")
+        assert ("weak evidence" in label) == (not line.count("(3/3 seeds)"))
 
 
 def test_t_p6_gain_vs_distance(report: str) -> None:

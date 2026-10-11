@@ -224,3 +224,25 @@ SPEC.md rev 3 (owner's decision, made after these results were known) changed bo
 to "no two verdicts point in opposite directions". Under it both pass on the same results; no
 seed, shot count or case was rerun or dropped (X7). REPORT.md sections 5 and 9 show the strict
 and the rev 3 readings side by side.
+
+## D18. Pooled verdicts, seed breakdown and claims (rev 4)
+
+**Choice.** Every comparison's verdict is computed from the three seeds' shots pooled
+(`CaseSummary.vs_fixed` / `vs_average`, as since v1). The report shows next to it how many
+seeds give that verdict on their own (`analysis.seed_breakdown`) and an evidence label
+(`analysis.evidence`): *gain* when the pooled verdict is *better* and every seed agrees,
+*gain, weak evidence* when the pooled verdict is *better* but some seed alone is not,
+*loss* / *loss, weak evidence* likewise for *worse*, and *no gain shown* (or *no gain shown,
+seeds mixed*) for a pooled *indistinguishable*. Section 1 of the report lists every N2 claim.
+
+**Why.** SPEC.md rev 4 (owner's decision, made after the rev 2 results were known). The
+pooled interval is the tightest estimate the saved counts allow; the tally shows how robust
+it is. Nothing was rerun and no verdict changed.
+
+**Effect on rev 2 results.** Of the N2 headline comparisons, FakeHanoiV2 D7 vs fixed
+(better on seeds 1 and 3, indistinguishable on seed 2; pooled better, −19%) is the one gain
+labelled weak evidence. Elsewhere the label falls on T-L1 variants and N3/N1 cases
+(see REPORT.md sections 3 and 10), notably FakeHanoiV2 D7 with reset error = readout error,
+where every seed alone is indistinguishable and only the pooled shots resolve the gain
+(0/3 seeds, pooled better).
+
