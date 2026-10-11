@@ -2,6 +2,8 @@
 
 Oct 11, 2026 · @Khaled Al Daqrouq
 
+**Revision 2 (Oct 11, 2026).** Approved by Khaled in the project thread after the v1 audit. The conversion rule now removes any coupler whose CX `gate_error` exceeds 0.8 in either direction (the largest value the CX rule can turn into a Pauli channel), instead of v1's cap at 1/15 per term. This changes the FakeHanoiV2 placement counts (benchmark table and T-C3) and adds one T-L1 variant. Nothing else changed.
+
 ## Goal and definition of done
 
 A separate Python package, built on Nove, that chooses a SWAP-free placement of a QEC circuit's qubits on a device using that device's calibrated noise. The package must also measure, in simulation, whether that choice lowers the decoded logical error rate compared with a fixed placement and with every other valid placement.
@@ -101,19 +103,21 @@ The converter maps each fake-backend field to a Nove value by the rules below, a
 
 | Nove quantity | Source field | Rule |
 | --- | --- | --- |
-| Connectivity | `coupling_map` in `conf_*.json` | Every listed pair |
-| CX Pauli channel, each direction | `cx` `gate_error` e for that ordered pair | 15 two-qubit Pauli probabilities, each 1.25 · e / 15 |
+| Connectivity | `coupling_map` in `conf_*.json` | Every listed pair, except a pair whose `cx` `gate_error` exceeds 0.8 in either direction, which is removed in both directions (rev 2) |
+| CX Pauli channel, each direction | `cx` `gate_error` e for that ordered pair | 15 two-qubit Pauli probabilities, each 1.25 · e / 15; defined for e ≤ 0.8 |
 | H Pauli channel, per qubit | `sx` `gate_error` e for that qubit | p\_x = p\_y = p\_z = 1.5 · e / 3 |
 | Idle Pauli rates, per qubit | `T1`, `T2` | X rate = Y rate = 1/(4·T1); Z rate = 1/(2·T2) − 1/(4·T1) |
 | Readout flip, per qubit | `readout_error` | Used as given (symmetric) |
 | Reset flip, per qubit | none in the snapshot | 0; the sensitivity test T-L1 uses `readout_error` instead |
-| CX duration | `cx` `gate_length`, all pairs | Mean over every directed pair on the device |
+| CX duration | `cx` `gate_length`, all pairs | Mean over every directed pair on the device, after removals |
 | H duration | `sx` `gate_length` | Mean over all qubits |
 | Measurement duration | `readout_length` | Mean over all qubits |
 | Reset duration | `reset` `gate_length` | Mean over all qubits |
 | Snapshot provenance | `backend_name`, `last_update_date` | Stored as device id, capture time and source package version |
 
 Every qubit on the device gets idle, readout and reset values, including qubits a placement does not use.
+
+**Unrepresentable CX errors (rev 2).** The CX rule gives a total Pauli probability of 1.25 · e, which is a valid channel only for e ≤ 0.8; 0.8 is also the largest average gate error any two-qubit Pauli channel can have. A larger value cannot describe a working gate and is read as a failed calibration, so the coupler is removed from the device in both directions. The converter records each removed coupler and its raw values. On the pinned data this removes CX(5,8) and CX(19,20) on FakeHanoiV2 (gate_error 1 in one direction) and nothing on FakeJakartaV2.
 
 ## Benchmark specification
 
@@ -124,7 +128,7 @@ The benchmark covers two devices, four circuits and four noise conditions. Every
 | Device | Qubits | Used for | Valid placements: distance 3 / 5 / 7 |
 | --- | --- | --- | --- |
 | FakeJakartaV2 | 7 | Circuits A, B, C under N0–N3 | 8 / does not fit / does not fit |
-| FakeHanoiV2 | 27 | Circuits A, B, D under N1–N3 | 100 / 164 / 178 |
+| FakeHanoiV2 | 27 | Circuits A, B, D under N1–N3 | 80 / 102 / 74 (rev 2; 100 / 164 / 178 before couplers CX(5,8) and CX(19,20) were removed) |
 
 **Circuits** (all generated noiseless)
 
@@ -152,7 +156,7 @@ Every test has a mechanically checkable pass criterion. None requires the noise-
 | --- | --- | --- | --- |
 | T-C1 | Correctness | Placement validity | 100% of returned placements satisfy R-P1, and Nove raises no error for them |
 | T-C2 | Correctness | Circuit meaning preserved | Same detector and observable counts; 0 detection events in ≥ 10⁴ noiseless shots; mapping back reproduces the original circuit text exactly |
-| T-C3 | Correctness | Enumeration complete | Candidate counts: 8 for circuits A and B and 14 for C on FakeJakartaV2; 100, 164 and 178 for distances 3, 5 and 7 on FakeHanoiV2; each matches an independent subgraph-isomorphism count |
+| T-C3 | Correctness | Enumeration complete | Candidate counts: 8 for circuits A and B and 14 for C on FakeJakartaV2; 80, 102 and 74 for distances 3, 5 and 7 on FakeHanoiV2 (rev 2); each matches an independent subgraph-isomorphism count |
 | T-C4 | Correctness | Planted fault (N3) | The chosen placement avoids the planted qubit or connection, and its P\_L is no higher than any placement containing the fault, within 95% intervals |
 | T-C5 | Correctness | No valid placement | A circuit needing a qubit with 4 neighbours raises a clear error, with no fallback |
 | T-C6 | Correctness | Determinism | Identical inputs give an identical placement, and ties follow the documented rule |
@@ -179,7 +183,7 @@ Every test has a mechanically checkable pass criterion. None requires the noise-
 | T-R1 | Reproducibility | Same seed | Re-running gives bit-identical failure counts |
 | T-R2 | Reproducibility | Different seeds | The verdict is the same across all 3 seeds |
 | T-R3 | Reproducibility | Provenance | Every results file records the Nove commit; Stim, PyMatching and qiskit-ibm-runtime versions; source file SHA-256; calibration and device hashes; and all seeds |
-| T-L1 | Limitations | Assumption sensitivity | N2 is rerun with CX duration at the device minimum and maximum, and with reset error = readout error; the report states whether the verdict holds |
+| T-L1 | Limitations | Assumption sensitivity | N2 is rerun with CX duration at the device minimum and maximum, with reset error = readout error, and (rev 2) with every removed coupler restored, both directions at the CX rule applied to its lower raw `gate_error`; the report states whether the verdict holds |
 | T-L2 | Limitations | Scope statement | The report's limitations section covers every item under Constraints |
 
 ## Reporting requirements

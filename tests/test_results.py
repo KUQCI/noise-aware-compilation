@@ -6,6 +6,7 @@ T-L1, T-L2. These read ``results/runs/*.json`` and ``REPORT.md``.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import subprocess
@@ -19,6 +20,7 @@ from noise_aware_compilation.benchmark import expand_cases, load_config
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNS = ROOT / "results" / "runs"
+L1_VARIANTS = ("L1-cx-min", "L1-cx-max", "L1-reset-readout", "L1-coupler-better")
 REPORT = ROOT / "REPORT.md"
 
 pytestmark = [
@@ -61,6 +63,9 @@ def test_t_c3_results_hold_every_valid_placement(summaries: dict[str, CaseSummar
     baselines = json.loads((ROOT / "configs" / "fixed_baselines.json").read_text())
     for s in summaries.values():
         key = f"{s.case['device']}-{s.case['circuit']['label']}"
+        variant_key = f"{key}-{s.case['variant']}"
+        if variant_key in baselines["fixed"]:
+            key = variant_key
         assert len(s.placements) == baselines["num_valid_placements"][key]
         assert list(s.placements[s.fixed_index].mapping) == baselines["fixed"][key]
 
@@ -125,39 +130,34 @@ def test_t_f3_seed_separation(summaries: dict[str, CaseSummary]) -> None:
         assert not selection & evaluation
 
 
-def _first_commit(path: str) -> tuple[str, int]:
-    out = subprocess.run(
-        ["git", "log", "--diff-filter=A", "--format=%H %ct", "--", path],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.split()
-    if not out:
-        pytest.fail(f"{path} is not committed")
-    return out[-2], int(out[-1])
+def _git(*args: str) -> str:
+    return subprocess.run(
+        ["git", *args], cwd=ROOT, capture_output=True, text=True, check=True
+    ).stdout.strip()
 
 
-def test_t_f4_baseline_committed_before_n2_results() -> None:
-    config_commit, config_time = _first_commit("configs/benchmark.json")
-    baseline_commit, baseline_time = _first_commit("configs/fixed_baselines.json")
-    results_commit, results_time = _first_commit("results/runs")
-    for commit in (config_commit, baseline_commit):
-        ancestor = subprocess.run(
-            ["git", "merge-base", "--is-ancestor", commit, results_commit], cwd=ROOT
+def test_t_f4_baseline_committed_before_n2_results(summaries: dict[str, CaseSummary]) -> None:
+    # The last commit touching the config or fixed baselines must strictly precede every
+    # results file: each file names a clean commit that already contains the current config,
+    # and records the SHA-256 of that config (X5: nothing changed after the runs).
+    config_commit = _git("log", "-1", "--format=%H", "--", "configs/")
+    assert config_commit, "configs/ is not committed"
+    config_sha = hashlib.sha256((ROOT / "configs" / "benchmark.json").read_bytes()).hexdigest()
+    results_commit = _git("log", "-1", "--format=%H", "--", "results/runs")
+    assert results_commit and results_commit != config_commit
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", config_commit, results_commit], cwd=ROOT
+    )
+    assert ancestor.returncode == 0
+    for s in summaries.values():
+        assert s.raw["config_file_sha256"] == config_sha, s.case_id
+        prov = s.raw["provenance"]
+        assert prov["package_git_dirty"] is False, s.case_id
+        run_commit = prov["package_git_commit"]
+        check = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", config_commit, run_commit], cwd=ROOT
         )
-        assert ancestor.returncode == 0
-        assert commit != results_commit
-    assert max(config_time, baseline_time) <= results_time
-    # the config has not changed since (X5)
-    changes = subprocess.run(
-        ["git", "log", "--format=%H", "--", "configs/"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.split()
-    assert changes == [config_commit]
+        assert check.returncode == 0, (s.case_id, run_commit)
 
 
 def test_t_i5_results_record_approximate_decoder(summaries: dict[str, CaseSummary]) -> None:
@@ -269,10 +269,10 @@ def test_t_r3_provenance(summaries: dict[str, CaseSummary]) -> None:
 def test_t_l1_sensitivity(summaries: dict[str, CaseSummary], report: str) -> None:
     section = report.split("## 10.")[1].split("## 11.")[0]
     for s in _base(summaries, "N2"):
-        for variant in ("L1-cx-min", "L1-cx-max", "L1-reset-readout"):
+        for variant in L1_VARIANTS:
             assert f"{s.case_id}-{variant}" in summaries
     rows = [line for line in section.splitlines() if line.startswith("| Fake")]
-    assert len(rows) == 3 * len(_base(summaries, "N2"))
+    assert len(rows) == len(L1_VARIANTS) * len(_base(summaries, "N2"))
     assert all(line.rstrip().endswith(("| yes |", "| **no** |")) for line in rows)
 
 

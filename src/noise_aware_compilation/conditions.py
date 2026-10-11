@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 import nove
 
+from noise_aware_compilation.conversion import cx_probabilities
 from noise_aware_compilation.placement import device_qubits
 
 PLANT_FACTOR = 5.0
@@ -196,6 +197,47 @@ def reset_equals_readout(
     )
 
 
+def restore_removed_couplers(
+    device: nove.DeviceModel, noise: nove.HardwareNoiseModel
+) -> tuple[nove.DeviceModel, nove.HardwareNoiseModel]:
+    """T-L1 (SPEC.md rev 2): put back every coupler the converter removed.
+
+    Each removed pair returns to the connectivity, and both of its CX directions
+    get the CX rule applied to the *lower* of its two raw gate errors (the case
+    where the unrepresentable value is a reporting glitch). The raw values come
+    from the device metadata written by the converter, so nothing here knows
+    which device it is (R-D5). Durations are left unchanged so that only the
+    coupler treatment differs from the base run.
+    """
+
+    removed = device.metadata.get("removed_couplers", ()) if device.metadata else ()
+    if not removed:
+        return device, noise
+    data = device.to_dict()
+    connectivity = [[a, b] for a, b in device.connectivity]
+    channels = dict(noise.gate_channels)
+    for entry in removed:
+        a, b = (int(q) for q in entry["pair"])
+        connectivity.append([a, b])
+        error = min(float(e) for e in entry["gate_error"].values())
+        probabilities = cx_probabilities(error)
+        for pair in ((a, b), (b, a)):
+            channels[nove.OperationKey("CX", pair)] = nove.PauliChannel(probabilities)
+    data["connectivity"] = sorted(connectivity)
+    restored = nove.HardwareNoiseModel(
+        gate_channels=channels,
+        gate_defaults=dict(noise.gate_defaults),
+        idle_rates=dict(noise.idle_rates),
+        default_idle_rate=noise.default_idle_rate,
+        readout_flip_probabilities=dict(noise.readout_flip_probabilities),
+        default_readout_flip_probability=noise.default_readout_flip_probability,
+        reset_flip_probabilities=dict(noise.reset_flip_probabilities),
+        default_reset_flip_probability=noise.default_reset_flip_probability,
+        calibration_hash=noise.calibration_hash,
+    )
+    return nove.DeviceModel.from_dict(data), restored
+
+
 __all__ = [
     "PLANT_FACTOR",
     "PlantedFault",
@@ -203,6 +245,7 @@ __all__ = [
     "noise_sha256",
     "plant_fault",
     "reset_equals_readout",
+    "restore_removed_couplers",
     "uniform_median",
     "with_cx_duration",
     "zero_noise",

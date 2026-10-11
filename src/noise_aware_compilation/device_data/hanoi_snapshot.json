@@ -314,34 +314,6 @@
       "operation": {
         "gate": "CX",
         "targets": [
-          5,
-          8
-        ]
-      },
-      "parameters": {
-        "p_ix": 0.06666666666666667,
-        "p_iy": 0.06666666666666667,
-        "p_iz": 0.06666666666666667,
-        "p_xi": 0.06666666666666667,
-        "p_xx": 0.06666666666666667,
-        "p_xy": 0.06666666666666667,
-        "p_xz": 0.06666666666666667,
-        "p_yi": 0.06666666666666667,
-        "p_yx": 0.06666666666666667,
-        "p_yy": 0.06666666666666667,
-        "p_yz": 0.06666666666666667,
-        "p_zi": 0.06666666666666667,
-        "p_zx": 0.06666666666666667,
-        "p_zy": 0.06666666666666667,
-        "p_zz": 0.06666666666666667,
-        "source_gate_error": 1.0,
-        "source_gate_length_ns": 593.7777777777777
-      }
-    },
-    {
-      "operation": {
-        "gate": "CX",
-        "targets": [
           6,
           7
         ]
@@ -448,34 +420,6 @@
         "p_zz": 0.00036159747920019164,
         "source_gate_error": 0.0043391697504023,
         "source_gate_length_ns": 202.66666666666666
-      }
-    },
-    {
-      "operation": {
-        "gate": "CX",
-        "targets": [
-          8,
-          5
-        ]
-      },
-      "parameters": {
-        "p_ix": 0.0007516976249104523,
-        "p_iy": 0.0007516976249104523,
-        "p_iz": 0.0007516976249104523,
-        "p_xi": 0.0007516976249104523,
-        "p_xx": 0.0007516976249104523,
-        "p_xy": 0.0007516976249104523,
-        "p_xz": 0.0007516976249104523,
-        "p_yi": 0.0007516976249104523,
-        "p_yx": 0.0007516976249104523,
-        "p_yy": 0.0007516976249104523,
-        "p_yz": 0.0007516976249104523,
-        "p_zi": 0.0007516976249104523,
-        "p_zx": 0.0007516976249104523,
-        "p_zy": 0.0007516976249104523,
-        "p_zz": 0.0007516976249104523,
-        "source_gate_error": 0.009020371498925428,
-        "source_gate_length_ns": 561.7777777777777
       }
     },
     {
@@ -1155,34 +1099,6 @@
         "gate": "CX",
         "targets": [
           19,
-          20
-        ]
-      },
-      "parameters": {
-        "p_ix": 0.06666666666666667,
-        "p_iy": 0.06666666666666667,
-        "p_iz": 0.06666666666666667,
-        "p_xi": 0.06666666666666667,
-        "p_xx": 0.06666666666666667,
-        "p_xy": 0.06666666666666667,
-        "p_xz": 0.06666666666666667,
-        "p_yi": 0.06666666666666667,
-        "p_yx": 0.06666666666666667,
-        "p_yy": 0.06666666666666667,
-        "p_yz": 0.06666666666666667,
-        "p_zi": 0.06666666666666667,
-        "p_zx": 0.06666666666666667,
-        "p_zy": 0.06666666666666667,
-        "p_zz": 0.06666666666666667,
-        "source_gate_error": 1.0,
-        "source_gate_length_ns": 380.4444444444444
-      }
-    },
-    {
-      "operation": {
-        "gate": "CX",
-        "targets": [
-          19,
           22
         ]
       },
@@ -1204,34 +1120,6 @@
         "p_zz": 0.0009702484180862369,
         "source_gate_error": 0.011642981017034842,
         "source_gate_length_ns": 248.88888888888889
-      }
-    },
-    {
-      "operation": {
-        "gate": "CX",
-        "targets": [
-          20,
-          19
-        ]
-      },
-      "parameters": {
-        "p_ix": 0.00037067002434901936,
-        "p_iy": 0.00037067002434901936,
-        "p_iz": 0.00037067002434901936,
-        "p_xi": 0.00037067002434901936,
-        "p_xx": 0.00037067002434901936,
-        "p_xy": 0.00037067002434901936,
-        "p_xz": 0.00037067002434901936,
-        "p_yi": 0.00037067002434901936,
-        "p_yx": 0.00037067002434901936,
-        "p_yy": 0.00037067002434901936,
-        "p_yz": 0.00037067002434901936,
-        "p_zi": 0.00037067002434901936,
-        "p_zx": 0.00037067002434901936,
-        "p_zy": 0.00037067002434901936,
-        "p_zz": 0.00037067002434901936,
-        "source_gate_error": 0.004448040292188232,
-        "source_gate_length_ns": 348.4444444444444
       }
     },
     {
@@ -1981,8 +1869,8 @@
     "conf_file": "conf_hanoi.json",
     "conf_sha256": "9345ac086f406de1a3cc4684a93b1171aecebc82c7c0188ead165cfc158c44ea",
     "conversion_notes": [
-      "CX(19, 20): gate_error=1.0 gives 1.25*e > 1; 15 terms capped at 1/15 each (DECISIONS.md D3)",
-      "CX(5, 8): gate_error=1.0 gives 1.25*e > 1; 15 terms capped at 1/15 each (DECISIONS.md D3)",
+      "CX pair (5, 8): gate_error 1.0 / 0.009020371498925428 (directions 5->8 / 8->5); a value above 0.8 has no Pauli-channel representation, so the pair is removed from connectivity in both directions (SPEC.md rev 2, DECISIONS.md D3)",
+      "CX pair (19, 20): gate_error 1.0 / 0.004448040292188232 (directions 19->20 / 20->19); a value above 0.8 has no Pauli-channel representation, so the pair is removed from connectivity in both directions (SPEC.md rev 2, DECISIONS.md D3)",
       "qubit 2: T2=214775.4 ns > 2*T1=169789.0 ns gives a negative Z rate; clamped at 0 (DECISIONS.md D4)",
       "qubit 5: T2=212425.7 ns > 2*T1=183090.0 ns gives a negative Z rate; clamped at 0 (DECISIONS.md D4)",
       "qubit 10: T2=338866.5 ns > 2*T1=321776.7 ns gives a negative Z rate; clamped at 0 (DECISIONS.md D4)",

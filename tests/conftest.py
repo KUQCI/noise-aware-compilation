@@ -9,15 +9,15 @@ from noise_aware_compilation.devices import StoredDevice, load_device
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# (device, circuit label, distance, basis, expected valid placements) - T-C3 / SPEC.md
+# (device, circuit label, distance, basis, expected valid placements) - T-C3 / SPEC.md rev 2
 CIRCUITS = [
     ("jakarta", "A", 3, "Z", 8),
     ("jakarta", "B", 3, "X", 8),
     ("jakarta", "C", 2, "Z", 14),
-    ("hanoi", "A", 3, "Z", 100),
-    ("hanoi", "B", 3, "X", 100),
-    ("hanoi", "D5", 5, "Z", 164),
-    ("hanoi", "D7", 7, "Z", 178),
+    ("hanoi", "A", 3, "Z", 80),
+    ("hanoi", "B", 3, "X", 80),
+    ("hanoi", "D5", 5, "Z", 102),
+    ("hanoi", "D7", 7, "Z", 74),
 ]
 
 

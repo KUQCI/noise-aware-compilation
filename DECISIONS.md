@@ -31,18 +31,30 @@ mirror images) a tie rather than an arbitrary winner. The lexicographic rule is 
 and is the same order that defines the fixed baseline, so under N1 the chosen placement is the
 fixed placement and the "no gain" result is exact.
 
-## D3. CX gate error of 1 (conversion departure)
+## D3. CX gate error above 0.8 (SPEC.md rev 2)
 
 **Fact.** FakeHanoiV2 has two directed CX entries, CX(19,20) and CX(5,8), with
-`gate_error = 1` (the opposite directions are normal). The rule gives 1.25·1/15 per term,
-summing to 1.25, which is not a probability distribution; Nove rejects it.
+`gate_error = 1`, while their reverse directions report 0.0044 and 0.0090. Every other pair
+on both devices reports the same value in both directions. The rule 1.25·e/15 per term only
+gives a Pauli channel for e ≤ 0.8 (which is also the largest average gate error any
+two-qubit Pauli channel can have), so e = 1 describes no channel at all.
 
-**Choice.** Cap each of the 15 terms at 1/15 (total 1). The pair stays in the device
-connectivity, so the SPEC placement counts (100/164/178) are unchanged.
+**Choice (rev 2, approved by the project owner after the v1 audit).** A coupling-map pair
+whose `gate_error` exceeds 0.8 in either direction is read as a failed calibration and
+removed from the device in both directions. The raw values are kept in the device metadata
+(`removed_couplers`) and in the snapshot's `conversion_notes`. FakeHanoiV2 then has 80, 102
+and 74 valid placements at distance 3, 5 and 7; its mean CX duration is taken over the
+remaining pairs. FakeJakartaV2 is unchanged.
 
-**Why.** This is the smallest change that keeps every other value exactly as the rule gives
-it; the gate stays "always wrong", which is what an error of 1 means. Recorded in the
-snapshot's `conversion_notes`, in DECISIONS.md and in the report's limitations.
+**Why.** The threshold comes from the conversion rule itself, not from the data, and applies
+to any device. v1 instead capped the entries at 1/15 per term. That kept one perfect and one
+always-failing direction per pair, which the K4 directional model then treated as real: the
+d=5 and d=7 fixed baselines ran a gate in the dead direction, several chosen placements sat
+on a dead coupler using its other direction, and dead-direction placements inflated the
+all-placement average (see the v1 audit). T-L1 adds `L1-coupler-better`, which restores the
+removed pairs with both directions at the CX rule applied to the lower raw error, as the
+optimistic bound (the 1 being a reporting glitch). That variant changes the valid placement
+set, so it has its own fixed baselines in `configs/fixed_baselines.json`.
 
 ## D4. Negative Z idle rate (conversion departure)
 
@@ -90,6 +102,12 @@ the qubit, and a connection fault when a circuit CX runs on that connection.
 is not trivial) and is avoidable by at least one valid placement (the runner checks this
 before running). The faults are fixed in the committed config.
 
+**Rev 2 note.** After the couplers were removed (D3), the FakeHanoiV2 fixed baselines for
+D5 and D7 start (0,1,4,…) and no longer run a CX on (1,2); they still use qubit 1. The
+faults were left unchanged rather than re-chosen, because v1's N3 results were already known
+and re-choosing them now would be a choice made after seeing data. The SPEC.md requirement
+(recorded before running, avoidable by at least one placement) still holds.
+
 ## D8. Precision rule and shot counts (T-P4)
 
 **Choice.** 200,000 shots per seed to start. Under N2 and N3 (and the T-L1 reruns of N2), all
@@ -135,6 +153,12 @@ comparisons give the same verdict as the base N2 run.
 **Why.** Rerunning selection too answers the question "would the method reach the same
 conclusion under the alternative assumption", which is what a reader of the verdict needs.
 
+## D11b. Removed-coupler variant (T-L1, rev 2)
+
+**Choice.** `L1-coupler-better` restores each removed coupler using only the raw values the
+converter stored in the device metadata, so it works for any device (R-D5). Durations are
+left as in the base run so that only the coupler treatment differs.
+
 ## D12. Equivalent placements (R-F5, T-C7)
 
 **Choice.** No placements are merged; mirror images and every other valid mapping are
@@ -172,3 +196,16 @@ every N1 case whose homogeneity p-value exceeds 0.01. Two N1 pairwise chosen-vs-
 verdicts are not *indistinguishable* (FakeHanoiV2 A1 *better*, FakeJakartaV2 A5 *worse*);
 they are reported as computed and explained as chance fluctuations of one fixed placement
 against a very tight average interval, not claimed as gains or losses.
+
+## D16. Run provenance (rev 2)
+
+**Choice.** Every results file records the package's git commit, whether tracked code, data
+or config differed from it (`package_git_dirty`), and the UTC time it was written. The runner
+refuses to run from a tree with uncommitted changes unless `--allow-dirty` is passed. T-F4
+checks that every results file records the current config's SHA-256 and a clean commit
+that descends from the last commit touching `configs/`.
+
+**Why.** In v1 the order "config committed, then N2 run" could only be shown by commit order,
+and 26 runs recorded a source hash that matched no commit because the code was edited while
+the benchmark ran. With these fields, each number names the exact code that produced it.
+
