@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "noise_aware_compilation"
-version = "0.1.0"
+version = "0.2.0"
 description = "Noise-aware SWAP-free qubit placement for QEC circuits, built on Nove"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,13 +31,14 @@ dev = [
 ]
 
 [project.scripts]
+nac = "noise_aware_compilation.cli:main"
 nac-benchmark = "noise_aware_compilation.benchmark:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-noise_aware_compilation = ["device_data/*.json", "py.typed"]
+noise_aware_compilation = ["device_data/*.json", "examples/*.json", "examples/*.stim", "py.typed"]
 
 [tool.pytest.ini_options]
 addopts = "--strict-config --strict-markers"
@@ -50,7 +51,7 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["data", "results"]
+extend-exclude = ["data", "results", "src/noise_aware_compilation/examples/*.json"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]

@@ -25,6 +25,42 @@ python -m pip install -e ".[dev]"         # adds pytest, ruff, mypy, networkx, s
 Qiskit is never a runtime dependency; it is only in the `dev` extra, used by
 `scripts/fetch_device_files.py` to copy the fake-backend files.
 
+## Place your own circuit (v2 command line)
+
+`nac` converts a device's calibration files and places a Stim circuit on it. It needs no
+Qiskit, no decoder and no simulation. Worked example, from a fresh install to a placed
+circuit, using the circuit and device files shipped with the package (a distance-3
+bit-flip repetition code and FakeJakartaV2's IBM file pair):
+
+<!-- worked-example:start -->
+```bash
+python -m pip install "noise_aware_compilation @ git+https://github.com/KUQCI/noise-aware-compilation@claude/project-thread-vef0cz"
+nac example --out example
+nac convert --conf example/conf_jakarta.json --props example/props_jakarta.json --out my_device
+nac place --circuit example/repetition_d3_bitflip.stim --device my_device --out placed
+cat placed/mapping.json
+```
+<!-- worked-example:end -->
+
+`placed/mapping.json` holds the chosen mapping (circuit qubit → physical qubit), its score,
+the scorer, every valid candidate with its score, the SHA-256 of every input file and the
+package version; `placed/placed_circuit.stim` is the relabelled circuit. To skip the
+conversion step, pass the IBM files directly (`--conf FILE --props FILE` instead of
+`--device`), or a shipped device by name (`--device jakarta` or `--device hanoi`).
+`--scorer` picks the selection score. Run `nac --help` or `nac COMMAND --help` for every
+option. Invalid input exits with code 1 and a one-line message; `nac --debug ...` shows the
+traceback.
+
+The same two operations are in Python, with the same inputs and outputs:
+
+```python
+from noise_aware_compilation.api import convert_device, place_circuit
+
+convert_device("example/conf_jakarta.json", "example/props_jakarta.json", "my_device")
+placed = place_circuit("example/repetition_d3_bitflip.stim", "placed", device="my_device")
+placed.mapping  # {0: 6, 1: 5, 2: 3, 3: 1, 4: 2}
+```
+
 ## Reproduce every result (R-D7)
 
 One command, from the repository root, regenerates every results file, every figure and

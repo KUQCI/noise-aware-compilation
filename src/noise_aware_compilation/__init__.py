@@ -13,7 +13,7 @@ from noise_aware_compilation.placement import (
     relabel_circuit,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "Candidate",

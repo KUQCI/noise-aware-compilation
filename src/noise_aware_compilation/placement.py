@@ -18,7 +18,7 @@ wins.
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 
 import nove
@@ -42,6 +42,20 @@ class NoValidPlacementError(ValueError):
     """Raised when no SWAP-free placement of the circuit exists on the device."""
 
 
+ScoreFunction = Callable[
+    [nove.Circuit, nove.DeviceModel, nove.HardwareNoiseModel, Sequence[int]], float
+]
+
+
+@dataclass(frozen=True)
+class Scorer:
+    """A named selection score: lower is better; uses only circuit, device and noise (R-P4)."""
+
+    name: str
+    method: str
+    function: ScoreFunction
+
+
 @dataclass(frozen=True)
 class Candidate:
     mapping: Placement
@@ -60,6 +74,7 @@ class PlacementResult:
     candidates: tuple[Candidate, ...]
     tie_break_rule: str = TIE_BREAK_RULE
     score_method: str = SCORE_METHOD
+    scorer: str = "v1"
 
     @property
     def mapping_dict(self) -> dict[int, int]:
@@ -267,19 +282,33 @@ def _rounded(score: float) -> float:
     return float(f"{score:.{SCORE_SIGNIFICANT_DIGITS - 1}e}")
 
 
+V1_SCORER = Scorer(name="v1", method=SCORE_METHOD, function=score_placement)
+
+
 def place(
     circuit: nove.Circuit,
     device: nove.DeviceModel,
     noise: nove.HardwareNoiseModel,
+    scorer: Scorer = V1_SCORER,
 ) -> PlacementResult:
-    """Choose a SWAP-free placement using only circuit, device and noise data (R-D1)."""
+    """Choose a SWAP-free placement using only circuit, device and noise data (R-D1).
+
+    ``scorer`` selects the score (v2 R-G3); the default is the v1 score. The
+    tie-break rule is the same for every scorer.
+    """
 
     mappings = enumerate_placements(circuit, device)
     candidates = tuple(
-        Candidate(mapping=m, score=score_placement(circuit, device, noise, m)) for m in mappings
+        Candidate(mapping=m, score=scorer.function(circuit, device, noise, m)) for m in mappings
     )
     best = min(candidates, key=lambda c: (_rounded(c.score), c.mapping))
-    return PlacementResult(mapping=best.mapping, score=best.score, candidates=candidates)
+    return PlacementResult(
+        mapping=best.mapping,
+        score=best.score,
+        candidates=candidates,
+        score_method=scorer.method,
+        scorer=scorer.name,
+    )
 
 
 def fixed_placement(circuit: nove.Circuit, device: nove.DeviceModel) -> Placement:
@@ -291,10 +320,13 @@ def fixed_placement(circuit: nove.Circuit, device: nove.DeviceModel) -> Placemen
 __all__ = [
     "SCORE_METHOD",
     "TIE_BREAK_RULE",
+    "V1_SCORER",
     "Candidate",
     "NoValidPlacementError",
     "Placement",
     "PlacementResult",
+    "ScoreFunction",
+    "Scorer",
     "approximate_dem",
     "device_qubits",
     "enumerate_placements",
