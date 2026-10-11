@@ -19,9 +19,17 @@ to descend from the last commit touching `configs/`; the results tests read ever
 
 ## V2. Scorers (R-G3)
 
-**Choice.** `place()` takes a `Scorer` (name, method text, score function); the default is
-the v1 score, so every v1 call is unchanged. `scoring.SCORERS` lists the scorers the CLI and
-API accept. The tie-break rule (DECISIONS.md D2) is the same for every scorer.
+**Choice.** `place()` takes a `Scorer` (name, method text, score function). `scoring.SCORERS`
+lists the scorers the CLI and API accept, and `scoring.DEFAULT_SCORER` is their default, set
+by R-G7 to `decoder-graph` (REPORT_V2.md section 4). The CLI (`nac place`) and the R-I4 API
+(`api.place_circuit`) both use `DEFAULT_SCORER`, so they agree (R-I5, T2-I3). The tie-break
+rule (DECISIONS.md D2) is the same for every scorer.
+
+**`place()` keeps the v1 score as its default.** `place()` is v1's library function
+(placement.py), not one of the two R-I4 operations. It keeps its v1 default so every v1 call
+and result is unchanged (X14), and because placement.py is frozen with the decoder-graph score
+(R-G4; changing it would break T2-G2). Passing `scorer=DECODER_GRAPH_SCORER` selects the new
+score there.
 
 ## V3. Command line and API (Part D)
 
