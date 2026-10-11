@@ -209,3 +209,13 @@ that descends from the last commit touching `configs/`.
 and 26 runs recorded a source hash that matched no commit because the code was edited while
 the benchmark ran. With these fields, each number names the exact code that produced it.
 
+## D17. Unmet requirements under rev 2
+
+* **T-R2** (verdict the same on all three seeds) fails on FakeHanoiV2 D7 under N2: chosen vs
+  fixed is *better* on seeds 1 and 3 and *indistinguishable* on seed 2 (pooled: *better*,
+  −19%). Under rev 2 the d=7 fixed baseline no longer runs a dead gate, so the gap is small
+  enough that one seed's intervals overlap. No seed was rerun or dropped (X7); the test is
+  kept and marked `xfail(strict=True)`.
+* **T-P5** still fails on FakeHanoiV2, now *indistinguishable* at 1 and 3 rounds and *better*
+  at 5 rounds (D14).
+

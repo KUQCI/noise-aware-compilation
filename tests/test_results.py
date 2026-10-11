@@ -216,8 +216,9 @@ def test_t_p4_precision(summaries: dict[str, CaseSummary]) -> None:
     strict=True,
     reason=(
         "Reported unmet (REPORT.md section 5, DECISIONS.md D14): on FakeHanoiV2 the chosen-vs-"
-        "fixed verdict is indistinguishable at 1 round and better at 3 and 5 rounds. The pass "
-        "criterion is kept unchanged (X6); strict=True makes this test fail if it starts passing."
+        "fixed verdict is indistinguishable at 1 and 3 rounds and better at 5 rounds (rev 2). "
+        "The pass criterion is kept unchanged (X6); strict=True makes this test fail if it "
+        "starts passing."
     ),
 )
 def test_t_p5_per_round_consistency(summaries: dict[str, CaseSummary], report: str) -> None:
@@ -240,6 +241,14 @@ def test_t_p6_gain_vs_distance(report: str) -> None:
     assert any(f"**{t}**" in section for t in ("grows", "shrinks", "flat"))
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "Reported unmet (REPORT.md section 9, DECISIONS.md D17): under rev 2, FakeHanoiV2 D7 "
+        "N2's chosen-vs-fixed verdict is better on seeds 1 and 3 and indistinguishable on "
+        "seed 2. No seed was rerun or dropped (X7) and the criterion is unchanged (X6)."
+    ),
+)
 def test_t_r2_verdict_same_across_seeds(summaries: dict[str, CaseSummary]) -> None:
     inconsistent = [
         (s.case_id, s.per_seed_verdicts)
