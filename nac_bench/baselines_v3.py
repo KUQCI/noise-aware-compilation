@@ -30,11 +30,12 @@ SWAP-free candidates v2 already measured, so its counts are looked up.
 
 from __future__ import annotations
 
+import functools
 import importlib.metadata
 import math
 import time
 import warnings
-from collections.abc import Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -371,14 +372,69 @@ def _rounded(x: float) -> float:
     return float(f"{x:.{TIE_DIGITS}g}")
 
 
+ChunkMap = Callable[[QuantumCircuit, list[list[list[int]]]], Iterable[list[tuple[Any, float]]]]
+
+
+def evaluate_layouts_in_chunks(
+    small: QuantumCircuit,
+    layouts: list[list[int]],
+    backend: SnapshotBackend,
+    map_chunks: ChunkMap,
+    chunk_size: int,
+) -> list[tuple[Any, float]]:
+    """``mapomatic.evaluate_layouts`` with its default cost computed chunk by chunk.
+
+    The default cost scores each layout on its own, in order, so concatenating the chunks
+    and applying mapomatic's own stable sort gives the same list as one call.
+    """
+
+    if not any(layouts):
+        return []
+    gates = set(small.count_ops()).difference({"barrier", "reset", "measure", "delay"})
+    if not gates.issubset(backend.configuration().basis_gates):
+        return []
+    if not isinstance(layouts[0], list):
+        layouts = [layouts]
+    chunks = [layouts[i : i + chunk_size] for i in range(0, len(layouts), chunk_size)]
+    out = [pair for part in map_chunks(small, chunks) for pair in part]
+    out.sort(key=lambda x: x[1])
+    return out
+
+
+@functools.cache
+def _stored_backend(device_name: str, reset_error: str) -> SnapshotBackend:
+    from noise_aware_compilation.devices import load_device
+
+    stored = load_device(device_name)
+    target = native_target(stored.snapshot, stored.device, reset_error)
+    return SnapshotBackend(str(stored.snapshot.device_id), target)
+
+
+def mapomatic_cost_chunk(
+    args: tuple[str, str, QuantumCircuit, list[list[int]]],
+) -> list[tuple[Any, float]]:
+    """mapomatic's default cost of one chunk of layouts, on a stored device (a pool task)."""
+
+    from mapomatic.layouts import default_cost
+
+    device_name, reset_error, small, layouts = args
+    return list(default_cost(small, layouts, _stored_backend(device_name, reset_error)))
+
+
 def mapomatic_choice(
     qc: QuantumCircuit,
     backend: SnapshotBackend,
     seed_transpiler: int,
     edges: Sequence[tuple[int, int]],
     candidates: set[Placement],
+    map_chunks: ChunkMap | None = None,
+    chunk_size: int = 20_000,
 ) -> MapomaticChoice:
-    """mapomatic's README workflow on ``backend``; the pick is its lowest-cost layout."""
+    """mapomatic's README workflow on ``backend``; the pick is its lowest-cost layout.
+
+    With ``map_chunks`` the layouts' costs are computed in chunks (for a process pool);
+    the result is the same.
+    """
 
     import mapomatic as mm
 
@@ -413,7 +469,10 @@ def mapomatic_choice(
             )
         deflated_index = [active.index(p) for p in where.mapping]
         layouts = mm.matching_layouts(small, CouplingMap(backend.configuration().coupling_map))
-        scored = mm.evaluate_layouts(small, layouts, backend)
+        if map_chunks is None:
+            scored = mm.evaluate_layouts(small, layouts, backend)
+        else:
+            scored = evaluate_layouts_in_chunks(small, layouts, backend, map_chunks, chunk_size)
     seconds = time.perf_counter() - start
     if not scored:
         return MapomaticChoice(None, None, len(layouts), (), -1, "no layout scored", seconds)
@@ -449,8 +508,13 @@ def run_baselines(
     seed_transpiler: int,
     seed_sweep: Sequence[int] = (),
     reset_error: str = "none",
+    map_chunks: ChunkMap | None = None,
 ) -> dict[str, Any]:
-    """Every Step 6b selection for one case, as a JSON-ready record."""
+    """Every Step 6b selection for one case, as a JSON-ready record.
+
+    ``map_chunks`` computes mapomatic's layout costs in chunks (same result); its tasks
+    rebuild the backend from the stored device, so it needs a stored device.
+    """
 
     qc = qiskit_circuit(circuit)
     edges = sorted(interaction_edges(circuit))
@@ -474,7 +538,7 @@ def run_baselines(
             "selection_seconds": c.seconds,
         }
     backend = SnapshotBackend(str(snapshot.device_id), target)
-    m = mapomatic_choice(qc, backend, seed_transpiler, edges, allowed)
+    m = mapomatic_choice(qc, backend, seed_transpiler, edges, allowed, map_chunks)
     record["mapomatic"] = {
         "mapping": None if m.mapping is None else list(m.mapping),
         "cost": m.cost,
@@ -498,7 +562,9 @@ __all__ = [
     "MapomaticChoice",
     "Placed",
     "SnapshotBackend",
+    "evaluate_layouts_in_chunks",
     "mapomatic_choice",
+    "mapomatic_cost_chunk",
     "mapomatic_version",
     "native_target",
     "placed",

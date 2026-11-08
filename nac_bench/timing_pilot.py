@@ -6,23 +6,32 @@ Usage::
 
 It runs on development devices only (X16), at reset = readout, with native CZ circuits:
 
-* **FakeFez d=7** (circuit D7): every placement is enumerated. 100 random placements get
-  both scores and the R3-C6 simulation, a 100,000-shot pilot on a pilot seed and then the
+* **FakeFez d=7** (circuit D7): every placement is enumerated. 100 random placements are
+  scored and get the R3-C6 simulation, a 100,000-shot pilot on a pilot seed and then the
   main-stage shots per seed from the pilot count, on three seeds. The selections that run
-  over every candidate at once (lowest summed error, v2's VF2Layout, Qiskit's default at
-  levels 1 to 3 and mapomatic) are timed on all of them.
-* **FakeFez d=3 and d=5**: 20 random placements each, both scores and the pilot stage, for
+  over every candidate at once (v2's VF2Layout, Qiskit's default at levels 1 to 3 and
+  mapomatic, its layouts' costs computed on the workers) are timed on all of them.
+* **FakeFez d=3 and d=5**: 20 random placements each, scored, with the pilot stage, for
   the per-shot cost and P_L at those distances.
 * **FakeMiami d=7**, the square-lattice proxy for FakeNighthawk d=7: every placement is
-  enumerated (time and peak memory) and 1,000 random ones get both scores. FakeMiami d=3 and
-  d=5: both scores on 100 random placements.
+  enumerated (time and peak memory) and 1,000 random ones are scored. FakeMiami d=3 and
+  d=5: 100 random placements scored.
+* **The d=5 surface code** (R3-S6): the scaled score's whole selection, both hook-safe
+  schedules on every embedding, in one process, on FakeMiami with its removed couplers
+  restored (it has no d=5 embedding otherwise), the proxy for FakeNighthawk.
+
+Scoring a placement is the held-out runs' path: one prepared lowering
+(:class:`noise_aware_compilation.fast_lowering.Lowering`) shared by the v1 score, the
+decoder-graph score and summed error, all on the workers. Every scored placement's circuit
+is also checked against Nove's own lowering, outside the timed part.
 
 The projection multiplies these costs by each held-out case's placement count. The counts
 come from the coupling maps alone (``conf_<device>.json`` of qiskit-ibm-runtime, the one
 field ``coupling_map``): removed couplers are not subtracted, so they are upper bounds, and
 no calibration value of a held-out device is read. Both reset settings are projected, as
 v3 runs both. The seeds are timing seeds (tag ``v3-timing-pilot``); no count from this run
-enters any result. The surface code waits for the scaled score and is not timed here.
+enters any result. The first pilot, with Nove's lowering for each score and summed error
+and mapomatic in one process, is ``results_v3/timing_pilot/timing_pilot.json``.
 """
 
 from __future__ import annotations
@@ -45,16 +54,24 @@ from typing import Any
 
 import nove
 
-from nac_bench.baselines_v3 import run_baselines
+from nac_bench.baselines_v3 import mapomatic_cost_chunk, run_baselines
 from nac_bench.machine import machine
 from nac_bench.qiskit_layout import qiskit_layout
 from nac_bench.run_reset import git_state, noise_for
-from noise_aware_compilation.baselines import lowest_summed_error
+from nac_bench.surface_check import restored
+from noise_aware_compilation.baselines import summed_error
 from noise_aware_compilation.circuits import repetition_code
-from noise_aware_compilation.decoder_graph import DECODER_GRAPH_SCORER
+from noise_aware_compilation.decoder_graph import decoder_graph_score_from_dem, matching_graph
 from noise_aware_compilation.devices import StoredDevice, load_device
 from noise_aware_compilation.evaluation import CHUNK_SHOTS, PlacementEvaluator, derive_seed
-from noise_aware_compilation.placement import V1_SCORER, Placement, enumerate_placements
+from noise_aware_compilation.fast_lowering import Lowering, v1_score_from_dem
+from noise_aware_compilation.placement import (
+    Placement,
+    approximate_dem,
+    enumerate_placements,
+)
+from noise_aware_compilation.scaled_score import ScaledParameters, scaled_score_from_graph
+from noise_aware_compilation.surface_code import hook_safe_schedules, surface_code
 
 ROOT = Path(__file__).resolve().parent.parent
 SEED_TAG = "v3-timing-pilot"
@@ -80,6 +97,9 @@ HELD_OUT = {
 #: R3-C4 and R3-C7 thresholds, in hours on this machine at the worker count used
 SELECTION_LIMIT_HOURS = 24.0
 SIMULATION_LIMIT_HOURS = 48.0
+#: R3-S6, seconds on one core
+SURFACE_SELECTION_LIMIT_SECONDS = 60.0
+CALIBRATION = ROOT / "results_v3" / "scaled" / "calibration.json"
 
 
 def main_shots(failures: int, shots: int) -> int:
@@ -109,17 +129,74 @@ def _circuit(distance: int, basis: str) -> nove.Circuit:
     return repetition_code(distance, ROUNDS, basis, "CZ")  # type: ignore[arg-type]
 
 
-def _score_task(args: tuple[str, int, str, Placement]) -> dict[str, Any]:
-    device, distance, basis, mapping = args
+@functools.cache
+def _lowering(device: str, distance: int, basis: str) -> Lowering:
     stored, noise = _models(device)
+    return Lowering(_circuit(distance, basis), stored.device, noise)
+
+
+def _score_task(args: tuple[str, int, str, Placement]) -> dict[str, Any]:
+    """Every per-placement selection score, as the held-out runner computes them."""
+
+    device, distance, basis, mapping = args
+    _stored, noise = _models(device)
     circuit = _circuit(distance, basis)
+    lowering = _lowering(device, distance, basis)
     t = time.perf_counter()
-    dg = DECODER_GRAPH_SCORER.function(circuit, stored.device, noise, mapping)
+    noisy = lowering.stim_circuit(mapping)
+    t_lower = time.perf_counter() - t
+    t = time.perf_counter()
+    v1 = v1_score_from_dem(approximate_dem(noisy, decompose=False))
+    t_v1 = time.perf_counter() - t
+    t = time.perf_counter()
+    dg = decoder_graph_score_from_dem(approximate_dem(noisy, decompose=True))
     t_dg = time.perf_counter() - t
     t = time.perf_counter()
-    v1 = V1_SCORER.function(circuit, stored.device, noise, mapping)
-    t_v1 = time.perf_counter() - t
-    return {"decoder_graph": dg, "v1": v1, "seconds_decoder_graph": t_dg, "seconds_v1": t_v1}
+    summed = summed_error(circuit, noise, mapping)
+    t_summed = time.perf_counter() - t
+    lowering.check(mapping)  # Nove's own lowering gives the same circuit (not timed)
+    return {
+        "decoder_graph": dg,
+        "v1": v1,
+        "summed": summed,
+        "seconds_lowering": t_lower,
+        "seconds_decoder_graph": t_dg,
+        "seconds_v1": t_v1,
+        "seconds_summed": t_summed,
+    }
+
+
+def _mapomatic_chunks(pool: ProcessPoolExecutor, device: str) -> Any:
+    def run(small: Any, chunks: list[list[list[int]]]) -> Any:
+        return pool.map(mapomatic_cost_chunk, [(device, SETTING, small, c) for c in chunks])
+
+    return run
+
+
+def surface_selection(k: int, step: float) -> dict[str, Any]:
+    """R3-S6: the whole d=5 surface-code selection in this one process."""
+
+    t = time.perf_counter()
+    device, noise = restored("miami")
+    best: tuple[float, int] | None = None
+    n = 0
+    for schedule in hook_safe_schedules(5, 5, "CZ"):
+        circuit = surface_code(5, 5, schedule)
+        lowering = Lowering(circuit, device, noise)
+        for m in enumerate_placements(circuit, device):
+            graph = matching_graph(approximate_dem(lowering.stim_circuit(m), decompose=True))
+            score = scaled_score_from_graph(graph, ScaledParameters(k, step))
+            best = (score, n) if best is None or score < best[0] else best
+            n += 1
+    seconds = time.perf_counter() - t
+    return {
+        "device": "miami, removed couplers restored at the median CZ channel (synthetic)",
+        "candidates": n,
+        "scaled_parameters": {"k": k, "step": step},
+        "seconds_one_core": seconds,
+        "limit_seconds": SURFACE_SELECTION_LIMIT_SECONDS,
+        "over_limit": seconds > SURFACE_SELECTION_LIMIT_SECONDS,
+    }
 
 
 def _sim_task(args: tuple[str, int, str, Placement, int, list[int]]) -> dict[str, Any]:
@@ -213,14 +290,21 @@ def time_device(
     t = time.perf_counter()
     scores = list(pool.map(_score_task, [(device, distance, basis, m) for m in sample]))
     out["score_wall_seconds"] = time.perf_counter() - t
-    out["seconds_decoder_graph"] = _summary([s["seconds_decoder_graph"] for s in scores])
-    out["seconds_v1"] = _summary([s["seconds_v1"] for s in scores])
+    out["checked_against_nove"] = len(scores)
+    for part in ("lowering", "decoder_graph", "v1", "summed"):
+        out[f"seconds_{part}"] = _summary([s[f"seconds_{part}"] for s in scores])
+    out["seconds_per_placement"] = _summary(
+        [
+            s["seconds_lowering"]
+            + s["seconds_decoder_graph"]
+            + s["seconds_v1"]
+            + s["seconds_summed"]
+            for s in scores
+        ]
+    )
 
     if all_candidate_methods:
         timings: dict[str, float] = {}
-        t = time.perf_counter()
-        lowest_summed_error(circuit, stored.device, noise)
-        timings["lowest-summed-error"] = time.perf_counter() - t
         t = time.perf_counter()
         qiskit_layout(circuit, stored.device, noise, candidates)
         timings["qiskit-vf2"] = time.perf_counter() - t
@@ -234,6 +318,7 @@ def time_device(
                 candidates,
                 SEED_TRANSPILER,
                 reset_error="readout",
+                map_chunks=_mapomatic_chunks(pool, device),
             )
         timings["qiskit-default-l1-l3-and-mapomatic"] = time.perf_counter() - t
         timings["mapomatic"] = float(record["mapomatic"]["selection_seconds"])
@@ -290,10 +375,8 @@ def project(
     """Core-hours and wall hours of each held-out case, per reset setting and for both."""
 
     fez7 = measured["fez-7-Z"]
-    per_candidate = {
-        name: seconds / fez7["placements"]
-        for name, seconds in fez7["all_candidate_seconds"].items()
-    }
+    # mapomatic's wall time on all workers, taken as proportional to the layout count
+    mapomatic_per_candidate = fez7["all_candidate_seconds"]["mapomatic"] / fez7["placements"]
     cases = []
     for device, (lattice, proxy) in HELD_OUT.items():
         for label, distance, _basis in CIRCUITS:
@@ -301,17 +384,18 @@ def project(
             n = counts[key]["placements"]
             score = measured[f"{proxy}-{distance}-Z"]
             sim = measured[f"fez-{distance}-Z"]  # per-shot cost and P_L from FakeFez
-            per_score = score["seconds_decoder_graph"]["mean"] + score["seconds_v1"]["mean"]
-            # summed error and mapomatic run in one process over every candidate
-            serial = n * (per_candidate["lowest-summed-error"] + per_candidate["mapomatic"])
-            selection_core = n * per_score + serial
-            selection_wall = n * per_score / workers + serial
+            per_placement = score["seconds_per_placement"]["mean"]
+            # enumeration runs in one process, timed on the coupling map itself
+            serial = counts[key]["seconds"]
+            mapomatic = n * mapomatic_per_candidate
+            selection_core = n * per_placement + serial + mapomatic * workers
+            selection_wall = n * per_placement / workers + serial + mapomatic
             simulated = n if (lattice == "heavy-hex" or distance == 3) else min(n, BEST_FOUND_SET)
             shots = PILOT_SHOTS + len(BASE_SEEDS) * sim["main_shots_per_seed"]["mean"]
-            per_placement = (1 + len(BASE_SEEDS)) * sim["seconds_build"]["mean"] + shots * sim[
+            per_simulated = (1 + len(BASE_SEEDS)) * sim["seconds_build"]["mean"] + shots * sim[
                 "seconds_per_shot"
             ]["mean"]
-            simulation_core = simulated * per_placement
+            simulation_core = simulated * per_simulated
             cases.append(
                 {
                     "case": key,
@@ -349,9 +433,10 @@ def project(
             "placement counts are upper bounds (coupling map only, removed couplers kept)",
             "per-shot cost and P_L come from FakeFez at reset = readout; a held-out device "
             "with lower P_L needs proportionally more main-stage shots, up to the cap",
-            "the surface code (scaled score) is not timed here",
-            "selection wall hours run the two scores on every worker and summed error and "
-            "mapomatic in one process, as the v2 and reset runners do",
+            "selection wall hours: one prepared lowering per placement for the v1 score, the "
+            "decoder-graph score and summed error on every worker; enumeration (timed on the "
+            "coupling map) in one process; "
+            "mapomatic's layout costs on every worker, its whole time scaled by the count",
         ],
     }
 
@@ -361,7 +446,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=min(48, os.cpu_count() or 1))
     parser.add_argument("--machine-label", default=None)
     parser.add_argument(
-        "--out", type=Path, default=ROOT / "results_v3" / "timing_pilot" / "timing_pilot.json"
+        "--out", type=Path, default=ROOT / "results_v3" / "timing_pilot" / "timing_pilot_2.json"
     )
     parser.add_argument("--allow-dirty", action="store_true")
     parser.add_argument("--quick", action="store_true", help="tiny sizes, for a smoke test")
@@ -408,8 +493,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"{device} d={distance}: {time.perf_counter() - t:.1f}s", flush=True)
         for key, future in pending.items():
             counts[key] = future.result()
+    chosen = json.loads(CALIBRATION.read_text(encoding="utf-8"))["chosen"]
+    surface = surface_selection(int(chosen["k"]), float(chosen["step"]))
+    print(f"surface d=5 selection on one core: {surface['seconds_one_core']:.1f}s", flush=True)
     payload: dict[str, Any] = {
-        "schema": "noise-aware-compilation.timing-pilot-v3/1",
+        "schema": "noise-aware-compilation.timing-pilot-v3/2",
         "description": __doc__,
         "setting": SETTING,
         "two_qubit_gate": "CZ",
@@ -419,6 +507,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "seed_tag": SEED_TAG,
         "measured": measured,
         "held_out_placement_counts": counts,
+        "surface_selection": surface,
         "package_git_commit": commit,
         "package_git_dirty": dirty,
         "machine": machine(args.machine_label, workers=args.workers),
