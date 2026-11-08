@@ -10,7 +10,8 @@ exhaustive selection would take too long):
    Summed error can point at the wrong part of the chip (on FakeFez the decoder-graph
    choice is in the worst third by summed error), so ``spread`` more are scored: walking
    down the summed-error order, each placement that shares no qubit with an earlier one
-   picked this way, until ``spread`` are picked or none is left.
+   picked this way, until ``spread`` are picked or none is left. ``random`` more are drawn
+   uniformly (seeded by ``seed``), which no pre-filter can mislead.
 2. **Local search.** From each of the ``starts`` best placements scored so far, steepest descent:
    score every neighbour, move to the best if it beats the current placement, stop when
    none does. A repetition code's interaction graph is a path, so a placement is a simple
@@ -33,6 +34,7 @@ so the choice is always one of the exhaustive candidates.
 
 from __future__ import annotations
 
+import random
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 
@@ -48,6 +50,8 @@ class SearchParameters:
     prefilter: int
     starts: int
     spread: int = 0
+    random: int = 0
+    seed: int = 0
     max_shift: int = 2
     max_evaluations: int = 20_000
 
@@ -277,6 +281,8 @@ class FastSearch:
 
         pool = evaluate(self.prefiltered(parameters.prefilter))
         pool += evaluate(self.spread_out(parameters.spread))
+        rng = random.Random(parameters.seed)
+        pool += evaluate(rng.sample(self.placements, min(parameters.random, len(self.placements))))
         starts = sorted(set(pool), key=key)[: parameters.starts]
         descents = []
         for start in starts:
