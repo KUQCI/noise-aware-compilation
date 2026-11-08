@@ -587,7 +587,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     from nac_bench.report_reanalysis import write_report
 
-    path = write_report(result, step6b, args.out / "REANALYSIS.md")
+    mirror_path = ROOT / "results_v3" / "mirror_check.json"
+    mirror = json.loads(mirror_path.read_text(encoding="utf-8")) if mirror_path.exists() else None
+    path = write_report(result, step6b, args.out / "REANALYSIS.md", mirror)
     print(f"wrote {path}")
     return 0
 

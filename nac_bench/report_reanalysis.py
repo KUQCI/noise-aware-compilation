@@ -6,6 +6,7 @@ Tables with one line of framing each; the summary report over v1 to v3
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -81,7 +82,12 @@ def _rate_interval(i: dict[str, float]) -> str:
     return f"{_sci(i['estimate'])} [{_sci(i['low'])}, {_sci(i['high'])}]"
 
 
-def write_report(result: dict[str, Any], step6b: dict[str, Any], path: Path) -> Path:
+def write_report(
+    result: dict[str, Any],
+    step6b: dict[str, Any],
+    path: Path,
+    mirror: dict[str, Any] | None = None,
+) -> Path:
     prov = result["provenance"]
     lines: list[str] = []
     w = lines.append
@@ -404,6 +410,34 @@ def write_report(result: dict[str, Any], step6b: dict[str, Any], path: Path) -> 
     )
     w("")
 
+    if mirror is not None:
+        w("## 8. Does a mirror pair's gap follow the gate order or the qubits?")
+        w("")
+        w(
+            "The gate order. FakeHanoi d=7 placement "
+            f"({', '.join(map(str, mirror['mapping']))}) and its mirror, each with the two CX layers in "
+            "v2's order and swapped, on three fresh seeds. Swapping the layers on one placement gives "
+            "its mirror's physical schedule, so the *same schedule* rows compare physically identical "
+            "circuits; this checks the explanation and the pipeline, not hardware."
+        )
+        w("")
+        w(
+            _table(
+                ["Comparison", "Change [95% CI]", "Verdict"],
+                [
+                    [name, _pct(c["relative"]), c["verdict"]]
+                    for name, c in mirror["comparisons"].items()
+                ],
+            )
+        )
+        w("")
+        w(
+            "Command: `python -m nac_bench.mirror_check configs_v3/mirror_check.json` "
+            f"({mirror['provenance']['wall_clock_seconds']:.0f} s on "
+            f"{mirror['provenance']['machine']['workers']} workers)."
+        )
+        w("")
+
     m = prov["machine"]
     w("## Reproducibility")
     w("")
@@ -421,6 +455,23 @@ def write_report(result: dict[str, Any], step6b: dict[str, Any], path: Path) -> 
     w("")
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
+
+
+def main() -> int:
+    """Rewrite REANALYSIS.md from the committed JSON files, without recomputing."""
+
+    root = Path(__file__).resolve().parent.parent
+    out = root / "results_v3" / "reanalysis"
+    result = json.loads((out / "reanalysis.json").read_text(encoding="utf-8"))
+    step6b = json.loads((out / "baselines.json").read_text(encoding="utf-8"))
+    mirror_path = root / "results_v3" / "mirror_check.json"
+    mirror = json.loads(mirror_path.read_text(encoding="utf-8")) if mirror_path.exists() else None
+    print(f"wrote {write_report(result, step6b, out / 'REANALYSIS.md', mirror)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 
 
 __all__ = ["NAMES", "write_report"]
