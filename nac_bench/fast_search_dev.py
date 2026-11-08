@@ -15,7 +15,8 @@ placements (1 is the exhaustive choice) and how many placements it scored.
 
 The setting frozen at F3 is picked by the rule in ``DECISIONS_V3.md`` P2-18: the one that
 finds the exhaustive choice on every development case with the fewest placements scored in
-the worst case; if none does, the smallest worst-case rank, then the fewest placements.
+the worst case; if none does, the smallest worst-case ratio of its choice's score to the
+exhaustive choice's, then the fewest placements scored.
 """
 
 from __future__ import annotations
@@ -53,8 +54,10 @@ DEVICES = ("fez", "marrakesh", "miami")
 CIRCUITS = (("A", 3, "Z"), ("B", 3, "X"), ("D5", 5, "Z"), ("D7", 7, "Z"))
 SETTINGS = ("readout", "zero")
 ROUNDS = 3
-PREFILTERS = (10, 30, 100, 300, 1000)
-STARTS = (1, 3, 10, 30)
+PREFILTERS = (10, 100)
+SPREADS = (0, 40)
+STARTS = (3, 10, 30)
+SHIFTS = (2, 4, 6)
 MAX_EVALUATIONS = 20_000
 CHUNK = 5_000
 CHECKED = 20  # placements per case checked against Nove's lowering
@@ -97,7 +100,10 @@ def _check_chunk(args: tuple[str, str, int, str, list[Placement]]) -> int:
 
 def grid() -> list[SearchParameters]:
     return [
-        SearchParameters(p, s, MAX_EVALUATIONS) for p, s in itertools.product(PREFILTERS, STARTS)
+        SearchParameters(
+            prefilter=p, starts=s, spread=sp, max_shift=k, max_evaluations=MAX_EVALUATIONS
+        )
+        for p, sp, s, k in itertools.product(PREFILTERS, SPREADS, STARTS, SHIFTS)
     ]
 
 
@@ -135,6 +141,9 @@ def develop(
             {
                 "prefilter": parameters.prefilter,
                 "starts": parameters.starts,
+                "spread": parameters.spread,
+                "max_shift": parameters.max_shift,
+                "score_ratio": _rounded(value[result.mapping]) / _rounded(value[ranked[0]]),
                 "max_evaluations": parameters.max_evaluations,
                 "choice": list(result.mapping),
                 "rank": rank[result.mapping],
@@ -169,26 +178,30 @@ def pick(cases: Sequence[dict[str, Any]]) -> dict[str, Any]:
 
     rows = []
     for i, parameters in enumerate(grid()):
-        ranks = [c["runs"][i]["rank"] for c in cases]
-        evaluations = [c["runs"][i]["evaluations"] for c in cases]
+        runs = [c["runs"][i] for c in cases]
         rows.append(
             {
                 "prefilter": parameters.prefilter,
+                "spread": parameters.spread,
                 "starts": parameters.starts,
-                "found_everywhere": all(r == 1 for r in ranks),
-                "cases_found": sum(1 for r in ranks if r == 1),
-                "worst_rank": max(ranks),
-                "worst_evaluations": max(evaluations),
+                "max_shift": parameters.max_shift,
+                "found_everywhere": all(r["rank"] == 1 for r in runs),
+                "cases_found": sum(1 for r in runs if r["rank"] == 1),
+                "worst_score_ratio": max(r["score_ratio"] for r in runs),
+                "worst_rank": max(r["rank"] for r in runs),
+                "worst_evaluations": max(r["evaluations"] for r in runs),
             }
         )
     best = min(
         rows,
         key=lambda r: (
             not r["found_everywhere"],
-            0 if r["found_everywhere"] else r["worst_rank"],
+            1.0 if r["found_everywhere"] else r["worst_score_ratio"],
             r["worst_evaluations"],
             r["prefilter"],
+            r["spread"],
             r["starts"],
+            r["max_shift"],
         ),
     )
     return {"chosen": best, "grid": rows}
@@ -232,7 +245,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     payload = {
         "schema": "noise-aware-compilation.fast-search-dev-v3/1",
         "description": __doc__,
-        "grid": {"prefilter": list(PREFILTERS), "starts": list(STARTS)},
+        "grid": {
+            "prefilter": list(PREFILTERS),
+            "spread": list(SPREADS),
+            "starts": list(STARTS),
+            "max_shift": list(SHIFTS),
+        },
         "max_evaluations": MAX_EVALUATIONS,
         "cases": cases,
         "pick": pick(cases),

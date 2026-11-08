@@ -17,8 +17,8 @@ exhaustive selection would take too long):
    path of 2d - 1 device qubits, and its neighbours are the paths that
 
    * run the other way (the mirror placement);
-   * shift by one or two qubits in either direction (drop qubits at one end, add new
-     ones at the other);
+   * slide by 1 to ``max_shift`` qubits in either direction (drop that many qubits at
+     one end, add as many new ones at the other, every way the device allows);
    * swap an end qubit for another neighbour of the next one;
    * swap an inner qubit for another common neighbour of its two path neighbours (a
      corner flip, possible on the square lattice, not on heavy-hex).
@@ -48,6 +48,7 @@ class SearchParameters:
     prefilter: int
     starts: int
     spread: int = 0
+    max_shift: int = 2
     max_evaluations: int = 20_000
 
 
@@ -216,27 +217,27 @@ class FastSearch:
     def _path(self, mapping: Placement) -> list[int]:
         return [mapping[c] for c in self.order]
 
-    def neighbours(self, mapping: Placement) -> list[Placement]:
+    def neighbours(self, mapping: Placement, max_shift: int = 2) -> list[Placement]:
         """Every placement one move away, in a fixed order, without duplicates."""
 
         p = self._path(mapping)
         adj = self.adjacency
         out: list[list[int]] = [p[::-1]]
-        for s in (1, 2):
+
+        def grow(path: list[int], taken: set[int], k: int) -> Iterable[list[int]]:
+            if k == 0:
+                yield path
+                return
+            for v in sorted(adj.get(path[-1], frozenset()) - taken):
+                taken.add(v)
+                yield from grow([*path, v], taken, k - 1)
+                taken.discard(v)
+
+        for s in range(1, min(max_shift, len(p) - 1) + 1):
             for forward in (True, False):
-                kept = p[s:] if forward else p[:-s]
-                taken = set(kept)
-                tip = kept[-1] if forward else kept[0]
-                for v in sorted(adj.get(tip, ())):
-                    if v in taken:
-                        continue
-                    if s == 1:
-                        out.append([*kept, v] if forward else [v, *kept])
-                        continue
-                    for w in sorted(adj.get(v, ())):
-                        if w in taken or w == v:
-                            continue
-                        out.append([*kept, v, w] if forward else [w, v, *kept])
+                kept = p[s:] if forward else p[:-s][::-1]
+                for grown in grow(kept, set(kept), s):
+                    out.append(grown if forward else grown[::-1])
         used = set(p)
         for v in sorted(adj.get(p[1], frozenset()) - used):
             out.append([v, *p[1:]])
@@ -281,7 +282,7 @@ class FastSearch:
         for start in starts:
             current, moves = start, 0
             while len(scored) < parameters.max_evaluations:
-                options = evaluate(self.neighbours(current))
+                options = evaluate(self.neighbours(current, parameters.max_shift))
                 if not options:
                     break
                 best = min(options, key=key)
