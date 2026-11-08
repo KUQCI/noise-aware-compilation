@@ -372,9 +372,9 @@ Each N2 case was rerun end to end (selection and evaluation) with the CX duratio
 - FakeJakartaV2: source files `conf_jakarta.json` 15b25bc0c7fdf72a…, `props_jakarta.json` 29a90998e66c9558…; calibration snapshot `4345667cf8c9281d…`. Full hashes are in every results file.
 - FakeHanoiV2: source files `conf_hanoi.json` 9345ac086f406de1…, `props_hanoi.json` 17db2080056d895f…; calibration snapshot `d77b31ce6f3f9111…`. Full hashes are in every results file.
 - Results files: 93 in `results/runs/` (one per run).
-- Total compute (sum of per-run wall-clock times): **0.63 hours** (2,278 s) on 4 worker processes.
+- Total compute (sum of per-run wall-clock times): **0.48 hours** (1,734 s) on 4 worker processes.
 - Total simulated shots: 12,508,800,000.
-- Benchmark config and fixed baseline first committed in `05c98e23d9c51bf79d442c83f3feac9562235f17 2026-10-10T20:15:23+00:00` (R-F4).
+- Benchmark config and fixed baseline first committed in `ebe12aec3a390a29a4fe26a71248822f99ed8437 2026-10-10T20:15:23+00:00` (R-F4).
 
 ## Appendix: M1-M3 for every device, circuit, noise condition and placement (R-R1)
 
