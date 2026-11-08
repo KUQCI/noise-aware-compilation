@@ -1,6 +1,6 @@
 """Write results/v1_comparison.md: rev 2 results next to the v1 results they replace.
 
-v1's results files are read from git (commit 2ca4026, the v1 handback) into a temporary
+v1's results files are read from git (commit a1c40d5, the v1 handback) into a temporary
 folder, so nothing outside the repository is needed. Every number is computed by the
 package's own analysis from the raw counts.
 
@@ -19,7 +19,7 @@ from noise_aware_compilation.analysis import CaseSummary, load_summaries
 from noise_aware_compilation.report import mapping_text, summary_cell
 
 ROOT = Path(__file__).resolve().parent.parent
-V1_COMMIT = "2ca4026c44e332b1416c114a8b36360c28e2504b"
+V1_COMMIT = "a1c40d5c4000f4156961e25a9ff28a774f686214"
 DEVICE_TITLES = {"jakarta": "FakeJakartaV2", "hanoi": "FakeHanoiV2"}
 
 
