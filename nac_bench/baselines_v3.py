@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import functools
 import importlib.metadata
+import itertools
 import math
 import time
 import warnings
@@ -509,11 +510,13 @@ def run_baselines(
     seed_sweep: Sequence[int] = (),
     reset_error: str = "none",
     map_chunks: ChunkMap | None = None,
+    top: int = 0,
 ) -> dict[str, Any]:
     """Every Step 6b selection for one case, as a JSON-ready record.
 
     ``map_chunks`` computes mapomatic's layout costs in chunks (same result); its tasks
-    rebuild the backend from the stored device, so it needs a stored device.
+    rebuild the backend from the stored device, so it needs a stored device. ``top`` keeps
+    mapomatic's first ``top`` layouts in its own order (lowest cost first, its stable sort).
     """
 
     qc = qiskit_circuit(circuit)
@@ -552,6 +555,10 @@ def run_baselines(
         if not m.costs
         else [m.costs.get(tuple(p), math.nan) for p in candidates],
     }
+    if top:
+        record["mapomatic"]["top_layouts"] = [
+            list(layout) for layout in itertools.islice(m.costs, top)
+        ]
     return record
 
 
