@@ -428,8 +428,26 @@ def _header(case: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _no_placement(case: dict[str, Any], config: dict[str, Any], reason: str) -> dict[str, Any]:
-    return {**_header(case, config), "no_valid_placement": True, "reason": reason}
+def _no_placement(
+    case: dict[str, Any],
+    config: dict[str, Any],
+    reason: str,
+    workers: int,
+    machine_label: str | None,
+) -> dict[str, Any]:
+    commit, dirty = git_state()
+    return {
+        **_header(case, config),
+        "no_valid_placement": True,
+        "reason": reason,
+        "provenance": {
+            "package_git_commit": commit,
+            "package_git_dirty": dirty,
+            "lock_file_sha256": hashlib.sha256(LOCK_FILE.read_bytes()).hexdigest(),
+            "reset_setting": case["setting"],
+            "machine": machine(machine_label, workers=workers),
+        },
+    }
 
 
 # --- repetition-code cases ------------------------------------------------------------------
@@ -456,7 +474,7 @@ def run_repetition(
     try:
         placements = enumerate_placements(circuit, stored.device)
     except NoValidPlacementError as error:
-        return _no_placement(case, config, str(error))
+        return _no_placement(case, config, str(error), workers, machine_label)
     n = len(placements)
     seconds["enumeration"] = time.perf_counter() - t
 
@@ -695,7 +713,9 @@ def run_surface(
             embeddings = []
         candidates.extend((schedule, m) for m in embeddings)
     if not candidates:
-        return _no_placement(case, config, "no SWAP-free embedding of the surface-code patch")
+        return _no_placement(
+            case, config, "no SWAP-free embedding of the surface-code patch", workers, machine_label
+        )
     seconds["enumeration"] = time.perf_counter() - t
 
     t = time.perf_counter()

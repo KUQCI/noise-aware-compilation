@@ -198,3 +198,20 @@ def test_frozen_parameters_must_match(tmp_path: Path) -> None:
     config["fast_search"] = {**FAST_SEARCH, "starts": 30}
     with pytest.raises(RuntimeError, match="F3 freeze"):
         run_v3._check_frozen(config)
+
+
+def test_no_valid_placement_is_recorded(tmp_path: Path) -> None:
+    """FakeMiami has no d=5 surface-code embedding (P2-11): the case says so and leaves."""
+
+    config = _config(tmp_path)
+    config["devices"] = {
+        "miami": {"lattice": "square", "synthetic_calibration": False, "circuits": ["S5"]}
+    }
+    config["circuits"] = {"S5": {"kind": "surface", "distance": 5, "rounds": 5}}
+    case = run_v3.cases(config)[0]
+    with ProcessPoolExecutor(max_workers=1) as pool:
+        path = run_v3.run_case(case, config, pool, workers=1, out_dir=tmp_path, machine_label="t")
+    run = json.loads(path.read_text(encoding="utf-8"))
+    assert run["no_valid_placement"] is True
+    assert run["case"]["case_id"] == "v3-readout-miami-S5"
+    assert {"package_git_commit", "lock_file_sha256", "machine"} <= set(run["provenance"])
