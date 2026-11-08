@@ -1,7 +1,8 @@
 """The machine a run used, for quotable runtimes (roadmap Step 6b.4).
 
-Records CPU model, logical and usable cores, memory, OS and Python, plus a
-label the user passes (for example ``patty``). The host name is not recorded.
+Records CPU model, logical and usable cores, memory, OS, Python, the C library
+and the Stim build that loaded (its SIMD width), plus a label the user passes
+(for example ``patty``). The host name is not recorded.
 """
 
 from __future__ import annotations
@@ -58,6 +59,17 @@ def _usable_cores() -> int | None:
     return os.cpu_count()
 
 
+def _stim_build() -> str | None:
+    """The Stim extension module this process loaded (for example ``_stim_sse2``)."""
+
+    try:
+        import stim  # noqa: F401
+    except ImportError:
+        return None
+    builds = sorted(name.split(".", 1)[1] for name in sys.modules if name.startswith("stim._stim_"))
+    return ",".join(builds) or None
+
+
 def machine(label: str | None = None, workers: int | None = None) -> dict[str, Any]:
     """A JSON-ready description of this machine and the run's parallelism."""
 
@@ -71,6 +83,8 @@ def machine(label: str | None = None, workers: int | None = None) -> dict[str, A
         "memory_gib": None if memory is None else round(memory / 2**30, 1),
         "os": platform.platform(),
         "python": platform.python_version(),
+        "libc": "-".join(platform.libc_ver()) or None,
+        "stim_build": _stim_build(),
         "niceness": os.nice(0) if hasattr(os, "nice") else None,
     }
 

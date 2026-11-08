@@ -1,6 +1,10 @@
-# Exact versions behind the committed v1, v2 and v3 results (Python 3.13).
+# Exact versions behind the committed v1, v2 and v3 results.
+# Interpreter: CPython 3.13 (3.13.16 here). Nove's Rust core (nove/_core.abi3.so) is
+# built from source at the pinned commit; here with rustc 1.97.0, glibc 2.39.
+# Stim 1.16.0's x86-64 wheel ships only its SSE2 and generic builds, so every x86-64
+# machine runs the same SSE2 code.
 # Install with: pip install -r requirements-lock.txt && pip install --no-deps -e .
-# Every v3 run file records its versions; patty and this machine use this file.
+# Every v3 run file records its versions and machine; patty and this machine use this file.
 annotated-types==0.8.0
 antlr4-python3-runtime==4.13.2
 ast_serialize==0.12.1
