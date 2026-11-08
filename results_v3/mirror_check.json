@@ -1,0 +1,202 @@
+{
+ "schema": "noise-aware-compilation.mirror-check-v3/1",
+ "config_sha256": "28535fadcb4fe6bd45b0494271dce973cda344b76ed627c737b131801128332e",
+ "mapping": [
+  11,
+  14,
+  13,
+  12,
+  15,
+  18,
+  21,
+  23,
+  24,
+  25,
+  22,
+  19,
+  16
+ ],
+ "mirror": [
+  16,
+  19,
+  22,
+  25,
+  24,
+  23,
+  21,
+  18,
+  15,
+  12,
+  13,
+  14,
+  11
+ ],
+ "rates": {
+  "M/original": {
+   "failures": 2056,
+   "shots": 9600000,
+   "per_seed": [
+    [
+     727,
+     3200000
+    ],
+    [
+     656,
+     3200000
+    ],
+    [
+     673,
+     3200000
+    ]
+   ],
+   "p_l": {
+    "estimate": 0.00021416666666666668,
+    "low": 0.00020510810301630235,
+    "high": 0.00022362521071904394
+   }
+  },
+  "M/swapped": {
+   "failures": 3102,
+   "shots": 9600000,
+   "per_seed": [
+    [
+     1052,
+     3200000
+    ],
+    [
+     1040,
+     3200000
+    ],
+    [
+     1010,
+     3200000
+    ]
+   ],
+   "p_l": {
+    "estimate": 0.000323125,
+    "low": 0.0003119540517646947,
+    "high": 0.0003346958414375718
+   }
+  },
+  "mirror/original": {
+   "failures": 3078,
+   "shots": 9600000,
+   "per_seed": [
+    [
+     1059,
+     3200000
+    ],
+    [
+     1055,
+     3200000
+    ],
+    [
+     964,
+     3200000
+    ]
+   ],
+   "p_l": {
+    "estimate": 0.000320625,
+    "low": 0.0003094980983363916,
+    "high": 0.0003321517968666339
+   }
+  },
+  "mirror/swapped": {
+   "failures": 2116,
+   "shots": 9600000,
+   "per_seed": [
+    [
+     690,
+     3200000
+    ],
+    [
+     727,
+     3200000
+    ],
+    [
+     699,
+     3200000
+    ]
+   ],
+   "p_l": {
+    "estimate": 0.00022041666666666667,
+    "low": 0.00021122406791250104,
+    "high": 0.00023000924082094772
+   }
+  }
+ },
+ "v2_counts_original_order": {
+  "M": {
+   "failures": 2133,
+   "shots": 9600000
+  },
+  "mirror": {
+   "failures": 3155,
+   "shots": 9600000
+  }
+ },
+ "comparisons": {
+  "mirror gap, original order (replicates v2)": {
+   "a": "M/original",
+   "b": "mirror/original",
+   "relative": {
+    "estimate": -0.332033788174139,
+    "low": -0.3682968553679534,
+    "high": -0.2936890311019733
+   },
+   "verdict": "better",
+   "p_value": 3.6001888379829175e-46
+  },
+  "M swapped vs mirror original (same schedule)": {
+   "a": "M/swapped",
+   "b": "mirror/original",
+   "relative": {
+    "estimate": 0.007797270955165692,
+    "low": -0.041215503573213796,
+    "high": 0.05931556374747471
+   },
+   "verdict": "tie",
+   "p_value": 0.7601054961354177
+  },
+  "mirror swapped vs M original (same schedule)": {
+   "a": "mirror/swapped",
+   "b": "M/original",
+   "relative": {
+    "estimate": 0.029182879377431803,
+    "low": -0.031418793785021104,
+    "high": 0.09357624575726642
+   },
+   "verdict": "tie",
+   "p_value": 0.3528773621206024
+  },
+  "M original vs M swapped (same qubits, other order)": {
+   "a": "M/original",
+   "b": "M/swapped",
+   "relative": {
+    "estimate": -0.3372018052869117,
+    "low": -0.37313004611698375,
+    "high": -0.2992143837908213
+   },
+   "verdict": "better",
+   "p_value": 4.601224135798626e-48
+  }
+ },
+ "provenance": {
+  "package_git_commit": "9858c844672cecbc64ca8808c1752836ffc36960",
+  "package_git_dirty": false,
+  "written_at_utc": "2026-11-08T20:36:37+00:00",
+  "machine": {
+   "label": null,
+   "cpu_model": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+   "logical_cores": 4,
+   "usable_cores": 4,
+   "workers": 3,
+   "memory_gib": 15.7,
+   "os": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39",
+   "python": "3.13.16",
+   "niceness": 0
+  },
+  "stim_version": "1.16.0",
+  "wall_clock_seconds": 8.053028688000268
+ }
+}
