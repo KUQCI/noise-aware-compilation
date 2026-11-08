@@ -107,7 +107,8 @@ def write_report(
     w(
         "Every row is development data except FakeAlgiers rows, which are held out. P_L is the logical "
         "error rate per shot. Changes are relative to the reference named in the row, with 95% "
-        "intervals."
+        "intervals. The naive placement is the one REPORT.md and REPORT_V2.md call *fixed*: the "
+        "first valid placement in lexicographic order."
     )
     w("")
 

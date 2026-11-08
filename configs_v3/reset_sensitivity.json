@@ -1,0 +1,79 @@
+{
+  "schema": "noise-aware-compilation.reset-config-v3/1",
+  "status": "Pre-registered on 2026-11-08, committed before any count of this run existed. Seen beforehand: every v1 and v2 result at reset error 0, and v1's reset = readout variant (REPORT.md section 10, v1 score only). The decoder-graph score is v2's frozen score, unchanged. The devices are not new, so this tests the frozen score under a second noise setting, not on unseen hardware.",
+  "settings": {
+    "zero": "reset flip probability 0 on every qubit, as in the converted snapshots (IBM publishes no reset error)",
+    "readout": "each qubit's reset flip probability equals its readout flip probability (v1 T-L1, noise_aware_compilation.conditions.reset_equals_readout); IBM resets by measuring and flipping on outcome 1, so a wrong readout leaves the qubit in |1>"
+  },
+  "selection_rule": "Every method selects under the noise model of the setting it is graded in. Qiskit's default transpile (levels 1-3) and mapomatic read the IBM-shaped Target of P1-5, whose reset carries the published readout error in the readout setting. mapomatic's default_cost charges every reset at the readout error in both settings, so its costs do not depend on the setting; its pick between a placement and its mirror (an exact tie in its cost) can, because the level-3 transpile it starts from reads the Target's reset error. Qiskit's default on the Target as IBM publishes it (reset without an error) is recorded as context.",
+  "base_seeds": [20261108, 20261109, 20261110],
+  "evaluation_seed_rule": "sha256('eval-v3-reset|<base_seed>|<case_id>|<mapping>|<chunk>')[:8] & (2**63-1)",
+  "min_shots_per_seed": 200000,
+  "max_shots_per_seed": 25600000,
+  "precision_rule": {
+    "target_relative_halfwidth": 0.1,
+    "description": "As v1 and v2: shots per seed are doubled for every placement of the case together until each placement's pooled Wilson 95% half-width <= 10% of its P_L, or max_shots_per_seed is reached."
+  },
+  "qiskit_version": "2.5.2",
+  "mapomatic_version": "0.14.0",
+  "seed_transpiler": 20261021,
+  "circuits": {
+    "A1": {"distance": 3, "rounds": 1, "basis": "Z"},
+    "A": {"distance": 3, "rounds": 3, "basis": "Z"},
+    "A5": {"distance": 3, "rounds": 5, "basis": "Z"},
+    "B": {"distance": 3, "rounds": 3, "basis": "X"},
+    "D5": {"distance": 5, "rounds": 3, "basis": "Z"},
+    "D7": {"distance": 7, "rounds": 3, "basis": "Z"}
+  },
+  "circuit_note": "A, B, D5 and D7 are v2's circuits; A is the same circuit as v1's A3 (identical circuit hash). A1 and A5 are v1's 1- and 5-round d=3 circuits, which v2 did not run.",
+  "runs": [
+    {"setting": "readout", "device": "jakarta", "role": "development", "circuits": ["A", "B"]},
+    {"setting": "readout", "device": "hanoi", "role": "development", "circuits": ["A1", "A", "A5", "B", "D5", "D7"]},
+    {"setting": "readout", "device": "algiers", "role": "held-out", "circuits": ["A1", "A", "A5", "B", "D5", "D7"]},
+    {"setting": "zero", "device": "hanoi", "role": "development", "circuits": ["A1", "A5"]},
+    {"setting": "zero", "device": "algiers", "role": "held-out", "circuits": ["A1", "A5"]}
+  ],
+  "zero_setting_of_v2_cases": "The reset = 0 counts of A, B, D5 and D7 are v2's committed runs (results_v2/runs), with the Phase 1 Step 6b choices (results_v3/reanalysis/baselines.json); they are not rerun.",
+  "fixed_baselines": {
+    "jakarta-A": [0, 1, 3, 5, 4],
+    "jakarta-B": [0, 1, 3, 5, 4],
+    "hanoi-A1": [0, 1, 2, 3, 5],
+    "hanoi-A": [0, 1, 2, 3, 5],
+    "hanoi-A5": [0, 1, 2, 3, 5],
+    "hanoi-B": [0, 1, 2, 3, 5],
+    "hanoi-D5": [0, 1, 4, 7, 10, 12, 13, 14, 11],
+    "hanoi-D7": [0, 1, 4, 7, 10, 12, 13, 14, 16, 19, 22, 25, 24],
+    "algiers-A1": [0, 1, 2, 3, 5],
+    "algiers-A": [0, 1, 2, 3, 5],
+    "algiers-A5": [0, 1, 2, 3, 5],
+    "algiers-B": [0, 1, 2, 3, 5],
+    "algiers-D5": [0, 1, 2, 3, 5, 8, 11, 14, 13],
+    "algiers-D7": [0, 1, 2, 3, 5, 8, 11, 14, 13, 12, 10, 7, 4]
+  },
+  "verdict_rule": "P1-1: better when the upper end of the 95% Newcombe interval for P_L(choice) - P_L(reference) is below zero, worse when its lower end is above zero, otherwise tie",
+  "test": "two-sided pooled two-proportion z-test on the pooled failure counts; a comparison of a placement with itself has p = 1",
+  "alpha": 0.05,
+  "families": {
+    "reset-headline": {
+      "description": "decoder-graph score vs the fixed placement, lowest summed error, Qiskit's default transpile (level 1) and mapomatic, on v2's 10 cases with reset error = readout error; the same 40 comparisons as Phase 1's v2-headline family, in the other reset setting",
+      "select": {
+        "setting": ["readout"],
+        "label": ["A", "B", "D5", "D7"],
+        "method": ["decoder-graph"],
+        "reference": ["fixed", "lowest-summed-error", "qiskit-default-l1", "mapomatic"]
+      },
+      "size": 40
+    }
+  },
+  "exploratory": [
+    "A1 and A5 on FakeHanoiV2 and FakeAlgiers at both settings: does the v1 score's T-L1 loss on Hanoi A1/A3/A5 replicate with fresh seeds, and does the decoder-graph score avoid it?",
+    "the v1 score, Qiskit's default at levels 2 and 3, v2's VF2Layout baseline and Qiskit's default on the published Target, against every reference",
+    "cross-fitted regret (P1-2) of every method in both settings",
+    "whether each method's choice changes between the settings"
+  ],
+  "bootstrap": {
+    "replicates": 4000,
+    "seed": 20261031,
+    "description": "Unused (no drift in this run); present because nac_bench.analysis_v2.summarize reads it."
+  }
+}

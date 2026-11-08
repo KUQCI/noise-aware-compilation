@@ -69,8 +69,21 @@ def _two_qubit_gate(snapshot: nove.CalibrationSnapshot) -> str:
     return next(iter(names))
 
 
-def native_target(snapshot: nove.CalibrationSnapshot, device: nove.DeviceModel) -> Target:
-    """An IBM-shaped Target carrying the snapshot's source (published) calibration values."""
+RESET_ERRORS = ("none", "readout")
+
+
+def native_target(
+    snapshot: nove.CalibrationSnapshot, device: nove.DeviceModel, reset_error: str = "none"
+) -> Target:
+    """An IBM-shaped Target carrying the snapshot's source (published) calibration values.
+
+    ``reset_error="none"`` leaves ``reset`` without an error, as IBM publishes it;
+    ``"readout"`` gives each qubit's reset its published readout error, the
+    reset = readout setting of the v3 reset run.
+    """
+
+    if reset_error not in RESET_ERRORS:
+        raise ValueError(f"reset_error must be one of {RESET_ERRORS}")
 
     num_qubits = len(snapshot.qubit_parameters)
     qubit = {int(q): p for q, p in snapshot.qubit_parameters.items()}
@@ -130,7 +143,10 @@ def native_target(snapshot: nove.CalibrationSnapshot, device: nove.DeviceModel) 
     target.add_instruction(
         Reset(),
         {
-            (q,): InstructionProperties(error=None, duration=reset_ns * NS)
+            (q,): InstructionProperties(
+                error=None if reset_error == "none" else float(qubit[q]["source_readout_error"]),
+                duration=reset_ns * NS,
+            )
             for q in range(num_qubits)
         },
     )
@@ -432,13 +448,14 @@ def run_baselines(
     candidates: Sequence[Placement],
     seed_transpiler: int,
     seed_sweep: Sequence[int] = (),
+    reset_error: str = "none",
 ) -> dict[str, Any]:
     """Every Step 6b selection for one case, as a JSON-ready record."""
 
     qc = qiskit_circuit(circuit)
     edges = sorted(interaction_edges(circuit))
     allowed = set(candidates)
-    target = native_target(snapshot, device)
+    target = native_target(snapshot, device, reset_error)
     record: dict[str, Any] = {}
     for level in LEVELS:
         c = qiskit_default(qc, target, level, seed_transpiler, edges, allowed)
@@ -476,6 +493,7 @@ def run_baselines(
 
 __all__ = [
     "LEVELS",
+    "RESET_ERRORS",
     "DefaultChoice",
     "MapomaticChoice",
     "Placed",
