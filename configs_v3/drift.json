@@ -1,0 +1,53 @@
+{
+  "schema": "noise-aware-compilation.drift-config-v3/1",
+  "status": "Pre-registered for SPEC_V3.md Part B (R3-D1 to R3-D4, R3-D6), committed before any count under this config existed; the runner was smoke-tested on three cases with tiny shots first (P2-22). The devices are development devices; their 2025-02-26 snapshots were seen in v1, v2 and v3 Phase 1, and the older snapshots' drift sizes in the roadmap's table. Every run of this config uses nac_bench.run_drift at a commit that contains this file, the score freeze F3 and the held-out config (P2-22).",
+  "snapshots": "data/devices/drift/SOURCE.json",
+  "pairs": [
+    {"pair": "hanoi-14d", "chip": "hanoi", "old": "2025-02-12", "new": "2025-02-26", "two_qubit_gate": "CX", "label": "FakeHanoi, 14 days"},
+    {"pair": "hanoi-9m", "chip": "hanoi", "old": "2024-05-27", "new": "2025-02-26", "two_qubit_gate": "CX", "label": "FakeHanoi, 9 months"},
+    {"pair": "fez-1m", "chip": "fez", "old": "2025-01-23", "new": "2025-02-26", "two_qubit_gate": "CZ", "label": "FakeFez, 1 month"},
+    {"pair": "torino-12m", "chip": "torino", "old": "2024-02-28", "new": "2025-02-26", "two_qubit_gate": "CZ", "label": "FakeTorino, 12 months"}
+  ],
+  "settings": {
+    "readout": "each qubit's reset flip probability equals its readout flip probability, in both snapshots (P1-13)",
+    "zero": "reset flip probability 0 on every qubit, in both snapshots"
+  },
+  "settings_order": ["readout", "zero"],
+  "circuits": {
+    "A": {"distance": 3, "rounds": 3, "basis": "Z"},
+    "B": {"distance": 3, "rounds": 3, "basis": "X"},
+    "D5": {"distance": 5, "rounds": 3, "basis": "Z"},
+    "D7": {"distance": 7, "rounds": 3, "basis": "Z"}
+  },
+  "methods": ["decoder-graph", "v1", "lowest-summed-error", "qiskit-default-l1", "mapomatic", "naive"],
+  "headline_method": "decoder-graph",
+  "selection_rule": "Every method chooses from the old snapshot (stale choice) and, for the fresh gain, from the new one (fresh choice), under that snapshot's model at the case's reset setting, with the same rules and tie-breaks as the held-out runs (nac_bench.run_v3). The naive placement is the first valid placement of the snapshot it is chosen from.",
+  "grading_rule": "Every chosen placement is simulated under the new snapshot. Stale choices are decoded with weights from the old snapshot (R3-D2, headline) and, as context, from the new one; fresh choices with weights from the new one. A coupler that is valid on the old snapshot and removed on the new one (two-qubit error above 0.8) is simulated, and decoded in the new-weights grading, at the converter's limit: error 0.8, each of the 15 Pauli terms at 1/15 (P2-22).",
+  "robust_rule": {
+    "pair": "hanoi-14d",
+    "snapshots": ["2024-05-27", "2025-02-12"],
+    "description": "R3-D6, secondary: choose the placement with the lowest mean decoder-graph score over FakeHanoi's two older snapshots (each rounded to 12 significant digits after averaging, ties to the lexicographically smallest mapping), graded on 2025-02-26 with weights from 2025-02-12, against the decoder-graph score's stale choice from 2025-02-12"
+  },
+  "base_seeds": [20261211, 20261212, 20261213],
+  "pilot_seed": 20261214,
+  "bootstrap_seed": 20261215,
+  "seed_transpiler": 20261216,
+  "seed_note": "New and disjoint from every v1, v2, v3 Phase 1 and held-out seed. Main-stage chunk k of a placement on base seed b: derive_seed('eval-v3-drift', b, case_id, mapping, k); pilot: derive_seed('pilot-v3-drift', pilot_seed, case_id, mapping, k). Every decoder of a placement decodes the same samples.",
+  "shots_rule": {
+    "pilot_shots": 100000,
+    "min_shots_per_seed": 200000,
+    "max_shots_per_seed": 25600000,
+    "expected_failures": 400,
+    "description": "R3-C6's rule, with the pilot's smaller failure count over the placement's decoders, so every grading of it gets about 400 expected failures or the cap"
+  },
+  "metrics": {
+    "kept_gain": "P_L(naive, stale) - P_L(choice, stale), both simulated under the new snapshot and decoded with old-snapshot weights; Newcombe 95% interval (R3-D4)",
+    "kept_gain_new_weights": "the same with new-snapshot weights (context, R3-D2)",
+    "fresh_gain": "P_L(naive, fresh) - P_L(choice, fresh), both under the new snapshot with new-snapshot weights; Newcombe 95% interval",
+    "m6": "kept_gain / fresh_gain, only where the fresh gain's interval has a lower end at least half its estimate (P1-4); 95% percentile interval from 10,000 parametric bootstrap draws of every count involved (binomial at its pooled rate), seeded by bootstrap_seed and the case and method"
+  },
+  "bootstrap_draws": 10000,
+  "nove_checks_per_case": 50,
+  "qiskit_version": "2.5.2",
+  "mapomatic_version": "0.14.0"
+}
