@@ -1,0 +1,19 @@
+{
+  "schema": "noise-aware-compilation.regrade-v2-drift-config-v3/1",
+  "status": "Pre-registered for SPEC_V3.md R3-D5 before any re-graded count existed (P2-23). It re-decodes v2's own samples, so it adds no simulation seed; v2's files are only read. Every run of this config uses nac_bench.regrade_v2_drift at a commit that contains this file, the score freeze F3 and the held-out config.",
+  "v2_config": "configs_v2/benchmark_v2.json",
+  "v2_runs": "results_v2/runs",
+  "cases": ["v2-jakarta-A", "v2-jakarta-B", "v2-hanoi-A", "v2-hanoi-B", "v2-hanoi-D5", "v2-hanoi-D7"],
+  "strengths": [0.1, 0.25, 0.5],
+  "grading_rule": "For each case, strength above 0 and draw, the fixed placement and every method's choice from that draw's seen model are simulated under the true model with v2's own chunk seeds and shots per seed, and decoded with the seen model's weights (stale) and with the true model's (true). The true decoding must reproduce v2's stored counts exactly, and every seen snapshot must hash to v2's recorded hash. At strength 0 the seen model is the true model, so nothing changes there.",
+  "metrics": {
+    "kept_gain_true_weights": "v2's kept gain: the mean over draws of P_L(fixed) - P_L(choice), both decoded with true-model weights",
+    "kept_gain_stale_weights": "the same, both decoded with that draw's seen-model weights (R3-D5)",
+    "kept_gain_lost": "kept_gain_true_weights - kept_gain_stale_weights",
+    "m6": "v2's M6 (mean over draws of the kept gain over the fresh gain P_L(fixed) - P_L(true-model choice), true weights), where v2's gate allowed it, with the numerator decoded both ways; m6_lost is their difference",
+    "m7_stale_weights": "draws whose choice is worse than the fixed placement when both are decoded with that draw's seen-model weights, with a Wilson interval",
+    "intervals": "95% percentile intervals from bootstrap_draws replicates that resample the draws and redraw every (placement, decoder) pooled count as a binomial at its pooled rate, seeded by bootstrap_seed, the case, the method and the strength"
+  },
+  "bootstrap_draws": 10000,
+  "bootstrap_seed": 20261217
+}
