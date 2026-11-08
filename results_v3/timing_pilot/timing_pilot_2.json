@@ -1,0 +1,679 @@
+{
+ "base_seeds": [
+  1,
+  2,
+  3
+ ],
+ "description": "v3 timing pilot (SPEC_V3.md R3-C7): what the exhaustive held-out runs cost on this machine.\n\nUsage::\n\n    nice -n 19 python -m nac_bench.timing_pilot --workers 48 --machine-label patty\n\nIt runs on development devices only (X16), at reset = readout, with native CZ circuits:\n\n* **FakeFez d=7** (circuit D7): every placement is enumerated. 100 random placements are\n  scored and get the R3-C6 simulation, a 100,000-shot pilot on a pilot seed and then the\n  main-stage shots per seed from the pilot count, on three seeds. The selections that run\n  over every candidate at once (v2's VF2Layout, Qiskit's default at levels 1 to 3 and\n  mapomatic, its layouts' costs computed on the workers) are timed on all of them.\n* **FakeFez d=3 and d=5**: 20 random placements each, scored, with the pilot stage, for\n  the per-shot cost and P_L at those distances.\n* **FakeMiami d=7**, the square-lattice proxy for FakeNighthawk d=7: every placement is\n  enumerated (time and peak memory) and 1,000 random ones are scored. FakeMiami d=3 and\n  d=5: 100 random placements scored.\n* **The d=5 surface code** (R3-S6): the scaled score's whole selection, both hook-safe\n  schedules on every embedding, in one process, on FakeMiami with its removed couplers\n  restored (it has no d=5 embedding otherwise), the proxy for FakeNighthawk.\n\nScoring a placement is the held-out runs' path: one prepared lowering\n(:class:`noise_aware_compilation.fast_lowering.Lowering`) shared by the v1 score, the\ndecoder-graph score and summed error, all on the workers. Every scored placement's circuit\nis also checked against Nove's own lowering, outside the timed part.\n\nThe projection multiplies these costs by each held-out case's placement count. The counts\ncome from the coupling maps alone (``conf_<device>.json`` of qiskit-ibm-runtime, the one\nfield ``coupling_map``): removed couplers are not subtracted, so they are upper bounds, and\nno calibration value of a held-out device is read. Both reset settings are projected, as\nv3 runs both. The seeds are timing seeds (tag ``v3-timing-pilot``); no count from this run\nenters any result. The first pilot, with Nove's lowering for each score and summed error\nand mapomatic in one process, is ``results_v3/timing_pilot/timing_pilot.json``.\n",
+ "held_out_placement_counts": {
+  "aachen-A": {
+   "placements": 856,
+   "seconds": 1.4055564496666193
+  },
+  "aachen-B": {
+   "placements": 856,
+   "seconds": 1.4472795315086842
+  },
+  "aachen-D5": {
+   "placements": 2662,
+   "seconds": 1.9874463137239218
+  },
+  "aachen-D7": {
+   "placements": 7790,
+   "seconds": 3.15347808226943
+  },
+  "berlin-A": {
+   "placements": 8312,
+   "seconds": 1.6395837990567088
+  },
+  "berlin-B": {
+   "placements": 8312,
+   "seconds": 1.873952528461814
+  },
+  "berlin-D5": {
+   "placements": 345408,
+   "seconds": 11.292898068204522
+  },
+  "berlin-D7": {
+   "placements": 12841728,
+   "seconds": 372.74606435839087
+  },
+  "kingston-A": {
+   "placements": 856,
+   "seconds": 1.462439808063209
+  },
+  "kingston-B": {
+   "placements": 856,
+   "seconds": 1.4136515939608216
+  },
+  "kingston-D5": {
+   "placements": 2662,
+   "seconds": 1.5978947672992945
+  },
+  "kingston-D7": {
+   "placements": 7790,
+   "seconds": 2.7312591979280114
+  },
+  "nighthawk-A": {
+   "placements": 8312,
+   "seconds": 1.7375610414892435
+  },
+  "nighthawk-B": {
+   "placements": 8312,
+   "seconds": 1.5681867487728596
+  },
+  "nighthawk-D5": {
+   "placements": 345408,
+   "seconds": 11.31646540760994
+  },
+  "nighthawk-D7": {
+   "placements": 12841728,
+   "seconds": 365.6830073231831
+  }
+ },
+ "machine": {
+  "cpu_model": "AMD EPYC 7401 24-Core Processor",
+  "label": "patty",
+  "libc": "glibc-2.35",
+  "logical_cores": 96,
+  "memory_gib": 787.3,
+  "niceness": 19,
+  "os": "Linux-5.15.0-187-generic-x86_64-with-glibc2.35",
+  "python": "3.13.18",
+  "stim_build": "_stim_sse2",
+  "usable_cores": 96,
+  "workers": 48
+ },
+ "measured": {
+  "fez-3-Z": {
+   "basis": "Z",
+   "checked_against_nove": 20,
+   "device": "fez",
+   "distance": 3,
+   "enumeration_seconds": 0.09256980009377003,
+   "main_shots_at_cap": 0,
+   "main_shots_per_seed": {
+    "max": 200000.0,
+    "mean": 200000.0,
+    "median": 200000.0,
+    "n": 20
+   },
+   "peak_rss_mb_after_enumeration": 275.97265625,
+   "pilot_p": {
+    "max": 0.01901,
+    "mean": 0.009132999999999999,
+    "median": 0.007265000000000001,
+    "n": 20
+   },
+   "pilot_wall_seconds": 0.6385959750041366,
+   "pilot_zero_failures": 0,
+   "placements": 738,
+   "rounds": 3,
+   "score_wall_seconds": 0.4631191659718752,
+   "seconds_build": {
+    "max": 0.4170578122138977,
+    "mean": 0.2657780712004751,
+    "median": 0.3010993548668921,
+    "n": 20
+   },
+   "seconds_decoder_graph": {
+    "max": 0.0028045400977134705,
+    "mean": 0.0017521113157272338,
+    "median": 0.0018283692188560963,
+    "n": 20
+   },
+   "seconds_lowering": {
+    "max": 0.015269066207110882,
+    "mean": 0.007287822850048542,
+    "median": 0.007727405522018671,
+    "n": 20
+   },
+   "seconds_per_placement": {
+    "max": 0.022622383199632168,
+    "mean": 0.012509320676326752,
+    "median": 0.013073349837213755,
+    "n": 20
+   },
+   "seconds_per_shot": {
+    "max": 2.3435335606336593e-06,
+    "mean": 1.5070447693578899e-06,
+    "median": 1.6632225736975668e-06,
+    "n": 20
+   },
+   "seconds_summed": {
+    "max": 0.0025499146431684494,
+    "mean": 0.0023650366347283125,
+    "median": 0.002403140999376774,
+    "n": 20
+   },
+   "seconds_v1": {
+    "max": 0.001998862251639366,
+    "mean": 0.0011043498758226632,
+    "median": 0.0011540944688022137,
+    "n": 20
+   }
+  },
+  "fez-5-Z": {
+   "basis": "Z",
+   "checked_against_nove": 20,
+   "device": "fez",
+   "distance": 5,
+   "enumeration_seconds": 0.3508944846689701,
+   "main_shots_at_cap": 0,
+   "main_shots_per_seed": {
+    "max": 400000.0,
+    "mean": 250000.0,
+    "median": 200000.0,
+    "n": 20
+   },
+   "peak_rss_mb_after_enumeration": 275.97265625,
+   "pilot_p": {
+    "max": 0.00254,
+    "mean": 0.0012575,
+    "median": 0.00124,
+    "n": 20
+   },
+   "pilot_wall_seconds": 0.7226293012499809,
+   "pilot_zero_failures": 0,
+   "placements": 1926,
+   "rounds": 3,
+   "score_wall_seconds": 0.4904382135719061,
+   "seconds_build": {
+    "max": 0.4409345043823123,
+    "mean": 0.2903881247155368,
+    "median": 0.2867923970334232,
+    "n": 20
+   },
+   "seconds_decoder_graph": {
+    "max": 0.008312617428600788,
+    "mean": 0.004020375339314342,
+    "median": 0.0038478970527648926,
+    "n": 20
+   },
+   "seconds_lowering": {
+    "max": 0.017272278666496277,
+    "mean": 0.008104323828592896,
+    "median": 0.00820770999416709,
+    "n": 20
+   },
+   "seconds_per_placement": {
+    "max": 0.031623974442481995,
+    "mean": 0.017230963241308926,
+    "median": 0.017028378322720528,
+    "n": 20
+   },
+   "seconds_per_shot": {
+    "max": 2.8683488443493844e-06,
+    "mean": 1.8305017589591444e-06,
+    "median": 1.8319147732108831e-06,
+    "n": 20
+   },
+   "seconds_summed": {
+    "max": 0.00794276874512434,
+    "mean": 0.003638086747378111,
+    "median": 0.0034888237714767456,
+    "n": 20
+   },
+   "seconds_v1": {
+    "max": 0.0027035577222704887,
+    "mean": 0.0014681773260235786,
+    "median": 0.001463295891880989,
+    "n": 20
+   }
+  },
+  "fez-7-Z": {
+   "all_candidate_seconds": {
+    "mapomatic": 6.866344292648137,
+    "qiskit-default-l1-l3-and-mapomatic": 7.995277099311352,
+    "qiskit-vf2": 0.017092478461563587
+   },
+   "basis": "Z",
+   "checked_against_nove": 100,
+   "device": "fez",
+   "distance": 7,
+   "enumeration_seconds": 1.2727833585813642,
+   "main_core_seconds": 1371.0643295878544,
+   "main_seconds_per_shot": {
+    "max": 3.6818301118910313e-06,
+    "mean": 2.392381810372657e-06,
+    "median": 2.4575897789327425e-06,
+    "n": 300
+   },
+   "main_shots_at_cap": 0,
+   "main_shots_per_seed": {
+    "max": 6400000.0,
+    "mean": 1840000.0,
+    "median": 1600000.0,
+    "n": 100
+   },
+   "main_wall_seconds": 33.07028239220381,
+   "peak_rss_mb_after_enumeration": 99.7265625,
+   "pilot_p": {
+    "max": 0.00057,
+    "mean": 0.00015209999999999998,
+    "median": 0.00012,
+    "n": 100
+   },
+   "pilot_wall_seconds": 2.08120278455317,
+   "pilot_zero_failures": 0,
+   "placements": 4614,
+   "rounds": 3,
+   "score_wall_seconds": 1.4389034556224942,
+   "seconds_build": {
+    "max": 1.1146125867962837,
+    "mean": 0.5016151679120958,
+    "median": 0.47729154909029603,
+    "n": 100
+   },
+   "seconds_decoder_graph": {
+    "max": 0.034811983816325665,
+    "mean": 0.0247898571472615,
+    "median": 0.021028979681432247,
+    "n": 100
+   },
+   "seconds_lowering": {
+    "max": 0.01957828737795353,
+    "mean": 0.007844057949259877,
+    "median": 0.006480247713625431,
+    "n": 100
+   },
+   "seconds_per_placement": {
+    "max": 0.06479628663510084,
+    "mean": 0.04051915372721851,
+    "median": 0.03532638493925333,
+    "n": 100
+   },
+   "seconds_per_shot": {
+    "max": 4.039947241544723e-06,
+    "mean": 2.4149744432419536e-06,
+    "median": 2.4500526767224076e-06,
+    "n": 100
+   },
+   "seconds_summed": {
+    "max": 0.00780611764639616,
+    "mean": 0.005581657513976097,
+    "median": 0.004853470250964165,
+    "n": 100
+   },
+   "seconds_v1": {
+    "max": 0.003691313788294792,
+    "mean": 0.002303581116721034,
+    "median": 0.0021881740540266037,
+    "n": 100
+   }
+  },
+  "miami-3-Z": {
+   "basis": "Z",
+   "checked_against_nove": 100,
+   "device": "miami",
+   "distance": 3,
+   "enumeration_seconds": 0.2150226691737771,
+   "peak_rss_mb_after_enumeration": 276.34375,
+   "placements": 7226,
+   "rounds": 3,
+   "score_wall_seconds": 0.7674595331773162,
+   "seconds_decoder_graph": {
+    "max": 0.00301397405564785,
+    "mean": 0.0016973576322197913,
+    "median": 0.0016747154295444489,
+    "n": 100
+   },
+   "seconds_lowering": {
+    "max": 0.01401106920093298,
+    "mean": 0.0047007585782557725,
+    "median": 0.004204444121569395,
+    "n": 100
+   },
+   "seconds_per_placement": {
+    "max": 0.02260046172887087,
+    "mean": 0.010131686972454191,
+    "median": 0.009601269848644733,
+    "n": 100
+   },
+   "seconds_summed": {
+    "max": 0.004027296788990498,
+    "mean": 0.0027286322973668576,
+    "median": 0.002535778097808361,
+    "n": 100
+   },
+   "seconds_v1": {
+    "max": 0.0019375104457139969,
+    "mean": 0.0010049384646117687,
+    "median": 0.0009953808039426804,
+    "n": 100
+   }
+  },
+  "miami-5-Z": {
+   "basis": "Z",
+   "checked_against_nove": 100,
+   "device": "miami",
+   "distance": 5,
+   "enumeration_seconds": 7.711192951537669,
+   "peak_rss_mb_after_enumeration": 305.87109375,
+   "placements": 263404,
+   "rounds": 3,
+   "score_wall_seconds": 0.7785968594253063,
+   "seconds_decoder_graph": {
+    "max": 0.006513167172670364,
+    "mean": 0.004090926917269826,
+    "median": 0.0037265485152602196,
+    "n": 100
+   },
+   "seconds_lowering": {
+    "max": 0.015115547925233841,
+    "mean": 0.005047252420336008,
+    "median": 0.004513429943472147,
+    "n": 100
+   },
+   "seconds_per_placement": {
+    "max": 0.02940363809466362,
+    "mean": 0.014394146986305714,
+    "median": 0.012955232989042997,
+    "n": 100
+   },
+   "seconds_summed": {
+    "max": 0.005749809555709362,
+    "mean": 0.0038629943784326314,
+    "median": 0.0035906401462852955,
+    "n": 100
+   },
+   "seconds_v1": {
+    "max": 0.0025621838867664337,
+    "mean": 0.001392973270267248,
+    "median": 0.0012879217974841595,
+    "n": 100
+   }
+  },
+  "miami-7-Z": {
+   "basis": "Z",
+   "checked_against_nove": 1000,
+   "device": "miami",
+   "distance": 7,
+   "enumeration_seconds": 256.2207285705954,
+   "peak_rss_mb_after_enumeration": 1544.91796875,
+   "placements": 8493720,
+   "rounds": 3,
+   "score_wall_seconds": 6.7546233190223575,
+   "seconds_decoder_graph": {
+    "max": 0.045267822220921516,
+    "mean": 0.021071608532220124,
+    "median": 0.0205541318282485,
+    "n": 1000
+   },
+   "seconds_lowering": {
+    "max": 0.020801723934710026,
+    "mean": 0.003372205276042223,
+    "median": 0.0030731409788131714,
+    "n": 1000
+   },
+   "seconds_per_placement": {
+    "max": 0.06708886288106441,
+    "mean": 0.03099048814829439,
+    "median": 0.030076830182224512,
+    "n": 1000
+   },
+   "seconds_summed": {
+    "max": 0.007742015644907951,
+    "mean": 0.004826037695631385,
+    "median": 0.0047096856869757175,
+    "n": 1000
+   },
+   "seconds_v1": {
+    "max": 0.004092920571565628,
+    "mean": 0.0017206366444006563,
+    "median": 0.0016835699789226055,
+    "n": 1000
+   }
+  }
+ },
+ "package_git_commit": "46b2d4ddbbd2f7db2943f7f81e505d066c0380df",
+ "package_git_dirty": false,
+ "pilot_shots": 100000,
+ "projection": {
+  "cases": [
+   {
+    "case": "kingston-A",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 856,
+    "selection_core_hours": 0.020365473701104104,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.00040623328001755806,
+    "selection_wall_hours": 0.0008220507887901945,
+    "simulated_placements": 856,
+    "simulation_core_hours": 0.5036237059971318,
+    "simulation_wall_hours": 0.010492160541606912
+   },
+   {
+    "case": "kingston-B",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 856,
+    "selection_core_hours": 0.020351921419408996,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.00039268099832245044,
+    "selection_wall_hours": 0.0008084985070950869,
+    "simulated_placements": 856,
+    "simulation_core_hours": 0.5036237059971318,
+    "simulation_wall_hours": 0.010492160541606912
+   },
+   {
+    "case": "kingston-D5",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 2662,
+    "selection_core_hours": 0.06600475903134666,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.00044385965758313736,
+    "selection_wall_hours": 0.0018097117278698773,
+    "simulated_placements": 2662,
+    "simulation_core_hours": 2.0094247449910814,
+    "simulation_wall_hours": 0.04186301552064753
+   },
+   {
+    "case": "kingston-D7",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 7790,
+    "selection_core_hours": 0.2430072642087409,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0007586831105355587,
+    "selection_wall_hours": 0.005805528550081504,
+    "simulated_placements": 7790,
+    "simulation_core_hours": 33.71039632288472,
+    "simulation_wall_hours": 0.7022999233934316
+   },
+   {
+    "case": "aachen-A",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 856,
+    "selection_core_hours": 0.02034967276821616,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.00039043234712961647,
+    "selection_wall_hours": 0.0008062498559022529,
+    "simulated_placements": 856,
+    "simulation_core_hours": 0.5036237059971318,
+    "simulation_wall_hours": 0.010492160541606912
+   },
+   {
+    "case": "aachen-B",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 856,
+    "selection_core_hours": 0.02036126251317229,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0004020220920857456,
+    "selection_wall_hours": 0.000817839600858382,
+    "simulated_placements": 856,
+    "simulation_core_hours": 0.5036237059971318,
+    "simulation_wall_hours": 0.010492160541606912
+   },
+   {
+    "case": "aachen-D5",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 2662,
+    "selection_core_hours": 0.06611296779424237,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0005520684204788672,
+    "selection_wall_hours": 0.001917920490765607,
+    "simulated_placements": 2662,
+    "simulation_core_hours": 2.0094247449910814,
+    "simulation_wall_hours": 0.04186301552064753
+   },
+   {
+    "case": "aachen-D7",
+    "lattice": "heavy-hex",
+    "placements_upper_bound": 7790,
+    "selection_core_hours": 0.24312454723216906,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0008759661339637306,
+    "selection_wall_hours": 0.0059228115735096756,
+    "simulated_placements": 7790,
+    "simulation_core_hours": 33.71039632288472,
+    "simulation_wall_hours": 0.7022999233934316
+   },
+   {
+    "case": "berlin-A",
+    "lattice": "square",
+    "placements_upper_bound": 8312,
+    "selection_core_hours": 0.18877556844092988,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0004554399441824191,
+    "selection_wall_hours": 0.004378775954531324,
+    "simulated_placements": 8312,
+    "simulation_core_hours": 4.890327388140372,
+    "simulation_wall_hours": 0.10188182058625776
+   },
+   {
+    "case": "berlin-B",
+    "lattice": "square",
+    "placements_upper_bound": 8312,
+    "selection_core_hours": 0.18884067086576461,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0005205423690171706,
+    "selection_wall_hours": 0.004443878379366076,
+    "simulated_placements": 8312,
+    "simulation_core_hours": 4.890327388140372,
+    "simulation_wall_hours": 0.10188182058625776
+   },
+   {
+    "case": "berlin-D5",
+    "lattice": "square",
+    "placements_upper_bound": 345408,
+    "selection_core_hours": 8.237813030162403,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0031369161300568117,
+    "selection_wall_hours": 0.17469266850573067,
+    "simulated_placements": 198,
+    "simulation_core_hours": 0.1494613446687581,
+    "simulation_wall_hours": 0.0031137780139324604
+   },
+   {
+    "case": "berlin-D7",
+    "lattice": "square",
+    "placements_upper_bound": 12841728,
+    "selection_core_hours": 365.4574733842254,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.10354057343288635,
+    "selection_wall_hours": 7.715080840324398,
+    "simulated_placements": 198,
+    "simulation_core_hours": 0.856823937346749,
+    "simulation_wall_hours": 0.017850498694723937
+   },
+   {
+    "case": "nighthawk-A",
+    "lattice": "square",
+    "placements_upper_bound": 8312,
+    "selection_core_hours": 0.18880278434160558,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.0004826558448581232,
+    "selection_wall_hours": 0.004405991855207028,
+    "simulated_placements": 8312,
+    "simulation_core_hours": 4.890327388140372,
+    "simulation_wall_hours": 0.10188182058625776
+   },
+   {
+    "case": "nighthawk-B",
+    "lattice": "square",
+    "placements_upper_bound": 8312,
+    "selection_core_hours": 0.18875573592696213,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.00043560743021468323,
+    "selection_wall_hours": 0.004358943440563589,
+    "simulated_placements": 8312,
+    "simulation_core_hours": 4.890327388140372,
+    "simulation_wall_hours": 0.10188182058625776
+   },
+   {
+    "case": "nighthawk-D5",
+    "lattice": "square",
+    "placements_upper_bound": 345408,
+    "selection_core_hours": 8.23781957664557,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.003143462613224983,
+    "selection_wall_hours": 0.17469921498889884,
+    "simulated_placements": 198,
+    "simulation_core_hours": 0.1494613446687581,
+    "simulation_wall_hours": 0.0031137780139324604
+   },
+   {
+    "case": "nighthawk-D7",
+    "lattice": "square",
+    "placements_upper_bound": 12841728,
+    "selection_core_hours": 365.4555114239379,
+    "selection_over_limit": false,
+    "selection_serial_hours": 0.10157861314532865,
+    "selection_wall_hours": 7.71311888003684,
+    "simulated_placements": 198,
+    "simulation_core_hours": 0.856823937346749,
+    "simulation_wall_hours": 0.017850498694723937
+   }
+  ],
+  "devices": {
+   "aachen": {
+    "selection_wall_hours_per_setting": 0.009464821521035918,
+    "simulation_over_limit": false,
+    "simulation_wall_hours_per_setting": 0.7651472599972929,
+    "wall_hours_both_settings": 1.5492241630366577
+   },
+   "berlin": {
+    "selection_wall_hours_per_setting": 7.898596163164026,
+    "simulation_over_limit": false,
+    "simulation_wall_hours_per_setting": 0.2247279178811719,
+    "wall_hours_both_settings": 16.246648162090395
+   },
+   "kingston": {
+    "selection_wall_hours_per_setting": 0.009245789573836663,
+    "simulation_over_limit": false,
+    "simulation_wall_hours_per_setting": 0.7651472599972929,
+    "wall_hours_both_settings": 1.5487860991422593
+   },
+   "nighthawk": {
+    "selection_wall_hours_per_setting": 7.89658303032151,
+    "simulation_over_limit": false,
+    "simulation_wall_hours_per_setting": 0.2247279178811719,
+    "wall_hours_both_settings": 16.242621896405364
+   }
+  },
+  "notes": [
+   "placement counts are upper bounds (coupling map only, removed couplers kept)",
+   "per-shot cost and P_L come from FakeFez at reset = readout; a held-out device with lower P_L needs proportionally more main-stage shots, up to the cap",
+   "selection wall hours: one prepared lowering per placement for the v1 score, the decoder-graph score and summed error on every worker; enumeration (timed on the coupling map) in one process; mapomatic's layout costs on every worker, its whole time scaled by the count"
+  ],
+  "settings": 2,
+  "total_wall_hours_both_settings": 35.58728032067467,
+  "workers": 48
+ },
+ "rounds": 3,
+ "schema": "noise-aware-compilation.timing-pilot-v3/2",
+ "seed_tag": "v3-timing-pilot",
+ "setting": "readout",
+ "surface_selection": {
+  "candidates": 128,
+  "device": "miami, removed couplers restored at the median CZ channel (synthetic)",
+  "limit_seconds": 60.0,
+  "over_limit": false,
+  "scaled_parameters": {
+   "k": 10,
+   "step": 0.05
+  },
+  "seconds_one_core": 15.260704865679145
+ },
+ "two_qubit_gate": "CZ",
+ "wall_clock_seconds": 388.571542898193
+}
