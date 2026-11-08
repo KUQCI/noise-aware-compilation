@@ -19,6 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 # v2 benchmark only (nac_bench/, outside the package): the Qiskit layout baseline (X15)
 bench = [
+  "mapomatic==0.14.0",
   "matplotlib>=3.7",
   "qiskit==2.5.2",
 ]
@@ -57,7 +58,7 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["data", "results", "results_v2", "src/noise_aware_compilation/examples/*.json"]
+extend-exclude = ["data", "results", "results_v2", "results_v3", "src/noise_aware_compilation/examples/*.json"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
@@ -68,10 +69,11 @@ files = ["src", "tests", "scripts", "nac_bench"]
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["stim", "pymatching", "networkx", "scipy", "matplotlib", "matplotlib.*", "qiskit", "qiskit.*"]
+module = ["stim", "pymatching", "networkx", "scipy", "matplotlib", "matplotlib.*", "qiskit", "qiskit.*", "mapomatic", "qiskit_ibm_runtime"]
 ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
 # The report generator writes Unicode typography (−, ×, –) into REPORT.md on purpose.
 "src/noise_aware_compilation/report.py" = ["RUF001", "E501"]
 "nac_bench/report_v2.py" = ["RUF001", "E501"]
+"nac_bench/report_reanalysis.py" = ["RUF001", "E501"]

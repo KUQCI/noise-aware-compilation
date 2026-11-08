@@ -1,0 +1,33 @@
+{
+  "schema": "noise-aware-compilation.reanalysis-config-v3/1",
+  "status": "Post hoc re-analysis (roadmap Steps 6 and 6b), written on 2026-11-08 after every v1 and v2 result had been seen. Its families and rules are labelled a re-analysis, not a pre-registered test; v3's own pre-registration is SPEC_V3.md.",
+  "v1_runs": "results/runs",
+  "v2_runs": "results_v2/runs",
+  "v2_config": "configs_v2/benchmark_v2.json",
+  "seed_transpiler": 20261021,
+  "seed_sweep": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "seed_note": "seed_transpiler is the first v2 base seed. The sweep reruns each Qiskit default level with ten other seeds to show whether the choice depends on the seed; it is context, not a result.",
+  "alpha": 0.05,
+  "families": {
+    "v1-headline": {
+      "description": "v1 score vs naive placement under real converted noise (N2, base variant): the 11 headline cases of REPORT.md section 1",
+      "select": {"version": ["v1"], "condition": ["N2"], "variant": ["base"], "reference": ["fixed"]},
+      "size": 11
+    },
+    "v2-headline": {
+      "description": "decoder-graph score vs naive placement, lowest summed error, Qiskit's default transpile (level 1) and mapomatic, on all 10 v2 cases",
+      "select": {
+        "version": ["v2"],
+        "method": ["decoder-graph"],
+        "reference": ["fixed", "lowest-summed-error", "qiskit-default-l1", "mapomatic"]
+      },
+      "size": 40
+    }
+  },
+  "test": "two-sided pooled two-proportion z-test on the pooled failure counts; a comparison of a placement with itself has p = 1",
+  "bootstrap": {
+    "replicates": 4000,
+    "seed": 20261108,
+    "description": "Retained-gain intervals: percentile bootstrap resampling draws and redrawing every placement's pooled failure count from Binomial(shots, P_L), as v2's M6; one stream per (case, method, delta) from sha256('reanalysis-m6|<seed>|<case>|<method>|<delta>')"
+  }
+}
