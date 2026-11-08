@@ -65,3 +65,18 @@ Everything in this phase was decided after every v1 and v2 result had been seen.
 **P2-12. FakeBoston and FakePittsburgh were read.** Looking for a second square-lattice development device, I read their configuration and properties: both are 156-qubit heavy-hex with CZ, with 2 and 9 couplers above error 0.8. Nothing was converted, scored or simulated. They stay unused, but they are no longer untouched, and SPEC_V3.md section 1 now says so.
 
 **P2-13. Surface-code selection time is close to R3-S6's limit.** Lowering one d=5, 5-round candidate through Nove takes about 0.4 s here and the scaled score with k = 10 about 0.015 s, so 128 candidates take about 55 s on one core of this machine. It is timed on patty before F3.
+
+## Phase 2, before F3: patty
+
+**P2-14. patty reproduces v2 bit for bit (T3-R2).** On patty (AMD EPYC 7401, 96 logical cores, glibc 2.35, Python 3.13.18, Stim's SSE2 build), a clean HTTPS clone of de82171 installed from `requirements-lock.txt` (every pinned version matched; `tzdata` is one unpinned extra) passed all 215 tests, and `run_v2` re-ran v2-hanoi-A (80 placements, 80 drift draws) and v2-algiers-D7 (86 placements, 3.2M shots per seed) under `nice -n 19` with 48 workers. Every per-seed count, every selection and every drift selection equals the committed result (`results_v3/cross_machine/patty.json`). The record's machine block shows niceness 0 because the summarizer, not the simulation, ran without `nice`.
+
+**P2-15. The timing pilot puts the square-lattice d=7 cases over R3-C4's limit.** `results_v3/timing_pilot/timing_pilot.json` (patty, 48 workers, 370 s) projects, for both reset settings:
+
+| Device | Placements (A/B, D5, D7; upper bounds) | Wall hours per setting | Over a limit |
+|---|---|---|---|
+| FakeKingston | 856, 2,662, 7,790 | 0.85 (0.72 of it simulating D7) | no |
+| FakeAachen | 856, 2,662, 7,790 | 0.85 | no |
+| FakeNighthawk | 8,312, 345,408, 12,841,728 | 62.0 | D7 selection |
+| FakeBerlin | 8,312, 345,408, 12,841,728 | 62.0 | D7 selection |
+
+The total is 251.5 wall hours. Simulation is small everywhere, so R3-C7's 48-hour fallback for FakeKingston and FakeAachen does not apply. The cost is selection on the two square-lattice d=7 cases: 12.8 million placements at about 0.28 s for the decoder-graph score and 0.26 s for the v1 score per placement on a patty core (1,962 core-hours; R3-C4 assumed about 150), plus 19.8 hours of summed error and mapomatic in one process, which is 60.3 wall hours per setting against R3-C4's 24. As pre-registered, those two cases' decoder-graph choice would come from the local search of R3-C8. The time is almost all Nove's lowering and Stim's error model, which both scores repeat for every placement.
