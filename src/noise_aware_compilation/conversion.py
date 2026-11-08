@@ -15,6 +15,13 @@ converted snapshot's provenance where they act:
   metadata under ``removed_couplers`` for the T-L1 sensitivity variant;
 * a qubit with ``T2 > 2 * T1`` gives a negative Z rate under the rule; the Z
   rate is clamped at 0 because Nove rejects negative rates (DECISIONS.md D4).
+
+v3 (SPEC_V3.md R3-C1) adds devices whose two-qubit gate is CZ. The same rule,
+removal threshold and H rule apply; the gate is stored as Nove ``CZ`` in both
+directions, as IBM lists it. A props file with no ``reset`` entry (FakeMiami's
+family) gets a reset duration of the mean readout length plus the mean ``x``
+length, a measurement followed by a conditional flip; this is noted in the
+provenance.
 """
 
 from __future__ import annotations
@@ -38,6 +45,8 @@ TWO_QUBIT_LABELS: tuple[str, ...] = tuple(
 )
 ONE_QUBIT_LABELS: tuple[str, ...] = ("p_x", "p_y", "p_z")
 
+#: IBM gate name -> Nove gate name for the supported two-qubit gates.
+TWO_QUBIT_GATES = {"cx": "CX", "cz": "CZ"}
 CX_FACTOR = 1.25
 #: Largest CX gate_error the Pauli rule can represent (1.25 * e <= 1).
 MAX_PAULI_CX_ERROR = 1.0 / CX_FACTOR
@@ -125,16 +134,23 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
     coupling = [(int(a), int(b)) for a, b in conf["coupling_map"]]
     notes: list[str] = []
 
+    present = sorted({str(g["gate"]) for g in props["gates"]} & set(TWO_QUBIT_GATES))
+    if len(present) != 1:
+        raise ValueError(
+            f"expected exactly one of {sorted(TWO_QUBIT_GATES)} in props, got {present}"
+        )
+    ibm_gate = present[0]
+    gate_name = TWO_QUBIT_GATES[ibm_gate]
     raw_cx: dict[tuple[int, int], tuple[float, float]] = {}
     for gate in props["gates"]:
-        if gate["gate"] == "cx":
+        if gate["gate"] == ibm_gate:
             a, b = (int(q) for q in gate["qubits"])
             fields = _gate_fields(gate)
             raw_cx[(a, b)] = (fields["gate_error"][0], _in_ns(*fields["gate_length"]))
     directed = {(a, b) for a, b in coupling} | {(b, a) for a, b in coupling}
     missing = sorted(directed - set(raw_cx))
     if missing:
-        raise ValueError(f"coupling-map pairs without cx calibration: {missing}")
+        raise ValueError(f"coupling-map pairs without {ibm_gate} calibration: {missing}")
 
     # SPEC.md rev 2: a pair with an unrepresentable CX error in either direction is removed.
     removed_pairs = sorted(
@@ -160,7 +176,7 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
             }
         )
         notes.append(
-            f"CX pair ({a}, {b}): gate_error {raw_cx[(a, b)][0]} / {raw_cx[(b, a)][0]} "
+            f"{gate_name} pair ({a}, {b}): gate_error {raw_cx[(a, b)][0]} / {raw_cx[(b, a)][0]} "
             f"(directions {a}->{b} / {b}->{a}); a value above {MAX_PAULI_CX_ERROR} has no "
             "Pauli-channel representation, so the pair is removed from connectivity in both "
             "directions (SPEC.md rev 2, DECISIONS.md D3)"
@@ -172,11 +188,12 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
     cx_lengths: list[float] = []
     sx_lengths: list[float] = []
     reset_lengths: list[float] = []
+    x_lengths: list[float] = []
     for gate in props["gates"]:
         name = gate["gate"]
         qubits = tuple(int(q) for q in gate["qubits"])
         fields = _gate_fields(gate)
-        if name == "cx":
+        if name == ibm_gate:
             if (min(qubits), max(qubits)) in removed:
                 continue
             error = fields["gate_error"][0]
@@ -184,7 +201,7 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
             parameters = dict(zip(TWO_QUBIT_LABELS, cx_probabilities(error), strict=True))
             parameters["source_gate_error"] = error
             parameters["source_gate_length_ns"] = length
-            operations[nove.OperationKey("CX", qubits)] = parameters
+            operations[nove.OperationKey(gate_name, qubits)] = parameters
             cx_lengths.append(length)
         elif name == "sx":
             error = fields["gate_error"][0]
@@ -196,6 +213,8 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
             sx_lengths.append(length)
         elif name == "reset":
             reset_lengths.append(_in_ns(*fields["gate_length"]))
+        elif name == "x" and "gate_length" in fields:
+            x_lengths.append(_in_ns(*fields["gate_length"]))
 
     qubit_parameters: dict[int, dict[str, float]] = {}
     readout_lengths: list[float] = []
@@ -222,6 +241,17 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
         }
     if len(qubit_parameters) != num_qubits:
         raise ValueError("props qubit count differs from conf n_qubits")
+    if reset_lengths:
+        reset_duration = statistics.fmean(reset_lengths)
+    else:
+        if not x_lengths:
+            raise ValueError("props has neither reset nor x gate lengths")
+        reset_duration = statistics.fmean(readout_lengths) + statistics.fmean(x_lengths)
+        notes.append(
+            f"no reset entry in props: reset duration {reset_duration:.1f} ns = mean readout "
+            "length + mean x length, a measurement followed by a conditional flip "
+            "(SPEC_V3.md R3-C1)"
+        )
 
     provenance = {
         "source_package": SOURCE_PACKAGE,
@@ -247,15 +277,15 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
         time_unit="ns",
         connectivity=coupling,
         gate_durations={
-            "CX": statistics.fmean(cx_lengths),
+            gate_name: statistics.fmean(cx_lengths),
             "H": statistics.fmean(sx_lengths),
         },
         measurement_duration=statistics.fmean(readout_lengths),
-        reset_duration=statistics.fmean(reset_lengths),
+        reset_duration=reset_duration,
         metadata={
             "num_qubits": num_qubits,
-            "cx_duration_min": min(cx_lengths),
-            "cx_duration_max": max(cx_lengths),
+            f"{gate_name.lower()}_duration_min": min(cx_lengths),
+            f"{gate_name.lower()}_duration_max": max(cx_lengths),
             "removed_couplers": removed_couplers,
             "calibration_sha256": snapshot.sha256,
             "provenance": provenance,
@@ -275,6 +305,7 @@ __all__ = [
     "ONE_QUBIT_LABELS",
     "SOURCE_PACKAGE",
     "SOURCE_PACKAGE_VERSION",
+    "TWO_QUBIT_GATES",
     "TWO_QUBIT_LABELS",
     "ConvertedDevice",
     "convert_fake_backend",

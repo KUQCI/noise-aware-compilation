@@ -5,8 +5,9 @@ of the circuit, on a ``Target`` built from the same Nove noise model the
 package's method receives:
 
 * each Target instruction's error is the total error probability of its Nove
-  channel: the sum of the Pauli probabilities for ``cx`` (per direction) and
-  ``h``, the readout flip for ``measure`` and the reset flip for ``reset``;
+  channel: the sum of the Pauli probabilities for the two-qubit gate (``cx``
+  or, on CZ devices, ``cz``; per direction) and ``h``, the readout flip for
+  ``measure`` and the reset flip for ``reset``;
 * durations come from the Nove device model, and T1 and T2 (qubit properties)
   are recovered from the noise model's idle rates;
 * ``VF2Layout(seed=-1, strict_direction=True, call_limit=None,
@@ -26,7 +27,7 @@ from dataclasses import dataclass
 import nove
 import stim
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import CXGate, HGate, Measure, Reset
+from qiskit.circuit.library import CXGate, CZGate, HGate, Measure, Reset
 from qiskit.providers.backend import QubitProperties
 from qiskit.transpiler import InstructionProperties, PassManager, Target
 from qiskit.transpiler.passes import VF2Layout
@@ -39,6 +40,8 @@ from noise_aware_compilation.placement import (
 )
 
 NS = 1e-9
+#: The two-qubit gates a device model can carry (SPEC_V3.md R3-C1); a device has exactly one.
+TWO_QUBIT_GATES = {"CX": CXGate, "CZ": CZGate}
 VF2_SETTINGS = {
     "seed": -1,
     "strict_direction": True,
@@ -66,7 +69,7 @@ class QiskitChoice:
 
 
 def qiskit_circuit(circuit: nove.Circuit) -> QuantumCircuit:
-    """Op-for-op translation: R -> reset, H -> h, CX -> cx (same direction), M -> measure."""
+    """Op-for-op translation: R -> reset, H -> h, CX -> cx, CZ -> cz (same order), M -> measure."""
 
     num_measurements = int(circuit.num_measurements)
     qc = QuantumCircuit(circuit.num_qubits, num_measurements)
@@ -83,6 +86,9 @@ def qiskit_circuit(circuit: nove.Circuit) -> QuantumCircuit:
         elif name in ("CX", "CNOT"):
             for a, b in zip(qubits[::2], qubits[1::2], strict=True):
                 qc.cx(a, b)
+        elif name == "CZ":
+            for a, b in zip(qubits[::2], qubits[1::2], strict=True):
+                qc.cz(a, b)
         elif name in ("M", "MZ"):
             for q in qubits:
                 qc.measure(q, clbit)
@@ -95,6 +101,15 @@ def qiskit_circuit(circuit: nove.Circuit) -> QuantumCircuit:
 def channel_total(noise: nove.HardwareNoiseModel, gate: str, qubits: tuple[int, ...]) -> float:
     channel = noise.gate_channel_for(nove.OperationKey(gate, qubits))
     return 0.0 if channel is None else math.fsum(channel.probabilities)
+
+
+def two_qubit_gate(device: nove.DeviceModel) -> str:
+    """The device's one two-qubit gate (``CX`` or ``CZ``), read from its gate durations."""
+
+    names = [g for g in TWO_QUBIT_GATES if device.duration_for(g) is not None]
+    if len(names) != 1:
+        raise ValueError(f"expected one two-qubit gate of {sorted(TWO_QUBIT_GATES)}, got {names}")
+    return names[0]
 
 
 def build_target(device: nove.DeviceModel, noise: nove.HardwareNoiseModel) -> Target:
@@ -113,7 +128,8 @@ def build_target(device: nove.DeviceModel, noise: nove.HardwareNoiseModel) -> Ta
         t2_ns = 1.0 / (2.0 * (rate.z + rate.x))
         properties.append(QubitProperties(t1=t1_ns * NS, t2=t2_ns * NS))
     target = Target(num_qubits=len(physical), qubit_properties=properties)
-    cx_duration = float(device.duration_for("CX") or 0.0) * NS
+    gate = two_qubit_gate(device)
+    two_duration = float(device.duration_for(gate) or 0.0) * NS
     h_duration = float(device.duration_for("H") or 0.0) * NS
     measure_duration = float(device.measurement_duration or 0.0) * NS
     reset_duration = float(device.reset_duration or 0.0) * NS
@@ -121,10 +137,10 @@ def build_target(device: nove.DeviceModel, noise: nove.HardwareNoiseModel) -> Ta
         {(a, b) for a, b in device.connectivity} | {(b, a) for a, b in device.connectivity}
     )
     target.add_instruction(
-        CXGate(),
+        TWO_QUBIT_GATES[gate](),
         {
             pair: InstructionProperties(
-                error=channel_total(noise, "CX", pair), duration=cx_duration
+                error=channel_total(noise, gate, pair), duration=two_duration
             )
             for pair in pairs
         },
@@ -183,6 +199,7 @@ def qiskit_layout(
 
 __all__ = [
     "METHOD",
+    "TWO_QUBIT_GATES",
     "VF2_SETTINGS",
     "QiskitChoice",
     "build_target",
@@ -190,4 +207,5 @@ __all__ = [
     "qiskit_circuit",
     "qiskit_layout",
     "qiskit_version",
+    "two_qubit_gate",
 ]

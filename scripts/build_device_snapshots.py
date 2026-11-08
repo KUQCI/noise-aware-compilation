@@ -17,7 +17,7 @@ from noise_aware_compilation.conversion import convert_fake_backend
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "devices"
 OUT = ROOT / "src" / "noise_aware_compilation" / "device_data"
-DEVICES = ("jakarta", "hanoi", "algiers")
+DEVICES = ("jakarta", "hanoi", "algiers", "fez", "marrakesh", "miami")
 
 
 def main() -> int:
