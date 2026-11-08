@@ -74,13 +74,13 @@ measurements (`scripts/develop_decoder_graph_score.py`, output in
 up to 2 edges longer than the minimum overcounted (scores 1.5–4.8× the measured P_L instead
 of 0.4–1.0×) and lowered M4 on 8 of 10 cases. FakeAlgiers has not been converted or scored.
 
-**Freeze (R-G4, R-G8).** Frozen at commit `b441685`, before FakeAlgiers was converted and
+**Freeze (R-G4, R-G8).** Frozen at commit `d6527cb` (`b441685` before the authorship rewrite, see V10), before FakeAlgiers was converted and
 before any final v2 run. The annotated tag `v2-decoder-graph-freeze` names that commit in
 the implementer's checkout, but pushing tags was refused by the session's network policy, so
 `configs_v2/freeze.json` records the commit and the git blob of each frozen file
 (`decoder_graph.py`, and `placement.py`, which defines how a scorer is applied). T2-G2 and
 T2-G3 check against that file. To publish the tag: `git tag -a v2-decoder-graph-freeze
-b441685 && git push origin v2-decoder-graph-freeze`.
+d6527cb && git push origin v2-decoder-graph-freeze`.
 
 ## V6. Drift (R-S2 to R-S6)
 
@@ -118,9 +118,9 @@ result is checked against the candidate set. Qiskit is pinned to 2.5.2 (`bench` 
   seen models, is a lookup into those measurements. Drift therefore adds selections, not
   shots.
 * **Clean provenance.** As in v1, the runner refuses uncommitted changes to code, data or
-  config, and every results file records the commit it ran from. The final runs ran from a
-  clean checkout at `797e798`; the analysis and report code was written in a separate
-  worktree while they ran, so the runs' `package_git_dirty` is false.
+  config, and every results file records the commit it ran from. The analysis and report code
+  was written in a separate worktree while the original runs ran, so their
+  `package_git_dirty` was false; the reruns (V10) are clean too.
 
 ## V9. Analysis and report (R2-R1 to R2-R7)
 
@@ -138,3 +138,20 @@ result is checked against the candidate set. Qiskit is pinned to 2.5.2 (`bench` 
   P_L of the best placement, with a delta-method interval from shot noise only (the four
   cases are fixed, not a sample). The decoder-graph score becomes the default only if the
   interval lies wholly below zero. The verdict covers only these four cases.
+
+## V10. Authorship rewrite and reruns (2026-11-08)
+
+**What changed.** At the spec owner's request, the whole history (v1 and v2) was rewritten so
+that every commit names him as author and committer, with the Claude attribution trailers
+removed. File contents did not change, but every commit hash did, so the results files no
+longer named an existing commit.
+
+**What was rerun.** v1's 93 runs were rerun from the rewritten v1 branch and v2's 10 runs from
+this branch, each from a clean commit, with the same configs and seeds. Every failure count,
+detection count, seed, drift draw and selection is identical to the previous files; only
+provenance (commit, source hash, platform, write time) and wall-clock times differ. The
+reports were regenerated from the reruns. The decoder-graph freeze commit is now `d6527cb`
+(`configs_v2/freeze.json`); the frozen files' git blobs are unchanged, and FakeAlgiers was
+still converted and run only after it. The pre-rewrite history is kept as a git bundle
+outside the repository.
+

@@ -27,8 +27,8 @@ CONFIG = ROOT / "configs_v2" / "benchmark_v2.json"
 RUNS = ROOT / "results_v2" / "runs"
 REPORT = ROOT / "REPORT_V2.md"
 FREEZE = json.loads((ROOT / "configs_v2" / "freeze.json").read_text(encoding="utf-8"))
-#: Last v1 commit (SPEC.md rev 4); v2 branches off it.
-V1_TIP = "d86835f6642edc69bcaa7168c8f99dc1f79a807b"
+#: Last v1 commit: the v1 rerun after the authorship rewrite, merged into v2.
+V1_TIP = "f7030f12c2845461b0f6e7af3028064a04ac83cf"
 NOISE_AWARE = ("v1", "decoder-graph", "lowest-summed-error", "qiskit-vf2")
 SCORE_NAMES = {"v1": "v1 score", "decoder-graph": "decoder-graph score"}
 METHOD_NAMES = {
