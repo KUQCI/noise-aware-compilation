@@ -8,10 +8,11 @@ exhaustive selection would take too long):
    terms, added per qubit and per coupler with NumPy, so its last bits can differ from
    ``math.fsum``'s; it only orders the search). The ``prefilter`` lowest are scored.
    Summed error can point at the wrong part of the chip (on FakeFez the decoder-graph
-   choice is in the worst third by summed error), so ``spread`` more are scored: walking
-   down the summed-error order, each placement that shares no qubit with an earlier one
-   picked this way, until ``spread`` are picked or none is left. ``random`` more are drawn
-   uniformly (seeded by ``seed``), which no pre-filter can mislead.
+   choice ranks past the 1,100th placement by summed error), so ``spread`` more are
+   scored: walking down the summed-error order, each placement that shares no qubit
+   with an earlier one picked this way, until ``spread`` are picked or none is left.
+   ``random`` more are drawn uniformly (seeded by ``seed``), which no pre-filter can
+   mislead.
 2. **Local search.** From each of the ``starts`` best placements scored so far, steepest descent:
    score every neighbour, move to the best if it beats the current placement, stop when
    none does. A repetition code's interaction graph is a path, so a placement is a simple
@@ -186,31 +187,38 @@ class FastSearch:
             neighbours.setdefault(a, set()).add(b)
             neighbours.setdefault(b, set()).add(a)
         self.adjacency = {q: frozenset(v) for q, v in neighbours.items()}
+        self._order: np.ndarray | None = None
+        self._spread: dict[int, list[Placement]] = {}
+
+    def summed_error_order(self) -> np.ndarray:
+        """Indices into ``placements`` by summed error, ties in enumeration order (cached)."""
+
+        if self._order is None:
+            array = np.asarray(self.placements, dtype=np.int64)
+            self._order = np.argsort(self.tables.values(array), kind="stable")
+        return self._order
 
     def prefiltered(self, count: int) -> list[Placement]:
         """The ``count`` placements of lowest summed error, ties in enumeration order."""
 
-        array = np.asarray(self.placements, dtype=np.int64)
-        values = self.tables.values(array)
-        top = np.argsort(values, kind="stable")[:count]
-        return [self.placements[int(i)] for i in top]
+        return [self.placements[int(i)] for i in self.summed_error_order()[:count]]
 
     def spread_out(self, count: int) -> list[Placement]:
         """Up to ``count`` placements on disjoint qubits, each the lowest in summed error
         among those sharing no qubit with the ones before it."""
 
-        array = np.asarray(self.placements, dtype=np.int64)
-        order = np.argsort(self.tables.values(array), kind="stable")
-        taken: set[int] = set()
-        picked: list[Placement] = []
-        for i in order:
-            if len(picked) >= count:
-                break
-            m = self.placements[int(i)]
-            if taken.isdisjoint(m):
-                picked.append(m)
-                taken.update(m)
-        return picked
+        if count not in self._spread:
+            taken: set[int] = set()
+            picked: list[Placement] = []
+            for i in self.summed_error_order():
+                if len(picked) >= count:
+                    break
+                m = self.placements[int(i)]
+                if taken.isdisjoint(m):
+                    picked.append(m)
+                    taken.update(m)
+            self._spread[count] = picked
+        return list(self._spread[count])
 
     def _mapping(self, path: Sequence[int]) -> Placement:
         mapping = [0] * self.n

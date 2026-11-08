@@ -5,6 +5,9 @@ Usage::
     python -m nac_bench.fast_search_dev --workers 4                 # all but FakeMiami d=7
     nice -n 19 python -m nac_bench.fast_search_dev --workers 48 --cases miami-D7 \\
         --out results_v3/fast_search/development_miami_d7.json
+    python -m nac_bench.fast_search_dev --pick-from results_v3/fast_search/development.json \\
+        results_v3/fast_search/development_miami_d7.json \\
+        --out results_v3/fast_search/pick.json
 
 Development devices only (X16): FakeFez, FakeMarrakesh and FakeMiami, circuits A, B, D5
 and D7 (3 rounds, native CZ), at reset = readout and reset 0. For each case every placement
@@ -56,8 +59,10 @@ SETTINGS = ("readout", "zero")
 ROUNDS = 3
 PREFILTERS = (10, 100)
 SPREADS = (0, 40)
-STARTS = (3, 10, 30)
+RANDOMS = (0, 300, 1000)
+STARTS = (10, 30)
 SHIFTS = (2, 4, 6)
+SEARCH_SEED = 20261108  # the random starts' seed, frozen with the setting
 MAX_EVALUATIONS = 20_000
 CHUNK = 5_000
 CHECKED = 20  # placements per case checked against Nove's lowering
@@ -101,9 +106,15 @@ def _check_chunk(args: tuple[str, str, int, str, list[Placement]]) -> int:
 def grid() -> list[SearchParameters]:
     return [
         SearchParameters(
-            prefilter=p, starts=s, spread=sp, max_shift=k, max_evaluations=MAX_EVALUATIONS
+            prefilter=p,
+            starts=s,
+            spread=sp,
+            random=r,
+            seed=SEARCH_SEED,
+            max_shift=k,
+            max_evaluations=MAX_EVALUATIONS,
         )
-        for p, sp, s, k in itertools.product(PREFILTERS, SPREADS, STARTS, SHIFTS)
+        for p, sp, r, s, k in itertools.product(PREFILTERS, SPREADS, RANDOMS, STARTS, SHIFTS)
     ]
 
 
@@ -142,6 +153,8 @@ def develop(
                 "prefilter": parameters.prefilter,
                 "starts": parameters.starts,
                 "spread": parameters.spread,
+                "random": parameters.random,
+                "seed": parameters.seed,
                 "max_shift": parameters.max_shift,
                 "score_ratio": _rounded(value[result.mapping]) / _rounded(value[ranked[0]]),
                 "max_evaluations": parameters.max_evaluations,
@@ -183,6 +196,7 @@ def pick(cases: Sequence[dict[str, Any]]) -> dict[str, Any]:
             {
                 "prefilter": parameters.prefilter,
                 "spread": parameters.spread,
+                "random": parameters.random,
                 "starts": parameters.starts,
                 "max_shift": parameters.max_shift,
                 "found_everywhere": all(r["rank"] == 1 for r in runs),
@@ -200,11 +214,39 @@ def pick(cases: Sequence[dict[str, Any]]) -> dict[str, Any]:
             r["worst_evaluations"],
             r["prefilter"],
             r["spread"],
+            r["random"],
             r["starts"],
             r["max_shift"],
         ),
     )
     return {"chosen": best, "grid": rows}
+
+
+def merge(paths: Sequence[Path], out: Path) -> int:
+    """P2-18 over the cases of several development records made on the same grid."""
+
+    records = [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+    for r in records:
+        if r["grid"] != records[0]["grid"] or r["max_evaluations"] != MAX_EVALUATIONS:
+            raise SystemExit(f"records were made on different grids: {paths}")
+        if r["package_git_dirty"]:
+            raise SystemExit("a record was made from uncommitted code")
+    cases = [c for r in records for c in r["cases"]]
+    keys = [(c["device"], c["setting"], c["circuit"]) for c in cases]
+    if len(set(keys)) != len(keys):
+        raise SystemExit("a case appears twice")
+    picked = pick(cases)
+    payload = {
+        "schema": "noise-aware-compilation.fast-search-pick-v3/1",
+        "records": [str(p) for p in paths],
+        "record_commits": [r["package_git_commit"] for r in records],
+        "cases": [list(k) for k in keys],
+        "pick": picked,
+    }
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(picked["chosen"]), flush=True)
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -216,7 +258,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--out", type=Path, default=ROOT / "results_v3" / "fast_search" / "development.json"
     )
     parser.add_argument("--allow-dirty", action="store_true")
+    parser.add_argument(
+        "--pick-from", nargs="*", type=Path, default=None, help="apply P2-18 to these records"
+    )
     args = parser.parse_args(argv)
+    if args.pick_from:
+        return merge(args.pick_from, args.out)
     commit, dirty = git_state()
     if dirty and not args.allow_dirty:
         parser.error("uncommitted changes to code, data or config; commit them first")
@@ -248,6 +295,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         "grid": {
             "prefilter": list(PREFILTERS),
             "spread": list(SPREADS),
+            "random": list(RANDOMS),
+            "seed": SEARCH_SEED,
             "starts": list(STARTS),
             "max_shift": list(SHIFTS),
         },
