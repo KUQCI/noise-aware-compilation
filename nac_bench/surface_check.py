@@ -66,11 +66,13 @@ SHOTS = 200_000
 SETTING = "readout"
 
 
-def restored(device_name: str) -> tuple[nove.DeviceModel, nove.HardwareNoiseModel]:
+def restored(
+    device_name: str, setting: str = SETTING
+) -> tuple[nove.DeviceModel, nove.HardwareNoiseModel]:
     """The device with its removed couplers back, each at the median kept CZ channel."""
 
     stored = load_device(device_name)
-    noise = noise_for(SETTING, stored)
+    noise = noise_for(setting, stored)
     removed = [tuple(int(q) for q in e["pair"]) for e in stored.device.metadata["removed_couplers"]]
     data = stored.device.to_dict()
     data["connectivity"] = sorted(
