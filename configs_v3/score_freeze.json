@@ -1,0 +1,26 @@
+{
+  "schema": "noise-aware-compilation.score-freeze-v3/1",
+  "status": "Freeze step F3 (SPEC_V3.md section 8), tagged v3-score-freeze. Neither score, the fast search, the files below nor these parameters change after this commit (X18); every held-out and drift run file records a commit that contains it (F5).",
+  "scaled_score": {
+    "k": 10,
+    "step": 0.05
+  },
+  "scaled_score_source": "R3-S2 by its fallback (P2-9): results_v3/scaled/calibration.json",
+  "fast_search": {
+    "prefilter": 10,
+    "starts": 30,
+    "spread": 0,
+    "random": 300,
+    "seed": 20261108,
+    "max_shift": 4,
+    "max_evaluations": 20000
+  },
+  "fast_search_source": "R3-C8 by P2-18's picking rule over the 24 development cases (P2-24): results_v3/fast_search/pick.json",
+  "frozen_files": [
+    "src/noise_aware_compilation/decoder_graph.py",
+    "src/noise_aware_compilation/placement.py",
+    "src/noise_aware_compilation/scaled_score.py",
+    "src/noise_aware_compilation/fast_search.py",
+    "src/noise_aware_compilation/fast_lowering.py"
+  ]
+}
