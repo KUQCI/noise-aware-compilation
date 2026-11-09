@@ -1,0 +1,141 @@
+{
+  "schema": "noise-aware-compilation.held-out-config-v3/1",
+  "status": "Freeze step F4 (SPEC_V3.md section 8), committed after the score freeze F3 (configs_v3/freeze_f3.json) and before any held-out device was converted, scored or simulated. Seen beforehand: what SPEC_V3.md section 1 lists. The held-out devices are converted only after Khaled's review of SPEC_V3.md; any change that review makes to this file is committed before the conversion and recorded in DECISIONS_V3.md. Every run of this config uses nac_bench.run_v3 at a clean commit that contains this file.",
+  "family": "v3-headline",
+  "settings": {
+    "readout": "each qubit's reset flip probability equals its readout flip probability (P1-13, the headline setting)",
+    "zero": "reset flip probability 0 on every qubit, as in the converted snapshots (the bridge to v1 and v2)"
+  },
+  "settings_order": [
+    "readout",
+    "zero"
+  ],
+  "headline_setting": "readout",
+  "headline_references": [
+    "naive",
+    "lowest-summed-error",
+    "qiskit-default-l1",
+    "mapomatic"
+  ],
+  "devices": {
+    "kingston": {
+      "lattice": "heavy-hex",
+      "synthetic_calibration": false,
+      "circuits": [
+        "A",
+        "B",
+        "D5",
+        "D7"
+      ]
+    },
+    "aachen": {
+      "lattice": "heavy-hex",
+      "synthetic_calibration": false,
+      "circuits": [
+        "A",
+        "B",
+        "D5",
+        "D7"
+      ]
+    },
+    "berlin": {
+      "lattice": "square",
+      "synthetic_calibration": false,
+      "circuits": [
+        "A",
+        "B",
+        "D5",
+        "D7",
+        "S5"
+      ]
+    },
+    "nighthawk": {
+      "lattice": "square",
+      "synthetic_calibration": true,
+      "circuits": [
+        "A",
+        "B",
+        "D5",
+        "D7",
+        "S5"
+      ]
+    }
+  },
+  "circuits": {
+    "A": {
+      "kind": "repetition",
+      "distance": 3,
+      "rounds": 3,
+      "basis": "Z"
+    },
+    "B": {
+      "kind": "repetition",
+      "distance": 3,
+      "rounds": 3,
+      "basis": "X"
+    },
+    "D5": {
+      "kind": "repetition",
+      "distance": 5,
+      "rounds": 3,
+      "basis": "Z"
+    },
+    "D7": {
+      "kind": "repetition",
+      "distance": 7,
+      "rounds": 3,
+      "basis": "Z"
+    },
+    "S5": {
+      "kind": "surface",
+      "distance": 5,
+      "rounds": 5
+    }
+  },
+  "circuit_note": "Native CZ circuits (R3-C2, R3-S4); the surface code is the rotated Z-memory with both hook-safe schedules as candidates",
+  "base_seeds": [
+    20261201,
+    20261202,
+    20261203
+  ],
+  "pilot_seed": 20261204,
+  "sample_seed": 20261205,
+  "seed_transpiler": 20261206,
+  "seed_note": "New and disjoint from every v1 (20261011-13), v2 (20261021-23, 20261031) and v3 Phase 1 (20261108-10) seed. Main-stage chunk k of a placement on base seed b: derive_seed('eval-v3-held-out', b, case_id, key, k); pilot: derive_seed('pilot-v3-held-out', pilot_seed, case_id, key, k); the R3-C5 random sample and the Nove checks: seeds derived from sample_seed and the case id ('sample-v3-held-out', 'check-v3-held-out')",
+  "shots_rule": {
+    "pilot_shots": 100000,
+    "min_shots_per_seed": 200000,
+    "max_shots_per_seed": 25600000,
+    "expected_failures": 400,
+    "description": "R3-C6: every simulated placement gets one 100,000-shot pilot on the pilot seed; its main-stage shots per seed are the smallest 200,000 x 2^k with 3 x shots x p >= 400, capped at 25,600,000 (p = 0 gives the cap); only main-stage counts on the three base seeds enter any result"
+  },
+  "best_found": {
+    "top": 30,
+    "random": 100,
+    "description": "R3-C5, on the square lattice at d=5 and d=7: every method's choice, the top 30 by the decoder-graph score, summed error and mapomatic's cost, and 100 uniform placements; every placement elsewhere"
+  },
+  "nove_checks_per_case": 200,
+  "scaled_score": {
+    "k": 10,
+    "step": 0.05
+  },
+  "fast_search": {
+    "prefilter": 10,
+    "starts": 30,
+    "spread": 0,
+    "random": 300,
+    "seed": 20261108,
+    "max_shift": 4,
+    "max_evaluations": 20000
+  },
+  "score_freeze_file": "configs_v3/score_freeze.json",
+  "qiskit_version": "2.5.2",
+  "mapomatic_version": "0.14.0",
+  "verdict_rule": "P1-1: better when the upper end of the 95% Newcombe interval for P_L(choice) - P_L(reference) is below zero, worse when its lower end is above zero, otherwise tie; the same placement is a tie",
+  "test": "two-sided pooled two-proportion z-test on the main-stage failure counts pooled over the three base seeds; Holm's step-down correction over the family",
+  "alpha": 0.05,
+  "claim_rules": {
+    "beats_min_cases": 5,
+    "description": "Per layout and reference: 'beats' when better after Holm in at least 5 of the layout's 8 repetition cases and worse after Holm in none; 'loses to' when worse after Holm in at least one (each named); otherwise 'no difference shown'. Surface code, per device and reference: 'beats' / 'loses to' when better / worse after Holm, otherwise 'no difference shown'"
+  }
+}
