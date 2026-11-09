@@ -1,0 +1,6806 @@
+{
+ "case": {
+  "case_id": "v2-hanoi-A",
+  "circuit": {
+   "basis": "Z",
+   "distance": 3,
+   "label": "A",
+   "rounds": 3
+  },
+  "device": "hanoi",
+  "drift": true,
+  "role": "development"
+ },
+ "config_file_sha256": "dc8e3da406cf3cd9317cd1dcd55d006b0ae395c63efae1713d7c8ba9a14d8ed5",
+ "provenance": {
+  "calibration_snapshot_sha256": "d77b31ce6f3f91116e38ff881f611540f916e8ac8631092d27319eb9c3b5ae96",
+  "circuit_sha256": "c820d3f9b1893003a593e7aa08720088deaea62587134ce783d115ff9f207f6f",
+  "device_sha256": "07b5283714cda1cd8c403af76e540586332d671a7ee9cc8dba84daf3664b86e4",
+  "machine": {
+   "cpu_model": "AMD EPYC 7401 24-Core Processor",
+   "label": "patty",
+   "libc": "glibc-2.35",
+   "logical_cores": 96,
+   "memory_gib": 787.3,
+   "niceness": 19,
+   "os": "Linux-5.15.0-187-generic-x86_64-with-glibc2.35",
+   "python": "3.13.18",
+   "stim_build": "_stim_sse2",
+   "usable_cores": 96,
+   "workers": 48
+  },
+  "nac_bench_source_sha256": "dc6be5af08e6593ccc620ba287a8c861e08e98ea8c7861d96ef217788c4173f5",
+  "noise_model_calibration_hash": "d77b31ce6f3f91116e38ff881f611540f916e8ac8631092d27319eb9c3b5ae96",
+  "noise_model_sha256": "5172eb95a96ca944e5e3b94ee46a5f8c6e82577ec47ccbbab4325b55a51406c5",
+  "nove_commit": "485b413dfc0a61683b835c7874507a40cbb687cf",
+  "nove_version": "0.1.0",
+  "numpy_version": "2.5.4",
+  "package_git_commit": "ac177ab225e49d5b663fc0ee12970a5269a22b28",
+  "package_git_dirty": false,
+  "package_source_sha256": "069cfa3cf225b34e9491cb314b9a1c00763363e5ab2c3234a5f1506aeb06bfbd",
+  "package_version": "0.2.0",
+  "platform": "Linux-5.15.0-187-generic-x86_64-with-glibc2.35",
+  "pymatching_version": "2.4.0",
+  "python_version": "3.13.18",
+  "qiskit_ibm_runtime_installed_at_runtime": "0.50.0",
+  "qiskit_ibm_runtime_version": "0.50.0",
+  "simulation_seconds": 3.3661964824423194,
+  "source_files": {
+   "conf_hanoi.json": "9345ac086f406de1a3cc4684a93b1171aecebc82c7c0188ead165cfc158c44ea",
+   "props_hanoi.json": "17db2080056d895f74012ed0f45ae2cb8e93be564641640fadbd0ae4c28a5211"
+  },
+  "stim_version": "1.16.0",
+  "written_at_utc": "2026-11-09T08:47:15+00:00"
+ },
+ "schema": "noise-aware-compilation.regrade-v2-drift-run-v3/1",
+ "seen_models": [
+  {
+   "decoder": "seen:0.1:0",
+   "delta": 0.1,
+   "draw": 0,
+   "draw_seed": 4797699255375609315,
+   "seen_snapshot_sha256": "c55e9648bb9841db7f3b92ff4819fde1e30c6743c76f252e9c62bfd57b76c220"
+  },
+  {
+   "decoder": "seen:0.1:1",
+   "delta": 0.1,
+   "draw": 1,
+   "draw_seed": 3330031604572699146,
+   "seen_snapshot_sha256": "7f07732e144a06aa82dd5c875ef9dc77a022efb32aacfdd56cb8dc881a653f5b"
+  },
+  {
+   "decoder": "seen:0.1:2",
+   "delta": 0.1,
+   "draw": 2,
+   "draw_seed": 4595258059077159624,
+   "seen_snapshot_sha256": "1ddebfa2217cb42da7053eca1f78aacdc1312a17e5c401208ebecfbab51a412b"
+  },
+  {
+   "decoder": "seen:0.1:3",
+   "delta": 0.1,
+   "draw": 3,
+   "draw_seed": 3568079370421938565,
+   "seen_snapshot_sha256": "5ee9b786fc9bd7e2646298e24688f419ad6c395ab5f3b772db27af6c74fa95d1"
+  },
+  {
+   "decoder": "seen:0.1:4",
+   "delta": 0.1,
+   "draw": 4,
+   "draw_seed": 6119517872810988842,
+   "seen_snapshot_sha256": "9efb322a33860549b2bd93fca3771d7c811351c32ce54686171372eeddabc6c2"
+  },
+  {
+   "decoder": "seen:0.1:5",
+   "delta": 0.1,
+   "draw": 5,
+   "draw_seed": 9164156931913770287,
+   "seen_snapshot_sha256": "f742b1fabe15e518e631ede756006add362013bc2b85242312d779c4f1135d5c"
+  },
+  {
+   "decoder": "seen:0.1:6",
+   "delta": 0.1,
+   "draw": 6,
+   "draw_seed": 6868203482744765221,
+   "seen_snapshot_sha256": "b6fdd4e32a85c6da6d014f1f0ed13b03b02d18e9892d37db9bfea1fd27a3cff4"
+  },
+  {
+   "decoder": "seen:0.1:7",
+   "delta": 0.1,
+   "draw": 7,
+   "draw_seed": 3280629038357423678,
+   "seen_snapshot_sha256": "9d9a7daa2097651e672905069a26246dfaee293703610cf3b10e38ba7427617c"
+  },
+  {
+   "decoder": "seen:0.1:8",
+   "delta": 0.1,
+   "draw": 8,
+   "draw_seed": 2640851128860215956,
+   "seen_snapshot_sha256": "637fe11811ae20ea0b6426c21943d40aea48451b53c9d62d2775b25b0f5d73ad"
+  },
+  {
+   "decoder": "seen:0.1:9",
+   "delta": 0.1,
+   "draw": 9,
+   "draw_seed": 5881658225567663470,
+   "seen_snapshot_sha256": "0b1dc1aac8617472208d63b68e710dd8ad8642770ed4cd1e0acdfecfa8428ac8"
+  },
+  {
+   "decoder": "seen:0.1:10",
+   "delta": 0.1,
+   "draw": 10,
+   "draw_seed": 7220383182546018834,
+   "seen_snapshot_sha256": "05c10022a5f7b414337a4098c5081062e6906c42c6914ae27c67ec8926d33a66"
+  },
+  {
+   "decoder": "seen:0.1:11",
+   "delta": 0.1,
+   "draw": 11,
+   "draw_seed": 897748295711341064,
+   "seen_snapshot_sha256": "85d8c17956bc6ef84955c09e2905cc11e9d7f174747fb3322b3c032628660003"
+  },
+  {
+   "decoder": "seen:0.1:12",
+   "delta": 0.1,
+   "draw": 12,
+   "draw_seed": 5586025552466295373,
+   "seen_snapshot_sha256": "ca45faf50e5e03897d5b984a135529fc829d4841e5bc56c5515c37c6c7762ecf"
+  },
+  {
+   "decoder": "seen:0.1:13",
+   "delta": 0.1,
+   "draw": 13,
+   "draw_seed": 2447572521201243057,
+   "seen_snapshot_sha256": "236c53f65d8643a0d6d7781a04c306fe59243bf2efdeec105bcd30658599299e"
+  },
+  {
+   "decoder": "seen:0.1:14",
+   "delta": 0.1,
+   "draw": 14,
+   "draw_seed": 1002300907346169959,
+   "seen_snapshot_sha256": "045ba0f5302c6ed7a4336ddaa053e386c554a2b4d2b66d5395079f2ac38fe405"
+  },
+  {
+   "decoder": "seen:0.1:15",
+   "delta": 0.1,
+   "draw": 15,
+   "draw_seed": 131056028392648734,
+   "seen_snapshot_sha256": "90a101e50c4ee11f92494e7ae1f5b0704f8a103c4a563655134e9c45b1708003"
+  },
+  {
+   "decoder": "seen:0.1:16",
+   "delta": 0.1,
+   "draw": 16,
+   "draw_seed": 2558751738709372827,
+   "seen_snapshot_sha256": "a9a3375d95683de59576cebf563ede049e1fa1646ad33d05dbe4998446a46433"
+  },
+  {
+   "decoder": "seen:0.1:17",
+   "delta": 0.1,
+   "draw": 17,
+   "draw_seed": 7149932779603529783,
+   "seen_snapshot_sha256": "39c01adee7c37a5615c7f3ae64bb69bd8f3201ed242f8188e9ba3a787f99ec05"
+  },
+  {
+   "decoder": "seen:0.1:18",
+   "delta": 0.1,
+   "draw": 18,
+   "draw_seed": 3531446877290005365,
+   "seen_snapshot_sha256": "fd75715fe6e85b67ba0b3bd38cc188f180123aeba244518da762f11a5a7de9d3"
+  },
+  {
+   "decoder": "seen:0.1:19",
+   "delta": 0.1,
+   "draw": 19,
+   "draw_seed": 9138781706995227168,
+   "seen_snapshot_sha256": "dd0a66a40ff5b9abf529ed385db7a90391511299d86f84a9632b8da5d661cdd8"
+  },
+  {
+   "decoder": "seen:0.25:0",
+   "delta": 0.25,
+   "draw": 0,
+   "draw_seed": 4797699255375609315,
+   "seen_snapshot_sha256": "00864c3c4d7c81133f64a3e632775666d821091f7479d485441c332ff37d6e16"
+  },
+  {
+   "decoder": "seen:0.25:1",
+   "delta": 0.25,
+   "draw": 1,
+   "draw_seed": 3330031604572699146,
+   "seen_snapshot_sha256": "3d9722d46d716b7839c2a5a4f83258fd85fdaa020d6d078d325f36c5acd531d0"
+  },
+  {
+   "decoder": "seen:0.25:2",
+   "delta": 0.25,
+   "draw": 2,
+   "draw_seed": 4595258059077159624,
+   "seen_snapshot_sha256": "9b0e39c9260c32c73154f83ca94df7c1add4080c0402acd19111b38bce233b5e"
+  },
+  {
+   "decoder": "seen:0.25:3",
+   "delta": 0.25,
+   "draw": 3,
+   "draw_seed": 3568079370421938565,
+   "seen_snapshot_sha256": "9fd99f80f1049bd068fa31b3d88f5ec9b3beb4724e7122522e8afcfe794c5db8"
+  },
+  {
+   "decoder": "seen:0.25:4",
+   "delta": 0.25,
+   "draw": 4,
+   "draw_seed": 6119517872810988842,
+   "seen_snapshot_sha256": "c1efedd2a88b41652c116927680c6021e6d175e1c24643088a56cf90e575dab2"
+  },
+  {
+   "decoder": "seen:0.25:5",
+   "delta": 0.25,
+   "draw": 5,
+   "draw_seed": 9164156931913770287,
+   "seen_snapshot_sha256": "31719c48d469ff3cf912a39a948bcfba629d453f34af6776ed29a331c7c0b333"
+  },
+  {
+   "decoder": "seen:0.25:6",
+   "delta": 0.25,
+   "draw": 6,
+   "draw_seed": 6868203482744765221,
+   "seen_snapshot_sha256": "0d8c233401fa7e9acf75d406aa722cc37c9287990f67a4eb29df1ac136dadea1"
+  },
+  {
+   "decoder": "seen:0.25:7",
+   "delta": 0.25,
+   "draw": 7,
+   "draw_seed": 3280629038357423678,
+   "seen_snapshot_sha256": "7a0bb163be956cf24a3f59d12ef000739e3c59c48a82a7b82a60314b5965228d"
+  },
+  {
+   "decoder": "seen:0.25:8",
+   "delta": 0.25,
+   "draw": 8,
+   "draw_seed": 2640851128860215956,
+   "seen_snapshot_sha256": "a0cece378310d5bc543bdaeb08e693f2756c082e1283c5ea436b3ddfc5c76c50"
+  },
+  {
+   "decoder": "seen:0.25:9",
+   "delta": 0.25,
+   "draw": 9,
+   "draw_seed": 5881658225567663470,
+   "seen_snapshot_sha256": "4c8979313dbca298a73797d5c85312f7470b53c5df9a2e23f51cb12698ee5244"
+  },
+  {
+   "decoder": "seen:0.25:10",
+   "delta": 0.25,
+   "draw": 10,
+   "draw_seed": 7220383182546018834,
+   "seen_snapshot_sha256": "6974ae0d78e033794dfbb495a3ba0ce18d29c0caf99216015d53bf49d2c84f9a"
+  },
+  {
+   "decoder": "seen:0.25:11",
+   "delta": 0.25,
+   "draw": 11,
+   "draw_seed": 897748295711341064,
+   "seen_snapshot_sha256": "c061f0998a47d509242e4d0a3de831c53f095ec636798de5880710992b6e3bc5"
+  },
+  {
+   "decoder": "seen:0.25:12",
+   "delta": 0.25,
+   "draw": 12,
+   "draw_seed": 5586025552466295373,
+   "seen_snapshot_sha256": "a9c4b920cdad7b8a15708e5b6c5648d180157d16891279a34271b7260314dff0"
+  },
+  {
+   "decoder": "seen:0.25:13",
+   "delta": 0.25,
+   "draw": 13,
+   "draw_seed": 2447572521201243057,
+   "seen_snapshot_sha256": "b4f6010a9eb181b6aee741b9cea9114aba92d8dcb968e79103deb65a9bf83c38"
+  },
+  {
+   "decoder": "seen:0.25:14",
+   "delta": 0.25,
+   "draw": 14,
+   "draw_seed": 1002300907346169959,
+   "seen_snapshot_sha256": "27d6395b51be305b190f0cd4c5a502aeb916220a8896a34cbcea77e1478ac738"
+  },
+  {
+   "decoder": "seen:0.25:15",
+   "delta": 0.25,
+   "draw": 15,
+   "draw_seed": 131056028392648734,
+   "seen_snapshot_sha256": "8b00f3a7a117c9f8c5bdbc3564f972427b79ea0c1b0739c72e33507ff4ad3d9a"
+  },
+  {
+   "decoder": "seen:0.25:16",
+   "delta": 0.25,
+   "draw": 16,
+   "draw_seed": 2558751738709372827,
+   "seen_snapshot_sha256": "74b39d02c14e6a4e8322225d076c5ebf8076eb75cea1bf0085e71024adca112b"
+  },
+  {
+   "decoder": "seen:0.25:17",
+   "delta": 0.25,
+   "draw": 17,
+   "draw_seed": 7149932779603529783,
+   "seen_snapshot_sha256": "9c57ded1437aef700dbcf7e8bc4865470961a8075f286618324b46d9a9a368d4"
+  },
+  {
+   "decoder": "seen:0.25:18",
+   "delta": 0.25,
+   "draw": 18,
+   "draw_seed": 3531446877290005365,
+   "seen_snapshot_sha256": "041970fc9bdc55906b41a14874ae48100547cf36f8be4c4c0b6764f910468d8c"
+  },
+  {
+   "decoder": "seen:0.25:19",
+   "delta": 0.25,
+   "draw": 19,
+   "draw_seed": 9138781706995227168,
+   "seen_snapshot_sha256": "962e5ef5040466025e35bd9fa53fbb1303b1ea046529abeac6b7e051fcff44d7"
+  },
+  {
+   "decoder": "seen:0.5:0",
+   "delta": 0.5,
+   "draw": 0,
+   "draw_seed": 4797699255375609315,
+   "seen_snapshot_sha256": "1dc265101768e8fb3c995ba1e9a262296c40e47b1cb37e31a474f9ad3159f761"
+  },
+  {
+   "decoder": "seen:0.5:1",
+   "delta": 0.5,
+   "draw": 1,
+   "draw_seed": 3330031604572699146,
+   "seen_snapshot_sha256": "fda88c1176e0c0e6a5e3a554b54fc90eb725c7edf1b1372d2806fecc7e97e1ed"
+  },
+  {
+   "decoder": "seen:0.5:2",
+   "delta": 0.5,
+   "draw": 2,
+   "draw_seed": 4595258059077159624,
+   "seen_snapshot_sha256": "d15b4cb1b2270ac84d6d5c0c2fd7d9a11ea48fb7a9831d75c7620ed1973d44cc"
+  },
+  {
+   "decoder": "seen:0.5:3",
+   "delta": 0.5,
+   "draw": 3,
+   "draw_seed": 3568079370421938565,
+   "seen_snapshot_sha256": "69abd8a8ef3b44891252a949d0b1f41611745baab1acb980fc00b47b4256ed85"
+  },
+  {
+   "decoder": "seen:0.5:4",
+   "delta": 0.5,
+   "draw": 4,
+   "draw_seed": 6119517872810988842,
+   "seen_snapshot_sha256": "6b52d24c72a26779c88642401893c38467e4cefc5e222cf3546a0f13c0d00c33"
+  },
+  {
+   "decoder": "seen:0.5:5",
+   "delta": 0.5,
+   "draw": 5,
+   "draw_seed": 9164156931913770287,
+   "seen_snapshot_sha256": "6be091f5a900432aa80061950e43780dcd72729e91928b92d0df3808164afced"
+  },
+  {
+   "decoder": "seen:0.5:6",
+   "delta": 0.5,
+   "draw": 6,
+   "draw_seed": 6868203482744765221,
+   "seen_snapshot_sha256": "8f8a71934c374b06de3ded15e7dc268062e9866ed93b0f693bfc697090e1a0e1"
+  },
+  {
+   "decoder": "seen:0.5:7",
+   "delta": 0.5,
+   "draw": 7,
+   "draw_seed": 3280629038357423678,
+   "seen_snapshot_sha256": "3a4588fe52234a46f587621e007b5cd5b6820271cd15fcb66029f037df011696"
+  },
+  {
+   "decoder": "seen:0.5:8",
+   "delta": 0.5,
+   "draw": 8,
+   "draw_seed": 2640851128860215956,
+   "seen_snapshot_sha256": "9079e96beabd09c35aeb4cb0d58f1d0936166ba402898ba09219c8136b853127"
+  },
+  {
+   "decoder": "seen:0.5:9",
+   "delta": 0.5,
+   "draw": 9,
+   "draw_seed": 5881658225567663470,
+   "seen_snapshot_sha256": "24c0d62108799db5cd45d1e170f95fb2a104012e2813604ed158b741209e6f5d"
+  },
+  {
+   "decoder": "seen:0.5:10",
+   "delta": 0.5,
+   "draw": 10,
+   "draw_seed": 7220383182546018834,
+   "seen_snapshot_sha256": "04bc8f541accac36ebdc7226635b5b3ceb1a2b6479da70d9757ebc4e291fa7be"
+  },
+  {
+   "decoder": "seen:0.5:11",
+   "delta": 0.5,
+   "draw": 11,
+   "draw_seed": 897748295711341064,
+   "seen_snapshot_sha256": "8bac74a393a9e83dcf6ca6761ee5a972994d30c641655b5fdd31d613a9ed994b"
+  },
+  {
+   "decoder": "seen:0.5:12",
+   "delta": 0.5,
+   "draw": 12,
+   "draw_seed": 5586025552466295373,
+   "seen_snapshot_sha256": "f9de227a9f2d8499318f5478b8b67f0e7f3ff08052be1428825115ac84dd2491"
+  },
+  {
+   "decoder": "seen:0.5:13",
+   "delta": 0.5,
+   "draw": 13,
+   "draw_seed": 2447572521201243057,
+   "seen_snapshot_sha256": "c1ec88b4f16fdf752c9f0b5f3eb79dd8db38a26f784e093688b376629cbd92bb"
+  },
+  {
+   "decoder": "seen:0.5:14",
+   "delta": 0.5,
+   "draw": 14,
+   "draw_seed": 1002300907346169959,
+   "seen_snapshot_sha256": "175f933d1f7bf6a4fabeb173b30f14a744bf4ffbd07fba3d1f663d10f65d21ee"
+  },
+  {
+   "decoder": "seen:0.5:15",
+   "delta": 0.5,
+   "draw": 15,
+   "draw_seed": 131056028392648734,
+   "seen_snapshot_sha256": "fa7c7f6a4fc90bb88d1d3505185f463a0c78e1ccf2c7d5a62da18331e1c52a94"
+  },
+  {
+   "decoder": "seen:0.5:16",
+   "delta": 0.5,
+   "draw": 16,
+   "draw_seed": 2558751738709372827,
+   "seen_snapshot_sha256": "fd808db95b12b573b0bb799930ac1e8c43f3c4e308326e854692d046745dc778"
+  },
+  {
+   "decoder": "seen:0.5:17",
+   "delta": 0.5,
+   "draw": 17,
+   "draw_seed": 7149932779603529783,
+   "seen_snapshot_sha256": "f00ae06184789d1b600638aa04c1ba296ec33289e099a7eaa5c125fdf9971022"
+  },
+  {
+   "decoder": "seen:0.5:18",
+   "delta": 0.5,
+   "draw": 18,
+   "draw_seed": 3531446877290005365,
+   "seen_snapshot_sha256": "2f22f221dac6f43272ad57aad32120439d113b8f938a0c0726dae648d708e97f"
+  },
+  {
+   "decoder": "seen:0.5:19",
+   "delta": 0.5,
+   "draw": 19,
+   "draw_seed": 9138781706995227168,
+   "seen_snapshot_sha256": "01133b53cc13edcc256b5f106a581f87b914169f143fb0c48b089bb166cdca68"
+  }
+ ],
+ "shots_per_seed": 200000,
+ "simulated": [
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:0",
+    "seen:0.1:1",
+    "seen:0.1:2",
+    "seen:0.1:3",
+    "seen:0.1:4",
+    "seen:0.1:5",
+    "seen:0.1:6",
+    "seen:0.1:7",
+    "seen:0.1:8",
+    "seen:0.1:9",
+    "seen:0.1:10",
+    "seen:0.1:11",
+    "seen:0.1:12",
+    "seen:0.1:13",
+    "seen:0.1:14",
+    "seen:0.1:15",
+    "seen:0.1:16",
+    "seen:0.1:17",
+    "seen:0.1:18",
+    "seen:0.1:19",
+    "seen:0.25:0",
+    "seen:0.25:1",
+    "seen:0.25:2",
+    "seen:0.25:3",
+    "seen:0.25:4",
+    "seen:0.25:5",
+    "seen:0.25:6",
+    "seen:0.25:7",
+    "seen:0.25:8",
+    "seen:0.25:9",
+    "seen:0.25:10",
+    "seen:0.25:11",
+    "seen:0.25:12",
+    "seen:0.25:13",
+    "seen:0.25:14",
+    "seen:0.25:15",
+    "seen:0.25:16",
+    "seen:0.25:17",
+    "seen:0.25:18",
+    "seen:0.25:19",
+    "seen:0.5:0",
+    "seen:0.5:1",
+    "seen:0.5:2",
+    "seen:0.5:3",
+    "seen:0.5:4",
+    "seen:0.5:5",
+    "seen:0.5:6",
+    "seen:0.5:7",
+    "seen:0.5:8",
+    "seen:0.5:9",
+    "seen:0.5:10",
+    "seen:0.5:11",
+    "seen:0.5:12",
+    "seen:0.5:13",
+    "seen:0.5:14",
+    "seen:0.5:15",
+    "seen:0.5:16",
+    "seen:0.5:17",
+    "seen:0.5:18",
+    "seen:0.5:19"
+   ],
+   "mapping": [
+    0,
+    1,
+    2,
+    3,
+    5
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:1": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 954,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 947,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 975,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 959,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 968,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 927,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 957,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 947,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 950,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 947,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:0": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:10": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 946,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 967,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 948,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 969,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 972,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 1029,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 997,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 833,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 884,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 957,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 848,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 867,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 948,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 892,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 856,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 889,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:0": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 959,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:1": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 1024,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 959,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:12": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 958,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 945,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 970,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:15": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 1033,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 1071,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:17": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 847,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 901,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 909,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 887,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 852,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 939,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 932,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 862,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 892,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 71362,
+       "detector_fires_sq": 142968,
+       "logical_failures": 936,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:1": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 929,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 925,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 903,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 914,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 929,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 892,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 929,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 907,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 929,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 929,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 925,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 895,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 903,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 925,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:0": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 887,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:10": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 896,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 927,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 928,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 881,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 909,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 971,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 957,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 801,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 913,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 831,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 907,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 821,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 850,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 926,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 838,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 814,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 903,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 846,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:0": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:1": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 886,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 954,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 912,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:12": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 944,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 836,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:15": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 976,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 1025,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:17": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 789,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 860,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 858,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 830,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 826,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 912,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 931,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 822,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 817,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 887,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 852,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70872,
+       "detector_fires_sq": 141804,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:1": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 931,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 936,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 927,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 950,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 940,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 968,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 894,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 936,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 936,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 936,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 927,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 927,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:0": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 886,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:10": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 916,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 963,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 927,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 945,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 934,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 1013,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 998,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 820,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 917,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 850,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 856,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 879,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 932,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 860,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 843,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 871,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:0": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 936,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:1": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 885,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 997,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 949,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:12": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 917,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 933,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:15": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 1021,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 1082,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:17": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 822,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 918,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 871,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 880,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 862,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 968,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 941,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 923,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 846,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 886,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 876,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 71476,
+       "detector_fires_sq": 142822,
+       "logical_failures": 913,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "fixed",
+    "seen:0.25:0:lowest-summed-error",
+    "seen:0.25:0:qiskit-vf2",
+    "seen:0.25:6:decoder-graph",
+    "seen:0.5:0:lowest-summed-error",
+    "seen:0.5:2:lowest-summed-error",
+    "seen:0.5:2:qiskit-vf2",
+    "seen:0.5:6:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:6",
+    "seen:0.5:9",
+    "seen:0.5:12"
+   ],
+   "mapping": [
+    0,
+    1,
+    4,
+    7,
+    6
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:12": {
+       "detector_fires": 72458,
+       "detector_fires_sq": 142362,
+       "logical_failures": 1022,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 72458,
+       "detector_fires_sq": 142362,
+       "logical_failures": 887,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 72458,
+       "detector_fires_sq": 142362,
+       "logical_failures": 932,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 72458,
+       "detector_fires_sq": 142362,
+       "logical_failures": 934,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:12": {
+       "detector_fires": 72024,
+       "detector_fires_sq": 141948,
+       "logical_failures": 1147,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 72024,
+       "detector_fires_sq": 141948,
+       "logical_failures": 955,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 72024,
+       "detector_fires_sq": 141948,
+       "logical_failures": 1042,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 72024,
+       "detector_fires_sq": 141948,
+       "logical_failures": 991,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:12": {
+       "detector_fires": 72066,
+       "detector_fires_sq": 141592,
+       "logical_failures": 1049,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 72066,
+       "detector_fires_sq": 141592,
+       "logical_failures": 917,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 72066,
+       "detector_fires_sq": 141592,
+       "logical_failures": 954,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 72066,
+       "detector_fires_sq": 141592,
+       "logical_failures": 949,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:6:qiskit-vf2",
+    "seen:0.5:9:decoder-graph",
+    "seen:0.5:12:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:0"
+   ],
+   "mapping": [
+    0,
+    1,
+    4,
+    7,
+    10
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:0": {
+       "detector_fires": 69654,
+       "detector_fires_sq": 137908,
+       "logical_failures": 792,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69654,
+       "detector_fires_sq": 137908,
+       "logical_failures": 815,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:0": {
+       "detector_fires": 69631,
+       "detector_fires_sq": 138459,
+       "logical_failures": 811,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69631,
+       "detector_fires_sq": 138459,
+       "logical_failures": 798,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:0": {
+       "detector_fires": 69684,
+       "detector_fires_sq": 137998,
+       "logical_failures": 833,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69684,
+       "detector_fires_sq": 137998,
+       "logical_failures": 864,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:0:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:0",
+    "seen:0.5:4"
+   ],
+   "mapping": [
+    1,
+    4,
+    7,
+    10,
+    12
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:0": {
+       "detector_fires": 86153,
+       "detector_fires_sq": 178265,
+       "logical_failures": 949,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 86153,
+       "detector_fires_sq": 178265,
+       "logical_failures": 1003,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 86153,
+       "detector_fires_sq": 178265,
+       "logical_failures": 921,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:0": {
+       "detector_fires": 86297,
+       "detector_fires_sq": 178745,
+       "logical_failures": 940,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 86297,
+       "detector_fires_sq": 178745,
+       "logical_failures": 1006,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 86297,
+       "detector_fires_sq": 178745,
+       "logical_failures": 918,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:0": {
+       "detector_fires": 85686,
+       "detector_fires_sq": 177210,
+       "logical_failures": 891,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 85686,
+       "detector_fires_sq": 177210,
+       "logical_failures": 1008,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 85686,
+       "detector_fires_sq": 177210,
+       "logical_failures": 885,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:0:qiskit-vf2",
+    "seen:0.5:4:lowest-summed-error",
+    "seen:0.5:4:qiskit-vf2",
+    "seen:0.5:4:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:15",
+    "seen:0.5:15"
+   ],
+   "mapping": [
+    2,
+    1,
+    4,
+    7,
+    6
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:15": {
+       "detector_fires": 73095,
+       "detector_fires_sq": 141487,
+       "logical_failures": 1112,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:15": {
+       "detector_fires": 73095,
+       "detector_fires_sq": 141487,
+       "logical_failures": 1100,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 73095,
+       "detector_fires_sq": 141487,
+       "logical_failures": 1097,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:15": {
+       "detector_fires": 74479,
+       "detector_fires_sq": 145547,
+       "logical_failures": 1156,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:15": {
+       "detector_fires": 74479,
+       "detector_fires_sq": 145547,
+       "logical_failures": 1165,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 74479,
+       "detector_fires_sq": 145547,
+       "logical_failures": 1115,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:15": {
+       "detector_fires": 74020,
+       "detector_fires_sq": 143352,
+       "logical_failures": 1143,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:15": {
+       "detector_fires": 74020,
+       "detector_fires_sq": 143352,
+       "logical_failures": 1138,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 74020,
+       "detector_fires_sq": 143352,
+       "logical_failures": 1123,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:15:qiskit-vf2",
+    "seen:0.5:15:lowest-summed-error"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:8",
+    "seen:0.25:10",
+    "seen:0.5:8",
+    "seen:0.5:10"
+   ],
+   "mapping": [
+    2,
+    1,
+    4,
+    7,
+    10
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:10": {
+       "detector_fires": 70426,
+       "detector_fires_sq": 137676,
+       "logical_failures": 977,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 70426,
+       "detector_fires_sq": 137676,
+       "logical_failures": 972,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 70426,
+       "detector_fires_sq": 137676,
+       "logical_failures": 959,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 70426,
+       "detector_fires_sq": 137676,
+       "logical_failures": 984,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70426,
+       "detector_fires_sq": 137676,
+       "logical_failures": 932,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:10": {
+       "detector_fires": 70937,
+       "detector_fires_sq": 138685,
+       "logical_failures": 992,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 70937,
+       "detector_fires_sq": 138685,
+       "logical_failures": 1000,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 70937,
+       "detector_fires_sq": 138685,
+       "logical_failures": 975,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 70937,
+       "detector_fires_sq": 138685,
+       "logical_failures": 1004,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70937,
+       "detector_fires_sq": 138685,
+       "logical_failures": 973,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:10": {
+       "detector_fires": 70686,
+       "detector_fires_sq": 138352,
+       "logical_failures": 993,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 70686,
+       "detector_fires_sq": 138352,
+       "logical_failures": 975,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 70686,
+       "detector_fires_sq": 138352,
+       "logical_failures": 972,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 70686,
+       "detector_fires_sq": 138352,
+       "logical_failures": 1005,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70686,
+       "detector_fires_sq": 138352,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:8:lowest-summed-error",
+    "seen:0.25:8:qiskit-vf2",
+    "seen:0.25:10:lowest-summed-error",
+    "seen:0.25:10:qiskit-vf2",
+    "seen:0.25:10:v1",
+    "seen:0.5:8:lowest-summed-error",
+    "seen:0.5:10:lowest-summed-error",
+    "seen:0.5:10:qiskit-vf2",
+    "seen:0.5:10:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:15",
+    "seen:0.5:3"
+   ],
+   "mapping": [
+    3,
+    2,
+    1,
+    4,
+    7
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:15": {
+       "detector_fires": 68017,
+       "detector_fires_sq": 129377,
+       "logical_failures": 1021,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 68017,
+       "detector_fires_sq": 129377,
+       "logical_failures": 1058,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68017,
+       "detector_fires_sq": 129377,
+       "logical_failures": 1022,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:15": {
+       "detector_fires": 67754,
+       "detector_fires_sq": 128730,
+       "logical_failures": 968,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 67754,
+       "detector_fires_sq": 128730,
+       "logical_failures": 1036,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 67754,
+       "detector_fires_sq": 128730,
+       "logical_failures": 968,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:15": {
+       "detector_fires": 68261,
+       "detector_fires_sq": 129615,
+       "logical_failures": 1102,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 68261,
+       "detector_fires_sq": 129615,
+       "logical_failures": 1148,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68261,
+       "detector_fires_sq": 129615,
+       "logical_failures": 1103,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:15:lowest-summed-error",
+    "seen:0.5:3:lowest-summed-error",
+    "seen:0.5:3:qiskit-vf2",
+    "seen:0.5:3:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:0",
+    "seen:0.1:1",
+    "seen:0.1:2",
+    "seen:0.1:3",
+    "seen:0.1:4",
+    "seen:0.1:5",
+    "seen:0.1:6",
+    "seen:0.1:7",
+    "seen:0.1:8",
+    "seen:0.1:9",
+    "seen:0.1:10",
+    "seen:0.1:11",
+    "seen:0.1:12",
+    "seen:0.1:13",
+    "seen:0.1:14",
+    "seen:0.1:15",
+    "seen:0.1:16",
+    "seen:0.1:17",
+    "seen:0.1:18",
+    "seen:0.1:19",
+    "seen:0.25:2",
+    "seen:0.25:3",
+    "seen:0.25:4",
+    "seen:0.25:6",
+    "seen:0.25:7",
+    "seen:0.25:9",
+    "seen:0.25:11",
+    "seen:0.25:12",
+    "seen:0.25:15",
+    "seen:0.25:16",
+    "seen:0.25:18",
+    "seen:0.25:19",
+    "seen:0.5:7",
+    "seen:0.5:9",
+    "seen:0.5:11",
+    "seen:0.5:12",
+    "seen:0.5:16",
+    "seen:0.5:18",
+    "seen:0.5:19"
+   ],
+   "mapping": [
+    4,
+    1,
+    2,
+    3,
+    5
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:1": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 674,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 738,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 674,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 674,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 740,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 674,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 664,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 674,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 679,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 674,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 684,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 715,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 679,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 678,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 663,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 655,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 708,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 708,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 757,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 654,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 663,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:12": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 735,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 706,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 671,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 659,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 683,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69308,
+       "detector_fires_sq": 138336,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:1": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 796,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 709,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 757,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 770,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 745,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 705,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 712,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 752,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 806,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 711,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 710,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:12": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 772,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 746,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 747,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 700,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 711,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 754,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69569,
+       "detector_fires_sq": 138897,
+       "logical_failures": 802,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:1": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 808,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 817,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 769,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 787,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 756,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 720,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 724,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 740,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 740,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 837,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:12": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 800,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 764,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 728,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 727,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69756,
+       "detector_fires_sq": 139348,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:0:lowest-summed-error",
+    "seen:0.1:1:lowest-summed-error",
+    "seen:0.1:1:qiskit-vf2",
+    "seen:0.1:2:lowest-summed-error",
+    "seen:0.1:2:qiskit-vf2",
+    "seen:0.1:3:lowest-summed-error",
+    "seen:0.1:3:qiskit-vf2",
+    "seen:0.1:4:lowest-summed-error",
+    "seen:0.1:4:qiskit-vf2",
+    "seen:0.1:5:lowest-summed-error",
+    "seen:0.1:5:qiskit-vf2",
+    "seen:0.1:6:decoder-graph",
+    "seen:0.1:6:lowest-summed-error",
+    "seen:0.1:6:qiskit-vf2",
+    "seen:0.1:7:lowest-summed-error",
+    "seen:0.1:7:qiskit-vf2",
+    "seen:0.1:8:lowest-summed-error",
+    "seen:0.1:8:qiskit-vf2",
+    "seen:0.1:9:decoder-graph",
+    "seen:0.1:9:lowest-summed-error",
+    "seen:0.1:9:qiskit-vf2",
+    "seen:0.1:10:lowest-summed-error",
+    "seen:0.1:10:qiskit-vf2",
+    "seen:0.1:11:decoder-graph",
+    "seen:0.1:11:lowest-summed-error",
+    "seen:0.1:11:qiskit-vf2",
+    "seen:0.1:12:lowest-summed-error",
+    "seen:0.1:12:qiskit-vf2",
+    "seen:0.1:13:lowest-summed-error",
+    "seen:0.1:13:qiskit-vf2",
+    "seen:0.1:14:decoder-graph",
+    "seen:0.1:14:qiskit-vf2",
+    "seen:0.1:15:decoder-graph",
+    "seen:0.1:15:lowest-summed-error",
+    "seen:0.1:16:decoder-graph",
+    "seen:0.1:16:lowest-summed-error",
+    "seen:0.1:16:qiskit-vf2",
+    "seen:0.1:17:qiskit-vf2",
+    "seen:0.1:18:decoder-graph",
+    "seen:0.1:18:lowest-summed-error",
+    "seen:0.1:18:qiskit-vf2",
+    "seen:0.1:19:decoder-graph",
+    "seen:0.1:19:lowest-summed-error",
+    "seen:0.1:19:qiskit-vf2",
+    "seen:0.25:2:lowest-summed-error",
+    "seen:0.25:2:qiskit-vf2",
+    "seen:0.25:3:lowest-summed-error",
+    "seen:0.25:3:qiskit-vf2",
+    "seen:0.25:4:lowest-summed-error",
+    "seen:0.25:4:qiskit-vf2",
+    "seen:0.25:6:qiskit-vf2",
+    "seen:0.25:7:lowest-summed-error",
+    "seen:0.25:9:decoder-graph",
+    "seen:0.25:9:lowest-summed-error",
+    "seen:0.25:11:decoder-graph",
+    "seen:0.25:11:lowest-summed-error",
+    "seen:0.25:12:lowest-summed-error",
+    "seen:0.25:12:qiskit-vf2",
+    "seen:0.25:15:decoder-graph",
+    "seen:0.25:16:decoder-graph",
+    "seen:0.25:16:lowest-summed-error",
+    "seen:0.25:16:qiskit-vf2",
+    "seen:0.25:18:decoder-graph",
+    "seen:0.25:18:lowest-summed-error",
+    "seen:0.25:18:qiskit-vf2",
+    "seen:0.25:19:decoder-graph",
+    "seen:0.25:19:lowest-summed-error",
+    "seen:0.25:19:qiskit-vf2",
+    "seen:0.5:7:lowest-summed-error",
+    "seen:0.5:9:qiskit-vf2",
+    "seen:0.5:11:decoder-graph",
+    "seen:0.5:11:lowest-summed-error",
+    "seen:0.5:12:lowest-summed-error",
+    "seen:0.5:12:qiskit-vf2",
+    "seen:0.5:16:decoder-graph",
+    "seen:0.5:16:lowest-summed-error",
+    "seen:0.5:16:qiskit-vf2",
+    "seen:0.5:18:lowest-summed-error",
+    "seen:0.5:18:qiskit-vf2",
+    "seen:0.5:18:v1",
+    "seen:0.5:19:decoder-graph",
+    "seen:0.5:19:lowest-summed-error",
+    "seen:0.5:19:qiskit-vf2"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:2",
+    "seen:0.5:2"
+   ],
+   "mapping": [
+    5,
+    3,
+    2,
+    1,
+    0
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:2": {
+       "detector_fires": 70349,
+       "detector_fires_sq": 140499,
+       "logical_failures": 889,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 70349,
+       "detector_fires_sq": 140499,
+       "logical_failures": 778,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70349,
+       "detector_fires_sq": 140499,
+       "logical_failures": 896,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:2": {
+       "detector_fires": 70826,
+       "detector_fires_sq": 141478,
+       "logical_failures": 902,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 70826,
+       "detector_fires_sq": 141478,
+       "logical_failures": 819,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70826,
+       "detector_fires_sq": 141478,
+       "logical_failures": 907,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:2": {
+       "detector_fires": 70976,
+       "detector_fires_sq": 141812,
+       "logical_failures": 914,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 70976,
+       "detector_fires_sq": 141812,
+       "logical_failures": 814,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70976,
+       "detector_fires_sq": 141812,
+       "logical_failures": 924,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:2:v1",
+    "seen:0.5:2:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:0",
+    "seen:0.1:2",
+    "seen:0.1:3",
+    "seen:0.1:11",
+    "seen:0.1:12",
+    "seen:0.1:15",
+    "seen:0.1:16",
+    "seen:0.1:18",
+    "seen:0.1:19",
+    "seen:0.25:3",
+    "seen:0.25:7",
+    "seen:0.25:9",
+    "seen:0.25:11",
+    "seen:0.25:12",
+    "seen:0.25:15",
+    "seen:0.25:16",
+    "seen:0.25:18",
+    "seen:0.25:19",
+    "seen:0.5:7",
+    "seen:0.5:11",
+    "seen:0.5:16",
+    "seen:0.5:18",
+    "seen:0.5:19"
+   ],
+   "mapping": [
+    5,
+    3,
+    2,
+    1,
+    4
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 779,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 733,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 733,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 712,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 733,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 733,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 829,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 712,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 750,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 780,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 732,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 729,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 712,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 754,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 764,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 738,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 712,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 750,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 741,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 749,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 777,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 738,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68700,
+       "detector_fires_sq": 136926,
+       "logical_failures": 779,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 775,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 769,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 752,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 844,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 752,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 781,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 836,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 756,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 775,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 752,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 761,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 783,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 757,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 752,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 781,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 776,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 768,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 781,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 756,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 138316,
+       "logical_failures": 775,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 770,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:11": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 766,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:15": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:16": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 718,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:18": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:19": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 830,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 718,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:11": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 739,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 789,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:15": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 720,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:16": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 735,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:18": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 718,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:19": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 723,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 753,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 718,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:11": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 739,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:16": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 738,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:18": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 739,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:19": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 750,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 722,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69137,
+       "detector_fires_sq": 138121,
+       "logical_failures": 770,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:0:qiskit-vf2",
+    "seen:0.1:2:v1",
+    "seen:0.1:3:v1",
+    "seen:0.1:11:v1",
+    "seen:0.1:12:v1",
+    "seen:0.1:15:qiskit-vf2",
+    "seen:0.1:15:v1",
+    "seen:0.1:16:v1",
+    "seen:0.1:18:v1",
+    "seen:0.1:19:v1",
+    "seen:0.25:3:v1",
+    "seen:0.25:7:qiskit-vf2",
+    "seen:0.25:9:qiskit-vf2",
+    "seen:0.25:11:qiskit-vf2",
+    "seen:0.25:11:v1",
+    "seen:0.25:12:v1",
+    "seen:0.25:15:v1",
+    "seen:0.25:16:v1",
+    "seen:0.25:18:v1",
+    "seen:0.25:19:v1",
+    "seen:0.5:7:qiskit-vf2",
+    "seen:0.5:11:qiskit-vf2",
+    "seen:0.5:11:v1",
+    "seen:0.5:16:v1",
+    "seen:0.5:18:decoder-graph",
+    "seen:0.5:19:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:7",
+    "seen:0.5:12"
+   ],
+   "mapping": [
+    6,
+    7,
+    4,
+    1,
+    0
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:12": {
+       "detector_fires": 72277,
+       "detector_fires_sq": 142191,
+       "logical_failures": 1091,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 72277,
+       "detector_fires_sq": 142191,
+       "logical_failures": 950,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 72277,
+       "detector_fires_sq": 142191,
+       "logical_failures": 958,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:12": {
+       "detector_fires": 72283,
+       "detector_fires_sq": 141931,
+       "logical_failures": 1053,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 72283,
+       "detector_fires_sq": 141931,
+       "logical_failures": 861,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 72283,
+       "detector_fires_sq": 141931,
+       "logical_failures": 901,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:12": {
+       "detector_fires": 72316,
+       "detector_fires_sq": 141654,
+       "logical_failures": 1067,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 72316,
+       "detector_fires_sq": 141654,
+       "logical_failures": 894,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 72316,
+       "detector_fires_sq": 141654,
+       "logical_failures": 891,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:7:decoder-graph",
+    "seen:0.5:12:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:15"
+   ],
+   "mapping": [
+    6,
+    7,
+    4,
+    1,
+    2
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:15": {
+       "detector_fires": 73356,
+       "detector_fires_sq": 142378,
+       "logical_failures": 1096,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 73356,
+       "detector_fires_sq": 142378,
+       "logical_failures": 1089,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:15": {
+       "detector_fires": 73663,
+       "detector_fires_sq": 143211,
+       "logical_failures": 1096,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 73663,
+       "detector_fires_sq": 143211,
+       "logical_failures": 1072,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:15": {
+       "detector_fires": 73275,
+       "detector_fires_sq": 142177,
+       "logical_failures": 1107,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 73275,
+       "detector_fires_sq": 142177,
+       "logical_failures": 1094,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:15:decoder-graph",
+    "seen:0.5:15:qiskit-vf2",
+    "seen:0.5:15:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:8",
+    "seen:0.5:9"
+   ],
+   "mapping": [
+    7,
+    4,
+    1,
+    2,
+    3
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:8": {
+       "detector_fires": 67995,
+       "detector_fires_sq": 129275,
+       "logical_failures": 1056,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 67995,
+       "detector_fires_sq": 129275,
+       "logical_failures": 1104,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 67995,
+       "detector_fires_sq": 129275,
+       "logical_failures": 1050,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:8": {
+       "detector_fires": 67989,
+       "detector_fires_sq": 128817,
+       "logical_failures": 1062,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 67989,
+       "detector_fires_sq": 128817,
+       "logical_failures": 1114,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 67989,
+       "detector_fires_sq": 128817,
+       "logical_failures": 1045,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:8": {
+       "detector_fires": 67309,
+       "detector_fires_sq": 128109,
+       "logical_failures": 1058,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 67309,
+       "detector_fires_sq": 128109,
+       "logical_failures": 1066,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 67309,
+       "detector_fires_sq": 128109,
+       "logical_failures": 1038,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:8:v1",
+    "seen:0.5:9:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:8",
+    "seen:0.25:3",
+    "seen:0.25:8",
+    "seen:0.5:8"
+   ],
+   "mapping": [
+    7,
+    10,
+    12,
+    13,
+    14
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:8": {
+       "detector_fires": 124441,
+       "detector_fires_sq": 279785,
+       "logical_failures": 757,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 124441,
+       "detector_fires_sq": 279785,
+       "logical_failures": 764,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 124441,
+       "detector_fires_sq": 279785,
+       "logical_failures": 757,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 124441,
+       "detector_fires_sq": 279785,
+       "logical_failures": 744,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 124441,
+       "detector_fires_sq": 279785,
+       "logical_failures": 783,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:8": {
+       "detector_fires": 124526,
+       "detector_fires_sq": 279970,
+       "logical_failures": 835,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 124526,
+       "detector_fires_sq": 279970,
+       "logical_failures": 840,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 124526,
+       "detector_fires_sq": 279970,
+       "logical_failures": 835,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 124526,
+       "detector_fires_sq": 279970,
+       "logical_failures": 812,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 124526,
+       "detector_fires_sq": 279970,
+       "logical_failures": 828,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:8": {
+       "detector_fires": 124948,
+       "detector_fires_sq": 281894,
+       "logical_failures": 751,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:3": {
+       "detector_fires": 124948,
+       "detector_fires_sq": 281894,
+       "logical_failures": 752,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 124948,
+       "detector_fires_sq": 281894,
+       "logical_failures": 751,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 124948,
+       "detector_fires_sq": 281894,
+       "logical_failures": 735,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 124948,
+       "detector_fires_sq": 281894,
+       "logical_failures": 754,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:8:decoder-graph",
+    "seen:0.25:3:decoder-graph",
+    "seen:0.25:8:decoder-graph",
+    "seen:0.5:8:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:17",
+    "seen:0.5:0"
+   ],
+   "mapping": [
+    8,
+    11,
+    14,
+    16,
+    19
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:17": {
+       "detector_fires": 114640,
+       "detector_fires_sq": 251718,
+       "logical_failures": 863,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:0": {
+       "detector_fires": 114640,
+       "detector_fires_sq": 251718,
+       "logical_failures": 862,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 114640,
+       "detector_fires_sq": 251718,
+       "logical_failures": 850,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:17": {
+       "detector_fires": 114742,
+       "detector_fires_sq": 252850,
+       "logical_failures": 906,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:0": {
+       "detector_fires": 114742,
+       "detector_fires_sq": 252850,
+       "logical_failures": 895,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 114742,
+       "detector_fires_sq": 252850,
+       "logical_failures": 868,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:17": {
+       "detector_fires": 114688,
+       "detector_fires_sq": 253070,
+       "logical_failures": 923,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:0": {
+       "detector_fires": 114688,
+       "detector_fires_sq": 253070,
+       "logical_failures": 916,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 114688,
+       "detector_fires_sq": 253070,
+       "logical_failures": 884,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:17:decoder-graph",
+    "seen:0.5:0:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:0",
+    "seen:0.1:2",
+    "seen:0.1:7",
+    "seen:0.1:10",
+    "seen:0.1:12",
+    "seen:0.1:13",
+    "seen:0.25:0",
+    "seen:0.25:2",
+    "seen:0.25:7",
+    "seen:0.25:8",
+    "seen:0.25:12",
+    "seen:0.5:2"
+   ],
+   "mapping": [
+    10,
+    7,
+    4,
+    1,
+    0
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 837,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 840,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 833,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 797,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 796,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:0": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 836,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 799,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 794,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 807,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 776,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69310,
+       "detector_fires_sq": 137254,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 782,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 810,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 793,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 761,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 759,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 812,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:0": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 782,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 756,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 758,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 775,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 812,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 775,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69996,
+       "detector_fires_sq": 139034,
+       "logical_failures": 812,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:0": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 781,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 799,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:12": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 784,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 747,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:2": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 764,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 783,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:0": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 784,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:12": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 761,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:2": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 762,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 760,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:8": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 782,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:2": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 799,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 69777,
+       "detector_fires_sq": 137465,
+       "logical_failures": 783,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:0:decoder-graph",
+    "seen:0.1:0:v1",
+    "seen:0.1:2:decoder-graph",
+    "seen:0.1:7:decoder-graph",
+    "seen:0.1:10:decoder-graph",
+    "seen:0.1:12:decoder-graph",
+    "seen:0.1:13:decoder-graph",
+    "seen:0.25:0:decoder-graph",
+    "seen:0.25:0:v1",
+    "seen:0.25:2:decoder-graph",
+    "seen:0.25:7:decoder-graph",
+    "seen:0.25:8:v1",
+    "seen:0.25:12:decoder-graph",
+    "seen:0.5:2:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:10",
+    "seen:0.25:13",
+    "seen:0.25:14",
+    "seen:0.5:8",
+    "seen:0.5:10",
+    "seen:0.5:13",
+    "seen:0.5:14"
+   ],
+   "mapping": [
+    10,
+    7,
+    4,
+    1,
+    2
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:10": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 980,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 971,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 931,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 977,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 970,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 930,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 997,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70443,
+       "detector_fires_sq": 137369,
+       "logical_failures": 947,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:10": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 933,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 930,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 933,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 935,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 932,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 953,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 70950,
+       "detector_fires_sq": 139400,
+       "logical_failures": 899,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:10": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 987,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 977,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 956,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:10": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 977,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 964,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 955,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:8": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 987,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 71057,
+       "detector_fires_sq": 139119,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:10:decoder-graph",
+    "seen:0.25:13:decoder-graph",
+    "seen:0.25:14:decoder-graph",
+    "seen:0.5:8:qiskit-vf2",
+    "seen:0.5:10:decoder-graph",
+    "seen:0.5:13:decoder-graph",
+    "seen:0.5:14:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:3",
+    "seen:0.1:5",
+    "seen:0.1:17",
+    "seen:0.25:5",
+    "seen:0.5:5"
+   ],
+   "mapping": [
+    12,
+    13,
+    14,
+    11,
+    8
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:17": {
+       "detector_fires": 151174,
+       "detector_fires_sq": 355600,
+       "logical_failures": 839,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 151174,
+       "detector_fires_sq": 355600,
+       "logical_failures": 845,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 151174,
+       "detector_fires_sq": 355600,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 151174,
+       "detector_fires_sq": 355600,
+       "logical_failures": 852,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 151174,
+       "detector_fires_sq": 355600,
+       "logical_failures": 893,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 151174,
+       "detector_fires_sq": 355600,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:17": {
+       "detector_fires": 150293,
+       "detector_fires_sq": 353157,
+       "logical_failures": 846,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 150293,
+       "detector_fires_sq": 353157,
+       "logical_failures": 840,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 150293,
+       "detector_fires_sq": 353157,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 150293,
+       "detector_fires_sq": 353157,
+       "logical_failures": 849,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 150293,
+       "detector_fires_sq": 353157,
+       "logical_failures": 886,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 150293,
+       "detector_fires_sq": 353157,
+       "logical_failures": 841,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:17": {
+       "detector_fires": 150504,
+       "detector_fires_sq": 356272,
+       "logical_failures": 847,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:3": {
+       "detector_fires": 150504,
+       "detector_fires_sq": 356272,
+       "logical_failures": 854,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 150504,
+       "detector_fires_sq": 356272,
+       "logical_failures": 852,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 150504,
+       "detector_fires_sq": 356272,
+       "logical_failures": 859,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 150504,
+       "detector_fires_sq": 356272,
+       "logical_failures": 917,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 150504,
+       "detector_fires_sq": 356272,
+       "logical_failures": 851,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:3:decoder-graph",
+    "seen:0.1:5:decoder-graph",
+    "seen:0.1:17:decoder-graph",
+    "seen:0.25:5:decoder-graph",
+    "seen:0.5:5:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:1",
+    "seen:0.25:1",
+    "seen:0.5:1"
+   ],
+   "mapping": [
+    12,
+    13,
+    14,
+    16,
+    19
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:1": {
+       "detector_fires": 119691,
+       "detector_fires_sq": 264411,
+       "logical_failures": 854,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 119691,
+       "detector_fires_sq": 264411,
+       "logical_failures": 859,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:1": {
+       "detector_fires": 119691,
+       "detector_fires_sq": 264411,
+       "logical_failures": 904,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 119691,
+       "detector_fires_sq": 264411,
+       "logical_failures": 842,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:1": {
+       "detector_fires": 119020,
+       "detector_fires_sq": 263218,
+       "logical_failures": 895,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 119020,
+       "detector_fires_sq": 263218,
+       "logical_failures": 910,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:1": {
+       "detector_fires": 119020,
+       "detector_fires_sq": 263218,
+       "logical_failures": 940,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 119020,
+       "detector_fires_sq": 263218,
+       "logical_failures": 894,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:1": {
+       "detector_fires": 118425,
+       "detector_fires_sq": 261375,
+       "logical_failures": 819,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 118425,
+       "detector_fires_sq": 261375,
+       "logical_failures": 833,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:1": {
+       "detector_fires": 118425,
+       "detector_fires_sq": 261375,
+       "logical_failures": 867,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 118425,
+       "detector_fires_sq": 261375,
+       "logical_failures": 804,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:1:decoder-graph",
+    "seen:0.25:1:decoder-graph",
+    "seen:0.5:1:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:4",
+    "seen:0.25:4",
+    "seen:0.5:3",
+    "seen:0.5:4"
+   ],
+   "mapping": [
+    14,
+    13,
+    12,
+    10,
+    7
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:4": {
+       "detector_fires": 124976,
+       "detector_fires_sq": 280732,
+       "logical_failures": 803,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 124976,
+       "detector_fires_sq": 280732,
+       "logical_failures": 801,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 124976,
+       "detector_fires_sq": 280732,
+       "logical_failures": 816,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 124976,
+       "detector_fires_sq": 280732,
+       "logical_failures": 889,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 124976,
+       "detector_fires_sq": 280732,
+       "logical_failures": 803,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:4": {
+       "detector_fires": 124343,
+       "detector_fires_sq": 279677,
+       "logical_failures": 774,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 124343,
+       "detector_fires_sq": 279677,
+       "logical_failures": 773,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 124343,
+       "detector_fires_sq": 279677,
+       "logical_failures": 803,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 124343,
+       "detector_fires_sq": 279677,
+       "logical_failures": 862,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 124343,
+       "detector_fires_sq": 279677,
+       "logical_failures": 774,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:4": {
+       "detector_fires": 124427,
+       "detector_fires_sq": 279787,
+       "logical_failures": 798,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 124427,
+       "detector_fires_sq": 279787,
+       "logical_failures": 795,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:3": {
+       "detector_fires": 124427,
+       "detector_fires_sq": 279787,
+       "logical_failures": 792,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:4": {
+       "detector_fires": 124427,
+       "detector_fires_sq": 279787,
+       "logical_failures": 886,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 124427,
+       "detector_fires_sq": 279787,
+       "logical_failures": 797,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:4:decoder-graph",
+    "seen:0.25:4:decoder-graph",
+    "seen:0.5:3:decoder-graph",
+    "seen:0.5:4:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:17"
+   ],
+   "mapping": [
+    14,
+    16,
+    19,
+    22,
+    25
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:17": {
+       "detector_fires": 79542,
+       "detector_fires_sq": 160650,
+       "logical_failures": 1102,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 79542,
+       "detector_fires_sq": 160650,
+       "logical_failures": 1102,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:17": {
+       "detector_fires": 80147,
+       "detector_fires_sq": 161903,
+       "logical_failures": 991,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 80147,
+       "detector_fires_sq": 161903,
+       "logical_failures": 992,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:17": {
+       "detector_fires": 79589,
+       "detector_fires_sq": 160123,
+       "logical_failures": 1037,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 79589,
+       "detector_fires_sq": 160123,
+       "logical_failures": 1037,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:17:qiskit-vf2"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:1"
+   ],
+   "mapping": [
+    16,
+    19,
+    22,
+    25,
+    24
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:1": {
+       "detector_fires": 74307,
+       "detector_fires_sq": 146877,
+       "logical_failures": 1197,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 74307,
+       "detector_fires_sq": 146877,
+       "logical_failures": 1110,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:1": {
+       "detector_fires": 74926,
+       "detector_fires_sq": 148472,
+       "logical_failures": 1208,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 74926,
+       "detector_fires_sq": 148472,
+       "logical_failures": 1138,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:1": {
+       "detector_fires": 74345,
+       "detector_fires_sq": 146441,
+       "logical_failures": 1253,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 74345,
+       "detector_fires_sq": 146441,
+       "logical_failures": 1165,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:1:lowest-summed-error",
+    "seen:0.5:1:qiskit-vf2",
+    "seen:0.5:1:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.1:1",
+    "seen:0.1:4",
+    "seen:0.1:5",
+    "seen:0.1:6",
+    "seen:0.1:7",
+    "seen:0.1:8",
+    "seen:0.1:9",
+    "seen:0.1:10",
+    "seen:0.1:13",
+    "seen:0.1:14",
+    "seen:0.1:17",
+    "seen:0.25:1",
+    "seen:0.25:4",
+    "seen:0.25:5",
+    "seen:0.25:6",
+    "seen:0.25:7",
+    "seen:0.25:9",
+    "seen:0.25:13",
+    "seen:0.25:14",
+    "seen:0.25:17",
+    "seen:0.5:5",
+    "seen:0.5:6",
+    "seen:0.5:7",
+    "seen:0.5:9",
+    "seen:0.5:13",
+    "seen:0.5:14",
+    "seen:0.5:17"
+   ],
+   "mapping": [
+    16,
+    19,
+    22,
+    25,
+    26
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.1:1": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 928,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 889,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 943,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 929,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 880,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 939,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 856,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 875,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 932,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 882,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 945,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 901,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:17": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 962,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 867,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 979,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 882,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 945,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68288,
+       "detector_fires_sq": 134798,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.1:1": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 982,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 960,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 946,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 1008,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 982,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 996,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 922,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 952,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 931,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 990,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 989,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 925,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:17": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 1009,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 937,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 1016,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 931,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 990,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68325,
+       "detector_fires_sq": 134959,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.1:1": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 934,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:10": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:13": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:14": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:17": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:4": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:5": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:6": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:7": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:8": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 911,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.1:9": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:1": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 956,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:13": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 934,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 892,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 962,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:4": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 874,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 877,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:6": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 945,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:7": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 868,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:9": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 933,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 912,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:17": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 980,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:5": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 874,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 995,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:7": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 868,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:9": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 961,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68156,
+       "detector_fires_sq": 134280,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.1:1:v1",
+    "seen:0.1:4:v1",
+    "seen:0.1:5:v1",
+    "seen:0.1:6:v1",
+    "seen:0.1:7:v1",
+    "seen:0.1:8:v1",
+    "seen:0.1:9:v1",
+    "seen:0.1:10:v1",
+    "seen:0.1:13:v1",
+    "seen:0.1:14:lowest-summed-error",
+    "seen:0.1:14:v1",
+    "seen:0.1:17:lowest-summed-error",
+    "seen:0.1:17:v1",
+    "seen:0.25:1:lowest-summed-error",
+    "seen:0.25:1:v1",
+    "seen:0.25:4:v1",
+    "seen:0.25:5:lowest-summed-error",
+    "seen:0.25:5:v1",
+    "seen:0.25:6:lowest-summed-error",
+    "seen:0.25:6:v1",
+    "seen:0.25:7:v1",
+    "seen:0.25:9:v1",
+    "seen:0.25:13:lowest-summed-error",
+    "seen:0.25:13:qiskit-vf2",
+    "seen:0.25:13:v1",
+    "seen:0.25:14:lowest-summed-error",
+    "seen:0.25:14:qiskit-vf2",
+    "seen:0.25:17:lowest-summed-error",
+    "seen:0.25:17:v1",
+    "seen:0.5:5:lowest-summed-error",
+    "seen:0.5:5:qiskit-vf2",
+    "seen:0.5:5:v1",
+    "seen:0.5:6:lowest-summed-error",
+    "seen:0.5:7:v1",
+    "seen:0.5:9:lowest-summed-error",
+    "seen:0.5:13:lowest-summed-error",
+    "seen:0.5:13:v1",
+    "seen:0.5:14:lowest-summed-error",
+    "seen:0.5:14:qiskit-vf2",
+    "seen:0.5:17:lowest-summed-error",
+    "seen:0.5:17:v1"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.5:17"
+   ],
+   "mapping": [
+    19,
+    16,
+    14,
+    11,
+    8
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.5:17": {
+       "detector_fires": 114169,
+       "detector_fires_sq": 251201,
+       "logical_failures": 972,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 114169,
+       "detector_fires_sq": 251201,
+       "logical_failures": 933,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.5:17": {
+       "detector_fires": 114326,
+       "detector_fires_sq": 251544,
+       "logical_failures": 915,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 114326,
+       "detector_fires_sq": 251544,
+       "logical_failures": 889,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.5:17": {
+       "detector_fires": 114235,
+       "detector_fires_sq": 250797,
+       "logical_failures": 914,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 114235,
+       "detector_fires_sq": 250797,
+       "logical_failures": 892,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.5:17:decoder-graph"
+   ]
+  },
+  {
+   "decoders": [
+    "true",
+    "seen:0.25:1",
+    "seen:0.25:5",
+    "seen:0.25:14",
+    "seen:0.25:17",
+    "seen:0.5:6",
+    "seen:0.5:13",
+    "seen:0.5:14"
+   ],
+   "mapping": [
+    26,
+    25,
+    22,
+    19,
+    16
+   ],
+   "per_seed": [
+    {
+     "base_seed": 20261021,
+     "decoders": {
+      "seen:0.25:1": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 945,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 963,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 901,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 870,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 938,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 978,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 67941,
+       "detector_fires_sq": 134111,
+       "logical_failures": 880,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261022,
+     "decoders": {
+      "seen:0.25:1": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 914,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 934,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 878,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 864,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 908,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 971,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 67984,
+       "detector_fires_sq": 134334,
+       "logical_failures": 862,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    },
+    {
+     "base_seed": 20261023,
+     "decoders": {
+      "seen:0.25:1": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 966,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:14": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 966,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:17": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 1016,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.25:5": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 941,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:13": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 883,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:14": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 966,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "seen:0.5:6": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 1054,
+       "num_detectors": 8,
+       "shots": 200000
+      },
+      "true": {
+       "detector_fires": 68475,
+       "detector_fires_sq": 135485,
+       "logical_failures": 914,
+       "num_detectors": 8,
+       "shots": 200000
+      }
+     }
+    }
+   ],
+   "roles": [
+    "seen:0.25:1:qiskit-vf2",
+    "seen:0.25:5:qiskit-vf2",
+    "seen:0.25:14:v1",
+    "seen:0.25:17:qiskit-vf2",
+    "seen:0.5:6:v1",
+    "seen:0.5:13:qiskit-vf2",
+    "seen:0.5:14:v1"
+   ]
+  }
+ ],
+ "strengths": [
+  0.1,
+  0.25,
+  0.5
+ ],
+ "true_counts_equal_v2": true,
+ "v2_run_file": "results_v2/runs/v2-hanoi-A.json",
+ "v2_run_file_sha256": "48a37d10a49085b5994f21677abd30c7107111899b44e958d7fab90e61f1433d",
+ "wall_clock_seconds": 3.736244241707027,
+ "workers": 48
+}
