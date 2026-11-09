@@ -10,14 +10,17 @@ Nov 8, 2026 · @Khaled Al Daqrouq
 
 **Revision 3 (Nov 8, 2026), from the timing pilot on patty; no held-out device was converted.** R3-C4's cost estimate was wrong: with Nove's lowering repeated for each score, the pilot put FakeNighthawk and FakeBerlin d=7 at 60 wall hours of selection per reset setting (`DECISIONS_V3.md` P2-15). R3-C4 now says how selection lowers a placement: once, through a prepared lowering that gives Nove's circuit exactly, shared by every score (P2-17). No rule changed; the timing pilot is re-run with this path and its projection decides R3-C4's fallback as before.
 
+**Revision 4 (Nov 9, 2026), from Khaled's review of revision 3; no held-out device was converted, and it was written after the exploratory real-drift results (section 1).** Qiskit's default transpile is level 2 in Qiskit 2.5.2, not level 1 as the roadmap's Step 6b had it, and level 1 keeps the trivial layout, which on these maps is the naive placement; level 2 is now the headline Qiskit baseline (section 3, R3-S5). FakeNighthawk leaves the family, which has 52 members, and the square-lattice claim rests on FakeBerlin alone (section 7). If FakeBerlin has no SWAP-free d=5 surface-code embedding, its surface-code comparisons leave the family and every surface-code result is exploratory (section 7, R3-R5). The claim rules gain a *mixed* row and define *better* and *worse after Holm* (section 7). Family placements get about 4,000 expected failures (R3-C6). The surface code's *k* is set by a convergence check on FakeMiami, which reopens F3 (R3-S2, section 8). The Nove check has stated sizes and fails the run on any difference (R3-C4, T3-C6). T3-R2's fallback uses per-placement z-scores. R3-C9 and K16 note that mapomatic charges resets at readout error. Section 1 adds what Khaled's review read. Dates in this spec and in `DECISIONS_V3.md` are UTC; the roadmap is cited by the date in its own header. Reasons are in `DECISIONS_V3.md` P2-26.
+
 ## 1. What was seen before this spec
 
 A pre-registration is only as good as its list of what was already known. Before this spec was written:
 
 - **Every v1 and v2 result**, and the Phase 1 re-analysis of them (`results_v3/reanalysis/REANALYSIS.md`), which is post hoc.
 - **The Phase 1b reset run** (`results_v3/reset/RESET.md`), pre-registered on its own and complete: 23 of its 40 headline comparisons hold after Holm at reset = readout.
-- **Of the held-out devices (FakeKingston, FakeAachen, FakeBerlin, FakeNighthawk):** their coupling maps, snapshot dates, qubit counts, native gate sets, and how many couplers carry a two-qubit error of 1.0 (Kingston 7, Aachen 2, Berlin 6, Nighthawk 0); FakeKingston's placement counts after removing those couplers (750 / 2,114 / 5,648 at d=3/5/7); and that FakeNighthawk's file names itself `fake_nighthawk`, so its calibration is synthetic. No other calibration value of a held-out device was read, no held-out device was converted, and nothing was scored or simulated on one.
+- **Of the held-out devices (FakeKingston, FakeAachen, FakeBerlin, FakeNighthawk):** their coupling maps, snapshot dates, qubit counts, native gate sets, and how many couplers carry a two-qubit error of 1.0 (Kingston 7, Aachen 2, Berlin 6, Nighthawk 0); FakeKingston's placement counts after removing those couplers (750 / 2,114 / 5,648 at d=3/5/7); and that FakeNighthawk's file names itself `fake_nighthawk`, so its calibration is synthetic. Khaled's review of revision 3 (Nov 9) also read FakeKingston's and FakeNighthawk's CZ error values, which list each pair in both directions with identical values, and saw FakeKingston's removed-coupler positions (which couplers carry error 1.0). Which couplers FakeAachen and FakeBerlin lost has not been read. No other calibration value of a held-out device was read, no held-out device was converted, and nothing was scored or simulated on one.
 - **Of the development devices (FakeFez, FakeMarrakesh, FakeMiami, FakeTorino):** the same facts, plus the real-drift table in the roadmap (Step 3).
+- **Before revision 4:** the exploratory real-drift and re-grade results (`results_v3/drift/DRIFT.md`, `DECISIONS_V3.md` P2-25), all on development devices, and which layout pass Qiskit's levels 1 and 2 use for circuits A, B, D5 and D7 on FakeFez, FakeMarrakesh and FakeMiami (P2-26).
 - **Of FakeBoston and FakePittsburgh (unused):** their gate sets and which couplers carry a two-qubit error above 0.8 (2 and 9), read on Nov 8 while looking for a second square-lattice development device; both are 156-qubit heavy-hex. Nothing was converted, scored or simulated on them.
 
 ## 2. Goal and definition of done
@@ -38,19 +41,19 @@ v1's and v2's specs stay in force except where this table or a later section cha
 | Topic | Decision |
 | --- | --- |
 | Reset error | **Headline setting: each qubit's reset error equals its readout error** (Khaled's choice, P1-13). Every headline device also runs at reset 0, reported alongside as the bridge to v1 and v2 |
-| Verdict rule | *Better* when the upper end of the 95% Newcombe interval for P_L(choice) − P_L(reference) is below zero, *worse* when its lower end is above zero, otherwise *tie* (P1-1). Same placement = tie |
-| Headline test | Two-sided pooled two-proportion z-test, Holm's step-down correction at α = 0.05 over the one family in section 7. Everything outside it is exploratory |
+| Verdict rule | *Better* when the upper end of the 95% Newcombe interval for P_L(choice) − P_L(reference) is below zero, *worse* when its lower end is above zero, otherwise *tie* (P1-1). Same placement = tie. Per-case tables use this rule; claims do not |
+| Headline test | Two-sided pooled two-proportion z-test, Holm's step-down correction at α = 0.05 over the one family in section 7; claims use only this test, with *better* and *worse after Holm* as section 7 defines them. At the margin it can disagree with the Newcombe verdict, and the tables then show both. Everything outside the family is exploratory |
 | Oracle | Cross-fitted (P1-2): for each of the three base seeds, the best placement on the other two seeds, measured on the held-out seed |
 | Naive placement | The first valid placement in lexicographic order (v1's and v2's *fixed* baseline) |
-| Baselines | Naive placement; lowest summed error; Qiskit's default transpile at level 1 (headline), levels 2 and 3; mapomatic 0.14.0; v2's VF2Layout baseline with CZ in its target (exploratory) |
+| Baselines | Naive placement; lowest summed error; Qiskit's default transpile at level 2 (headline: what `transpile` and `generate_preset_pass_manager` use when no level is given in Qiskit 2.5.2, which runs VF2Layout); levels 1 and 3 (exploratory: level 1 keeps the trivial layout whenever it needs no SWAP, and on these maps that is the naive placement); mapomatic 0.14.0; v2's VF2Layout baseline with CZ in its target (exploratory). Every Qiskit choice records the pass that set its layout (trivial, VF2 or Sabre) |
 | Native gates | CX devices keep CX circuits. CZ devices get circuits built natively from CZ and H; CX is never lowered into CZ after the fact |
 | Development devices | FakeJakartaV2, FakeHanoiV2, FakeAlgiers (spent in v2); FakeFez and FakeMarrakesh (156-qubit heavy-hex, Heron r2); FakeMiami (120-qubit square lattice); FakeTorino (real drift only) |
-| Held-out devices | **Heavy-hex:** FakeKingston (Heron r2) and FakeAachen (Heron r3). **Square lattice:** FakeBerlin (real calibration) and FakeNighthawk (synthetic calibration, labelled so everywhere) |
+| Held-out devices | **Heavy-hex:** FakeKingston (Heron r2) and FakeAachen (Heron r3). **Square lattice:** FakeBerlin (real calibration) and FakeNighthawk (synthetic calibration, labelled so everywhere). FakeNighthawk runs every case but is outside the family, and its results are exploratory (section 7) |
 | Not used | FakeBoston and FakePittsburgh (same map as Kingston) stay untouched, as a reserve for a later version |
 | Scores | The v2 decoder-graph score, frozen since v2, is the headline score for repetition codes. The scaled score (Part C) is frozen before any held-out conversion and is the headline score for surface codes |
 | Compute | Held-out and drift runs on patty, at `nice -n 19`, in the home directory, with at most 48 worker threads; all held-out runs use one machine and one environment (`requirements-lock.txt`) |
 | Seeds | New and disjoint from every v1, v2 and v3 Phase 1 seed; fixed in the configs at freeze step F4 |
-| Claims | Stated "under this noise model"; Nighthawk results are also labelled synthetic |
+| Claims | Stated "under this noise model"; Nighthawk results are also labelled synthetic and exploratory |
 
 ## 4. Part A: new layouts and CZ (roadmap Step 2)
 
@@ -59,12 +62,12 @@ v1's and v2's specs stay in force except where this table or a later section cha
 | R3-C1 | The converter accepts CZ devices. A CZ gate error *e* becomes 15 Pauli terms of 1.25 *e* / 15 each, the v1 CX rule; IBM lists `cz` in both directions and each direction is stored as its own channel. H follows v1's rule from the published `sx` error *e*<sub>sx</sub> (three Pauli terms of 1.5 *e*<sub>sx</sub> / 3); `rz` is error-free. Couplers whose two-qubit error exceeds 0.8 are removed, as for CX. A props file with no `reset` entry (FakeMiami) gets a reset duration of the mean readout length plus the mean `x` length, a measurement followed by a conditional flip; on FakeFez this rule gives its published reset length exactly (1,560 + 24 = 1,584 ns), and the conversion notes record it |
 | R3-C2 | The repetition codes A (d=3 bit-flip), B (d=3 phase-flip), D5 and D7 (bit-flip), 3 rounds each, are built natively for CZ devices: each CX layer of the v2 circuit becomes three layers, H on the CX targets, CZ on the same pairs, H on the targets. Then, until nothing changes: an H on a qubit and an H on the same qubit in the next layer are both removed (no time passes between them); two consecutive H-only layers on disjoint qubits are merged; empty layers are dropped. An H pair with any other layer between them stays, so the phase-flip code's data idle in the X basis as in v2's circuit B, and B stays a different circuit from A. The bit-flip round becomes H on the ancillas, CZ to each neighbour, H again. The CZ layers keep v2's order and pairs, so a placement uses the same couplers in the same layers; the H layers are their own layers, with idle noise on every waiting qubit |
 | R3-C3 | The converter and the CZ circuits are developed and tested on FakeFez, FakeMarrakesh and FakeMiami only. A unit test checks the CZ circuit's noiseless detectors are deterministic and its logical observable is correct |
-| R3-C4 | **Selection is exhaustive.** Every method scores every valid placement, at every distance on every device, including FakeNighthawk d=7 (12.8M placements). Each placement is lowered once, by `fast_lowering.Lowering`, which gives the same Stim circuit as Nove's lowering (tested on every development device; every run re-checks a sample of placements against Nove), and the v1 score, the decoder-graph score and summed error are computed from it; summed error and mapomatic's layout costs run on every worker. If the timing pilot (R3-C7) projects more than 24 hours on patty for one case, that case's decoder-graph choice comes from the local search of R3-C8 instead, and the report says so |
+| R3-C4 | **Selection is exhaustive.** Every method scores every valid placement, at every distance on every device, including FakeNighthawk d=7 (12.8M placements). Each placement is lowered once, by `fast_lowering.Lowering`, which gives the same Stim circuit as Nove's lowering (checked on the development devices as T3-C6 says; every held-out case also checks a seeded sample of 200 placements, or every placement when it has fewer, against Nove's own lowering, and any difference stops the run, leaves the case without a result and is reported), and the v1 score, the decoder-graph score and summed error are computed from it; summed error and mapomatic's layout costs run on every worker. If the timing pilot (R3-C7) projects more than 24 hours on patty for one case, that case's decoder-graph choice comes from the local search of R3-C8 instead, and the report says so |
 | R3-C5 | **Evaluation.** On the heavy-hex devices and at d=3 on the square lattice, every valid placement is simulated. At d=5 and d=7 on the square lattice, the simulated set is the union of: every method's choice; the top 30 by each of the decoder-graph score, summed error and mapomatic's cost; and a uniform random sample of 100 valid placements (seeded). Its cross-fitted best is reported as *best found*, with the random sample's size, mean and best-found interval beside it |
-| R3-C6 | **Shots.** A pilot stage runs every simulated placement once with 100,000 shots on a separate pilot seed. Each placement's main-stage shots per seed are then the smallest 200,000 × 2^k with 3 × shots × p̂ ≥ 400 (about a 10% relative half-width), capped at 25,600,000; p̂ = 0 gives the cap. Only main-stage counts, on three base seeds, enter any result |
+| R3-C6 | **Shots.** A pilot stage runs every simulated placement once with 100,000 shots on a separate pilot seed. Each placement's main-stage shots per seed are then the smallest 200,000 × 2^k with 3 × shots × p̂ ≥ *F*, capped at *C*; p̂ = 0 gives the cap. A *family placement* gets *F* = 4,000 (about a 3% relative half-width) and *C* = 102,400,000; every other placement gets *F* = 400 (about 10%) and *C* = 25,600,000. The family placements are, on every case with a family comparison (section 7) and on the same cases on FakeNighthawk, at both reset settings: the headline score's choice and the choices of the naive placement, summed error, Qiskit's default at level 2 and mapomatic. A placement chosen by several methods is simulated once. At 4,000 failures the smallest relative difference the family's strictest Holm step can call significant is about 7%, and about 4% at its loosest, against about 23% and 14% at 400. Only main-stage counts, on three base seeds, enter any result |
 | R3-C7 | A timing pilot on FakeFez d=7 (100 random placements, full selection and main-stage simulation) and on FakeMiami d=7 (enumeration of its 8,493,720 placements and the score on 1,000 random ones, the square-lattice proxy for FakeNighthawk d=7) is run before any held-out conversion; its projection for each held-out case is recorded in `DECISIONS_V3.md`. If FakeKingston or FakeAachen exhaustive simulation projects more than 48 hours on patty, that device falls back to R3-C5's best-found set, and the report says so |
 | R3-C8 | A fast search (pre-filter and local search, roadmap Step 2.3) is developed on FakeFez, FakeMarrakesh and FakeMiami against their exhaustive scores, frozen at F3, and reported on the held-out devices as exploratory: its choice's score rank and P_L against the exhaustive choice |
-| R3-C9 | Qiskit's default and mapomatic read an IBM-shaped Target (P1-5) with `cz` in place of `cx`, and each qubit's reset at its readout error in the reset = readout setting; v2's VF2Layout baseline gets `cz` at its Nove channel total |
+| R3-C9 | Qiskit's default and mapomatic read an IBM-shaped Target (P1-5) with `cz` in place of `cx`, and each qubit's reset at its readout error in the reset = readout setting; v2's VF2Layout baseline gets `cz` at its Nove channel total. mapomatic 0.14.0's cost charges every measurement and every reset at the qubit's readout error, whatever the Target's reset error (`layouts.py`), so at reset 0 it sees reset noise the model does not have; only exploratory results are affected (K16) |
 
 ## 5. Part B: real drift (roadmap Step 3)
 
@@ -82,32 +85,39 @@ v1's and v2's specs stay in force except where this table or a later section cha
 | ID | Requirement |
 | --- | --- |
 | R3-S1 | The scaled score replaces the exact score's two exponential parts: the distribution of a chain's flipped weight is a dynamic program over edge weights log((1−p)/p) rounded to a grid, and chains are the top *k* by weight from Dijkstra on the doubled graph (detector, observables flipped so far) followed by a k-shortest-paths search. It uses no sampling |
-| R3-S2 | *k* and the grid step are chosen on development data only: the smallest *k* (from 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000) for which, on all 10 v2 cases, the scaled score's top choice equals the exact score's and Spearman's ρ between the two over all candidates is at least 0.99. If none does, the *k* with the largest minimum ρ is used, and the report says the criterion failed. **Grid step:** with the chains fixed to the exact score's own minimum-length cycles, the largest step of 0.5, 0.2, 0.1, 0.05, 0.02 and 0.01 for which the scaled score is within 1% of the exact score on every candidate of the 10 cases; it is chosen first, then *k* at that step |
+| R3-S2 | *k* and the grid step are chosen on development data only: the smallest *k* (from 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000) for which, on all 10 v2 cases, the scaled score's top choice equals the exact score's and Spearman's ρ between the two over all candidates is at least 0.99. If none does, the *k* with the largest minimum ρ is used, and the report says the criterion failed. **Grid step:** with the chains fixed to the exact score's own minimum-length cycles, the largest step of 0.5, 0.2, 0.1, 0.05, 0.02 and 0.01 for which the scaled score is within 1% of the exact score on every candidate of the 10 cases; it is chosen first, then *k* at that step. **Surface-code *k* (revision 4).** Repetition codes have few near-lightest chains and the surface code has many, so the *k* above can be far too small for it. The held-out runs use the scaled score only on the surface code, with the *k* chosen by convergence on development data: the smallest *k* of 10, 20, 40, 80, 160, 320 and 640 for which, on each of four FakeMiami cases (the d=3 surface code as converted and the d=5 surface code with its removed couplers restored as in R3-S3, each at both reset settings, over every candidate of R3-S4), the scaled score at 2*k* ranks the candidates with Spearman's ρ of at least 0.99 against the score at *k*, and picks the same top choice (selection's rounding, then the default schedule, then the mapping). If none does, the *k* with the largest minimum ρ over the four cases is used (ties to the smaller *k*), and the report says the criterion failed. The grid step stays 0.05, and the repetition-code result above stays recorded. The record also gives each *k*'s Spearman's ρ against R3-S3's simulated P_L, as context that no rule uses. R3-S6 is timed at the chosen *k* and does not constrain it |
 | R3-S3 | The scaled score is checked against simulated P_L on FakeMiami surface codes (d=3 and d=5) before the freeze; the result is reported, and no threshold is applied. FakeMiami has no SWAP-free d=5 embedding (each of the 64 crosses one of its 7 removed couplers), so the d=5 check runs on FakeMiami with those couplers restored at the median CZ channel of the kept ones, labelled synthetic |
 | R3-S4 | Surface codes: the rotated surface code, Z-memory, distance 5, 5 rounds, native CZ, on the square lattice. Candidates are every SWAP-free embedding of the patch (shifts, rotations and reflections avoiding removed couplers), each with the standard stabilizer gate orders (N- and Z-shaped for each stabilizer type, the hook-safe combinations only) as schedule candidates. The hook-safe schedules are those with deterministic detectors whose circuit-level distance under uniform noise is *d*: for the Z-memory these are X-type row by row (Z-shaped) with Z-type either column by column (N-shaped, Stim's default) or row by row. An N-shaped X-type order has distance 3 at d=5 |
-| R3-S5 | Surface-code baselines: the naive placement with the default schedule; summed error (schedule-blind, so it takes the default schedule); Qiskit's default at level 1 and mapomatic (layout only, default schedule) |
-| R3-S6 | The score's whole d=5 surface-code selection on one patty core takes at most 60 seconds; the time is reported |
+| R3-S5 | Surface-code baselines: the naive placement with the default schedule; summed error (schedule-blind, so it takes the default schedule); Qiskit's default at level 2 (headline) and levels 1 and 3 (exploratory), and mapomatic (layout only, default schedule) |
+| R3-S6 | The score's whole d=5 surface-code selection on one patty core takes at most 60 seconds at the frozen *k*; the time is reported, and a miss is reported as one |
 | R3-S7 | The score is presented as a ranking signal, not an error rate, in the CLI output, the API docstrings and the report. No correction factor is fitted |
 | R3-S8 | Dropped from the roadmap, with reasons in `v3/EVALUATION.md`: mixed repetition-code schedules (a two-layer schedule must be uniform, so mixing needs a third layer) and the correction factor |
 
 ## 7. The headline family and the claim rules
 
-**Family `v3-headline`, 72 comparisons, at reset = readout:**
+**Family `v3-headline`, 52 comparisons, at reset = readout:**
 
-- 64: the v2 decoder-graph score against the naive placement, lowest summed error, Qiskit's default at level 1 and mapomatic, on circuits A, B, D5 and D7 on each held-out device (FakeKingston, FakeAachen, FakeBerlin, FakeNighthawk).
-- 8: the scaled score against the same four references, on the d=5 surface code on FakeBerlin and FakeNighthawk.
+- 48: the v2 decoder-graph score against the naive placement, lowest summed error, Qiskit's default at level 2 and mapomatic, on circuits A, B, D5 and D7 on FakeKingston, FakeAachen and FakeBerlin.
+- 4: the scaled score against the same four references, on the d=5 surface code on FakeBerlin.
 
-Every other comparison (reset 0, levels 2 and 3, v2's VF2Layout baseline, the v1 score, the fast search, the all-placement average, drift, development devices) is exploratory and labelled so.
+FakeNighthawk runs every case, and its 20 comparisons of the same kind are reported beside FakeBerlin's with their Newcombe verdicts and unadjusted p-values, labelled synthetic and exploratory. In the family they could decide no claim and would only make Holm stricter on the real-calibration comparisons (revision 4).
 
-**Claim rules**, applied per layout (heavy-hex: Kingston and Aachen; square lattice: Berlin and Nighthawk) and per reference, to the family's verdicts after Holm:
+**If FakeBerlin has no SWAP-free d=5 surface-code embedding.** FakeMiami has none: each of its 64 d=5 embeddings crosses one of its 7 removed couplers (P2-11). FakeBerlin has 6 removed couplers, and which ones is not read before F4 (section 1). If none of its 64 embeddings avoids them, its 4 surface-code comparisons leave the family, the family has 48 members, and every surface-code result in v3 is exploratory: FakeNighthawk's and the development checks of R3-S2 and R3-S3. v3 then makes no confirmatory surface-code claim, and the report says so (R3-R5). If FakeBerlin has at least one embedding, the 4 comparisons stay in the family however few embeddings there are.
+
+Every other comparison (FakeNighthawk, reset 0, Qiskit's default at levels 1 and 3, v2's VF2Layout baseline, the v1 score, the fast search, the all-placement average, drift, development devices) is exploratory and labelled so.
+
+**Better and worse after Holm.** A family comparison is *better after Holm* when Holm's step-down procedure rejects it at α = 0.05 (its adjusted p-value is at most 0.05) and the estimated difference P_L(choice) − P_L(reference) is below zero. It is *worse after Holm* when Holm rejects it and the difference is above zero. Claims use only this z-test with Holm. Per-case tables give the 95% Newcombe interval and its verdict (section 3); the two can disagree at the margin, and the tables then show both.
+
+**Claim rules**, applied per layout and per reference to the family's comparisons. The heavy-hex layout is FakeKingston and FakeAachen, with 8 repetition cases and threshold *t* = 5. The square lattice is FakeBerlin alone, with 4 repetition cases and *t* = 3.
 
 | Wording | Condition |
 | --- | --- |
-| "beats *X* on this layout" | better after Holm in at least 5 of the layout's 8 repetition cases, and worse after Holm in none |
-| "loses to *X* on this layout" | worse after Holm in at least one case; every such case is named |
-| "no difference shown against *X*" | anything else |
+| "beats *X* on this layout" | better after Holm in at least *t* cases, and worse after Holm in none |
+| "mixed against *X* on this layout: better in *N* cases, worse in *M*" | better after Holm in at least one case and worse after Holm in at least one; every worse case is named |
+| "loses to *X* on this layout" | worse after Holm in at least one case and better after Holm in none; every worse case is named |
+| "no difference shown against *X*" | anything else: better after Holm in fewer than *t* cases, and worse in none |
 
-For the surface code, per device and reference: "beats" when better after Holm, "loses to" when worse after Holm, otherwise "no difference shown". A case with no valid placement on a device leaves the family, which shrinks accordingly, and the report names it. Claims about real chips cite FakeKingston, FakeAachen and FakeBerlin; FakeNighthawk supports claims about the layout only.
+For the surface code on FakeBerlin, per reference: "beats" when better after Holm, "loses to" when worse after Holm, otherwise "no difference shown". A case with no valid placement for a method or a reference leaves the family, which shrinks accordingly, and the report names it; *t* stays 5 or 3. Claims about real chips cite FakeKingston, FakeAachen and FakeBerlin. FakeNighthawk is reported beside FakeBerlin and decides no claim.
 
 **Secondary endpoints, pre-registered but not in the family:** cross-fitted relative regret of each method on every held-out case; Spearman's ρ between each score and simulated P_L per held-out case; the drift metrics of R3-D4.
 
@@ -117,9 +127,9 @@ For the surface code, per device and reference: "beats" when better after Holm, 
 | --- | --- | --- |
 | F1 | This spec | Committed and pushed |
 | F2 | CZ converter and native CZ circuits, developed on development devices | Tests T3-C1 to T3-C3 pass |
-| F3 | Scaled score (*k*, grid) and fast search | Tagged commit `v3-score-freeze`; no later change to `decoder_graph.py` or the search |
-| F4 | Run configs with every seed, then conversion of the held-out devices | Configs committed before the converted held-out files; converted files' hashes recorded |
-| F5 | Every held-out and drift run, by the frozen code, on patty | Every run file records a commit that contains F3 and F4 |
+| F3 | Scaled score (*k*, grid) and fast search | The commit recorded in `configs_v3/freeze_f3.json` (tagged `v3-score-freeze` locally); no later change to the frozen files or parameters. Revision 4 reopens F3 for the surface-code *k* alone: a second F3 commit records the *k* of R3-S2's convergence check, before any held-out conversion |
+| F4 | Run configs with every seed, then conversion of the held-out devices | Configs committed before the converted held-out files; converted files' hashes recorded. Revision 4 changes the held-out config's family, Qiskit level, shots rule and Nove checks, and keeps its seeds as committed |
+| F5 | Every held-out and drift run, by the frozen code, on patty | Every held-out run file records a commit that contains the latest F3 and F4. The drift runs (P2-25) ran at `ac177ab`, which contains the first F3 and the drift config; they use neither the scaled score nor the held-out config, so revision 4 changes nothing they used |
 
 ## 9. Test specification
 
@@ -130,15 +140,16 @@ For the surface code, per device and reference: "beats" when better after Holm, 
 | T3-C2 | CZ circuits | Noiseless sampling of each CZ circuit gives deterministic detectors and the expected observable; the CZ circuit's two-qubit gate pattern equals the CX circuit's on the same qubits; under uniform noise its shortest undetectable logical error has the code's distance |
 | T3-C3 | CZ Target | The P1-5 Target for FakeFez, FakeMarrakesh and FakeMiami equals the fake backend's own Target on every instruction the conversion kept |
 | T3-C4 | Exhaustive selection | Every method's choice is among the candidates and, for the scores, has the best score among all candidates (ties broken lexicographically) |
-| T3-C5 | Shots rule | Every placement's main-stage shots follow R3-C6 from its recorded pilot count; pilot counts appear in no result |
-| T3-S1 | Scaled score agreement | The R3-S2 criterion is computed and recorded for every *k* tried |
+| T3-C5 | Shots rule | Every placement's main-stage shots follow R3-C6 from its recorded pilot count and whether it is a family placement; pilot counts appear in no result |
+| T3-C6 | Nove check | `fast_lowering.Lowering` gives the same Stim circuit as Nove's lowering for every placement of A, B, D5 and D7 on FakeFez and FakeMarrakesh, for every placement at d=3 and d=5 and a seeded sample of 10,000 at d=7 on FakeMiami, and for every surface-code candidate of R3-S3, at both reset settings, before any held-out conversion; every held-out run file records its R3-C4 sample as equal |
+| T3-S1 | Scaled score agreement | The R3-S2 criterion is computed and recorded for every *k* tried, and so is the surface-code convergence for every *k* and FakeMiami case |
 | T3-S2 | No sampling | Selection with the scaled score completes with every sampler mocked to raise |
-| T3-S3 | Speed | R3-S6 holds on patty |
+| T3-S3 | Speed | R3-S6 is timed on patty at the frozen *k*, and the record says whether it met 60 seconds |
 | T3-D1 | Stale weights | Every drift-graded run records the old snapshot's hash as the decoder's source and the new one's as the simulator's |
 | T3-F1 | Freeze order | The commits of F1, F3 and F4 are ancestors of every held-out run file's commit, and no held-out converted file exists in any commit before F4's configs |
-| T3-F2 | Family | The `v3-headline` family has exactly 72 members, computed from the run files by committed code |
+| T3-F2 | Family | The `v3-headline` family has exactly 52 members (48 if FakeBerlin has no SWAP-free d=5 embedding), computed from the run files by committed code |
 | T3-R1 | Reproducibility | Re-running a case with the same seeds gives bit-identical counts and selections |
-| T3-R2 | Cross-machine | Two v2 cases rerun on patty give bit-identical counts to the committed ones, or, failing that, every placement's interval overlaps its committed interval; the outcome is recorded |
+| T3-R2 | Cross-machine | Two v2 cases rerun on patty give bit-identical counts to the committed ones, or, failing that, the per-placement z-scores of the difference between the two pooled failure rates have a root mean square of at most 1.2 and none above 4 in absolute value; the outcome is recorded. Met bit for bit (P2-14, P2-25) |
 | T3-R3 | Provenance | Every v3 run file records the v2 provenance fields plus the machine (P1-9), the reset setting, the stage timings and the lock-file hash |
 | T3-I1 | Interface | `place()` accepts a Qiskit circuit when Qiskit is installed, and the package installs, imports and runs both CLI commands without Qiskit (v1's T-I8, restated) |
 | T3-I2 | README | The README's quickstart and Python example run as written in a clean environment |
@@ -150,9 +161,10 @@ The v3 report and the summary report over v1 to v3 follow the roadmap's report r
 | ID | Requirement |
 | --- | --- |
 | R3-R1 | Every table and figure says whether it shows development or held-out devices, and which reset setting |
-| R3-R2 | Every FakeNighthawk number is labelled synthetic calibration |
+| R3-R2 | Every FakeNighthawk number is labelled synthetic calibration and exploratory |
 | R3-R3 | The Phase 1b reset result (v1's flip replicates for the v1 score; the decoder-graph score avoids it) is in the main body |
 | R3-R4 | Best-found results name the size of the simulated set and the random sample's best-found interval, so a reader can judge how far the true best could be |
+| R3-R5 | A possible outcome, pre-registered: FakeBerlin has no SWAP-free d=5 surface-code embedding. The report then says that the family had 48 members, the claims table has no surface-code row, and question 3 (scale) is answered by exploratory results only: FakeNighthawk's, labelled synthetic, and FakeMiami's development checks |
 
 ## 11. Constraints, scope and prohibited actions
 
@@ -164,6 +176,7 @@ The v3 report and the summary report over v1 to v3 follow the roadmap's report r
 | K13 | FakeNighthawk's calibration is synthetic |
 | K14 | Real drift is measured between dated snapshots, each of which carries its own single-calibration noise |
 | K15 | Best-found regret on the square lattice at d=5 and d=7 is a lower bound on the true regret |
+| K16 | mapomatic's cost charges every reset at readout error, so at reset 0 it ranks layouts by reset noise the model does not have (exploratory results only) |
 
 **Out of scope for v3:** hardware runs (roadmap Step 7, which needs an IBM Quantum account), ECR devices, surface codes on heavy-hex devices, d=7 surface codes (they need a 13×13 region; the square lattice is 10×12), routing and SWAP insertion, changes to Nove.
 
