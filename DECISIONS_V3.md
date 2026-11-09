@@ -154,3 +154,23 @@ The drift config's Qiskit baseline is level 1. On FakeFez and FakeTorino it retu
 - **Section 1 and dates.** Section 1 adds what Khaled's review read (FakeKingston's and FakeNighthawk's CZ errors, both directions with identical values, and FakeKingston's removed-coupler positions) and the drift results that came before revision 4. Revision 0 is dated Nov 8 and cites the roadmap as Nov 9. Neither date changes: the spec's dates are UTC, and the roadmap is cited by the date in its own header.
 
 The held-out config (`configs_v3/held_out.json`), `run_v3` and `analysis_v3` still follow revision 3. They change to match revision 4, with the seeds kept, before any conversion and once Khaled says to.
+
+**P2-27. The surface-code *k* convergence check: the criterion fails, and its fallback gives *k* = 80.** `nac_bench.surface_k_convergence` ran here at `bf91d75` (4 workers, 12 minutes; `results_v3/scaled/surface_k_convergence.json`). Every candidate's scaled score at the smallest *k* matched `scaled_score_from_graph` exactly, and every candidate had at least 1,280 chains. Spearman's ρ between the scores at *k* and 2*k*, and whether the top choice stays:
+
+| Case | k = 10 | 20 | 40 | 80 | 160 | 320 | 640 |
+|---|---|---|---|---|---|---|---|
+| FakeMiami d=3, reset = readout | 0.985 | 0.980 | 0.993 ✓ | 0.995 ✓ | 0.998 (top changes) | 0.999 (top changes) | 0.999 ✓ |
+| FakeMiami d=5 restored, reset = readout | 0.988 | 0.989 | 0.984 | 0.987 | 0.978 | 0.981 | 0.986 (top changes) |
+| FakeMiami d=3, reset 0 | 0.987 (top changes) | 0.986 | 0.997 (top changes) | 0.999 ✓ | 0.999 ✓ | 0.999 ✓ | 1.000 ✓ |
+| FakeMiami d=5 restored, reset 0 | 0.985 | 0.983 | 0.989 | 0.989 | 0.983 | 0.992 (top changes) | 0.991 ✓ |
+
+The d=5 ranking never settles: doubling *k* keeps moving it by about the same amount (ρ 0.978 to 0.989 at reset = readout) up to 1,280 chains. No *k* meets ρ ≥ 0.99 on all four cases, so R3-S2's fallback applies: the largest minimum ρ over the four cases is 0.987, at *k* = 80. On d=3 the top choice moves between near-tied candidates (simulated P_L 0.04196 and 0.04207, both inside the best placement's interval).
+
+Context that no rule uses, against R3-S3's simulated P_L at reset = readout:
+
+| Case | k = 10 | 20 | 40 | 80 | 160 | 320 | 640 | 1,280 |
+|---|---|---|---|---|---|---|---|---|
+| d=3: Spearman's ρ | 0.976 | 0.983 | 0.989 | 0.984 | 0.973 | 0.965 | 0.962 | 0.956 |
+| d=5 restored: Spearman's ρ | 0.717 | 0.743 | 0.771 | 0.836 | 0.869 | 0.913 | 0.937 | 0.947 |
+
+At d=5 the ranking against simulation improves steadily with *k* (v2's exact score gives 0.662 and summed error 0.694, P2-16), and the top choice is the best simulated placement for every *k* from 10 to 640. At d=3 it peaks at *k* = 40 and falls slowly. So the convergence rule, written before this run, picks a *k* whose d=5 ranking is well short of what larger *k* reaches on the same development data. The *k* F3 freezes waits for Khaled's choice between the rule's *k* = 80 and *k* = 640, the list's value with the best worst-case ρ against simulation (0.937 at d=5, 0.962 at d=3). Either way the choice uses development data only.
