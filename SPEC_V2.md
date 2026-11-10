@@ -198,7 +198,7 @@ The v2 report keeps v1's rules (R-R1–R-R8, results stated "under this noise mo
 | --- | --- |
 | K9 | Random jitter is synthetic. Real drift is correlated across qubits and over time, so Part A measures sensitivity to calibration error, not any real device's drift. Choices are decoded with true-model weights, whereas a real decoder would also use the stale calibration (rev 1) |
 | K10 | The Qiskit baseline's behaviour depends on the Qiskit version; its results apply to the pinned version only |
-| K11 | FakeAlgiers has the same raw coupling map as FakeHanoiV2, so it is held out mainly for noise values, not for device layout; after conversion the layouts differ only in which dead couplers were removed ((15,18) on FakeAlgiers; (5,8) and (19,20) on FakeHanoiV2) (rev 1) |
+| K11 | FakeAlgiers has the same raw coupling map as FakeHanoiV2, so it is held out mainly for noise values, not for device layout; after conversion the layouts differ only in which uncalibrated couplers (error 1.0 in at least one direction) were removed ((15,18) on FakeAlgiers; (5,8) and (19,20) on FakeHanoiV2) (rev 1) |
 
 **Out of scope for v2**
 
@@ -225,7 +225,7 @@ The v2 report keeps v1's rules (R-R1–R-R8, results stated "under this noise mo
 
 Pinned versions: Nove commit `485b413`, `qiskit-ibm-runtime` 0.50.0 (FakeJakartaV2 props dated 2024-05-27; FakeHanoiV2 2025-02-26; FakeAlgiers 2024-02-28). The Qiskit version for the layout baseline is pinned in the benchmark config (`qiskit==2.5.2`, the version `qiskit-ibm-runtime` 0.50.0 resolves to; rev 1) and recorded in every results file.
 
-- [Noise-Aware Placement for Nove: v1 Spec](https://claude.ai/code/artifact/5ec7af84-2f93-4621-a117-5997f036f06f): the requirements, constraints and prohibitions this spec extends
+- [Noise-Aware Placement for Nove: v1 Spec](SPEC.md): the requirements, constraints and prohibitions this spec extends
 - [KUQCI/noise-aware-compilation](https://github.com/KUQCI/noise-aware-compilation): the v1 package
 - [KUQCI/nove repository](https://github.com/KUQCI/nove)
 - [qiskit-ibm-runtime Fake Provider](https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/fake-provider): FakeJakartaV2, FakeHanoiV2 and FakeAlgiers

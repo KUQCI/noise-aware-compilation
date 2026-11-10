@@ -1,0 +1,84 @@
+{
+ "description": "Revision 5's cost projection, from development timings only (SPEC_V3.md R3-C7, B7).\n\nUsage::\n\n    python -m nac_bench.timing_v5 [--out results_v3/timing_pilot/projection_v5.json]\n\nRevision 5 adds work that neither timing pilot measured: the idle-aware summed error on every\nplacement, the surface code's simulation and its scaled score at three *k* values, the\nfamily placements' 4,000-failure main stage, the correlated re-decode and the *d*-round\nmemory (R3-C10), and two more heavy-hex devices. This module measures each new cost as a\nratio to a cost the second pilot measured on patty (``timing_pilot_2.json``), on the same\nmachine and in one process, so the machine cancels; the projection is patty's measured\ncost times the ratio. It runs on development devices only (X16): FakeFez for the heavy-hex\nrepetition codes and FakeMiami, with its removed couplers restored (R3-S3), for the surface\ncode. P_L for the shots rule comes from these development devices too; the placement counts\nare the coupling-map upper bounds the pilot recorded.\n",
+ "projection": {
+  "largest_single_case": {
+   "case": "berlin-D7 and nighthawk-D7 selection, per device, both settings",
+   "wall_hours": 15.227394724342725
+  },
+  "lines": [
+   {
+    "core_hours": 1687.742974239095,
+    "item": "revision 3's projection (4 devices)",
+    "note": "timing_pilot_2.json, unchanged"
+   },
+   {
+    "core_hours": 148.30719159292266,
+    "item": "two more heavy-hex devices",
+    "note": "FakeBoston and FakePittsburgh at Kingston's cost"
+   },
+   {
+    "core_hours": 136.30111610709287,
+    "item": "idle-aware summed error, every placement",
+    "note": "ratio to summed error"
+   },
+   {
+    "core_hours": 1.0143271560471194,
+    "item": "family placements to 4,000 failures",
+    "note": "5 placements per case"
+   },
+   {
+    "core_hours": 5.5359214275921005,
+    "item": "surface code: every candidate, pilot and main stage",
+    "note": "128 candidates on each square-lattice device (FakeMiami's count, an estimate)"
+   },
+   {
+    "core_hours": 0.1910714646755433,
+    "item": "surface code: scaled score at k = 10, 80 and 640",
+    "note": "cloud seconds, unscaled"
+   },
+   {
+    "core_hours": 1.1237256738814356,
+    "item": "correlated re-decode of the family placements",
+    "note": "same samples"
+   },
+   {
+    "core_hours": 0.24260912740328036,
+    "item": "d-round memory for D5 and D7 family placements",
+    "note": "own pilot"
+   }
+  ],
+  "notes": [
+   "development timings only: patty's second pilot, times ratios measured here on FakeFez and FakeMiami (X16)",
+   "placement counts are coupling-map upper bounds; P_L from FakeFez (repetition) and FakeMiami restored (surface), so a held-out device with lower P_L needs more shots, up to each tier's cap",
+   "the scaled score's seconds are this machine's, not scaled to patty"
+  ],
+  "per_shot_patty_fez_d7": 2.4575897789327425e-06,
+  "total_core_hours": 1980.45893678871,
+  "total_wall_hours_on_48_workers": 41.25956118309812
+ },
+ "ratios": {
+  "fez-3-p_l-3-rounds": 0.006471,
+  "fez-3-redecode-over-main": 1.7116668979635223,
+  "fez-3-seconds-per-shot-here": 2.1333138499926463e-07,
+  "fez-5-d-rounds-over-3-rounds": 1.8145686944861108,
+  "fez-5-p_l-3-rounds": 0.000891,
+  "fez-5-p_l-d-rounds": 0.0019,
+  "fez-5-redecode-over-main": 2.058498233411741,
+  "fez-5-seconds-per-shot-here": 3.7370307999935903e-07,
+  "fez-7-d-rounds-over-3-rounds": 2.1030430656254726,
+  "fez-7-idle-aware-over-summed": 3.31295421813148,
+  "fez-7-p_l-3-rounds": 0.000112,
+  "fez-7-p_l-d-rounds": 0.000427,
+  "fez-7-redecode-over-main": 2.3081787484427907,
+  "fez-7-seconds-per-shot-here": 5.148306650005452e-07,
+  "miami-7-idle-aware-over-summed": 1.9663701298869798,
+  "surface-5-candidates-miami-restored": 128,
+  "surface-5-over-fez-7": 22.626377315711025,
+  "surface-5-p_l": 0.071158,
+  "surface-5-redecode-over-main": 2.702766062970736,
+  "surface-5-scaled-k10-seconds-here": 0.015354399999978341,
+  "surface-5-scaled-k640-seconds-here": 1.2055624929998885,
+  "surface-5-scaled-k80-seconds-here": 0.12255434300004708
+ },
+ "schema": "noise-aware-compilation.timing-v5/1"
+}

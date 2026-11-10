@@ -4,7 +4,7 @@ From `results_v3/drift` and `results_v3/regrade_v2_drift`. `python -m nac_bench.
 
 ## How to read the tables
 
-For each pair of snapshots, every method picks a placement on the old snapshot (the *old choice*) and on the new one (the *fresh choice*). Both are simulated under the new calibration. The old choice is decoded with the old snapshot's weights, which is what someone who has not recalibrated would run (*old weights*). The same samples are also decoded with the new snapshot's weights (*new weights*). Couplers that died between the snapshots are simulated at a two-qubit error of 0.8, so their harm is an upper bound (P2-22).
+For each pair of snapshots, every method picks a placement on the old snapshot (the *old choice*) and on the new one (the *fresh choice*). Both are simulated under the new calibration. The old choice is decoded with the old snapshot's weights, which is what someone who has not recalibrated would run (*old weights*). The same samples are also decoded with the new snapshot's weights (*new weights*). Couplers that became uncalibrated between the snapshots (two-qubit error 1.0, which IBM marks as stale rather than broken) are simulated at a two-qubit error of 0.8, so their harm is an upper bound (P2-22).
 
 - **Kept gain:** P_L(naive) − P_L(old choice), as a share of the naive placement's P_L, both decoded with old weights. Positive means the old choice still beats naive. Brackets give the 95% Newcombe interval. The naive placement is the first valid placement in lexicographic order on the old snapshot.
 - **Fresh gain:** the same comparison for the fresh choice against the fresh naive placement, both decoded with new weights.
@@ -14,14 +14,14 @@ Qiskit's default at level 1 is left out of the tables. On FakeFez and FakeTorino
 
 ## What the runs show (reset = readout, the headline setting)
 
-1. **A month of drift costs little.** On FakeFez, every method's old choice still beats naive in all four circuits. The decoder-graph score keeps 17% to 46% (M6 0.53 to 1.27).
+1. **A month of drift costs little.** On FakeFez, every method's old choice still beats naive in all four circuits. The decoder-graph score keeps 17% to 46% (M6 0.53 to 1.27). Summed error and mapomatic kept more than the score in three of the four circuits (B, D5 and D7: 37% to 64% against 17% to 42%; at D5 the intervals overlap).
 2. **At d=7 on FakeHanoi, the decoder-graph's old choice turns worse than naive.** It is 127% worse after 14 days and 76% worse after 9 months. Decoded with new weights it is still 76% and 51% worse, so the placement itself degraded, not only its decoder. Several of its twelve couplers drifted up; for example, 15–18 went from 0.019 to 0.028 and 19–22 from 0.009 to 0.015. At d=5 it keeps 28% (14 days) and 45% (9 months). At d=3 both the old and the fresh gains are small (0% to 9%).
-3. **After 12 months on FakeTorino, three of the decoder-graph's four old choices use two couplers that had died.** Decoded with old weights, which still trust those couplers, they fail badly; for example, circuit A's P_L is 0.32 against naive's 0.059. Decoded with new weights, the same placements are 15% better, 5% worse and 37% better than naive (A, D5, D7). Most of the harm therefore comes from decoding with old weights, not from the placement.
+3. **After 12 months on FakeTorino, three of the decoder-graph's four old choices use two couplers that had become uncalibrated.** Decoded with old weights, which still trust those couplers, they fail badly; for example, circuit A's P_L is 0.32 against naive's 0.059. Decoded with new weights, the same placements are 15% better, 5% worse and 37% better than naive (A, D5, D7). Most of the harm therefore comes from decoding with old weights, not from the placement.
 4. **Choosing again is what matters.** The decoder-graph's fresh choice beats naive by 27% to 96% in every case with d ≥ 5 and on FakeTorino at every distance.
-5. **The other methods also lose their gains.** mapomatic's old choice is worse than naive in all four FakeTorino circuits. On FakeHanoi B, summed error's, mapomatic's and Qiskit's choices are worse than naive by 116% to 129%, old and fresh alike, which repeats v2's finding on that circuit rather than showing an effect of drift. Summed error kept more of its gain than the decoder-graph score in three of the four FakeTorino circuits. *Inferred, not tested:* the decoder-graph score concentrates on the very best couplers, and on FakeTorino those are the ones that later died.
+5. **The other methods also lose their gains.** mapomatic's old choice is worse than naive in all four FakeTorino circuits. On FakeHanoi B, summed error's, mapomatic's and Qiskit's choices are worse than naive by 116% to 129%, old and fresh alike, which repeats v2's finding on that circuit rather than showing an effect of drift. Summed error kept more of its gain than the decoder-graph score in three of the four FakeTorino circuits. *Inferred, not tested:* the decoder-graph score concentrates on the very best couplers, and on FakeTorino those are the ones that later became uncalibrated.
 6. **The robust rule (R3-D6, FakeHanoi 14 days) against the decoder-graph's old choice:** better in A and D7, worse in D5 and the same in B at reset = readout; at reset 0, better in A and D5 (A only with new weights) and the same in B and D7. Eight cases on one pair are too few to choose between the two rules.
 
-At reset 0 the pattern is the same. The decoder-graph's old choice keeps 25% to 61% on FakeFez, turns worse than naive at d=5 and d=7 after 14 days and at d=7 after 9 months on FakeHanoi, and uses dead couplers in B, D5 and D7 on FakeTorino.
+At reset 0 the pattern is the same. The decoder-graph's old choice keeps 25% to 61% on FakeFez, turns worse than naive at d=5 and d=7 after 14 days and at d=7 after 9 months on FakeHanoi, and uses uncalibrated couplers in B, D5 and D7 on FakeTorino.
 
 ## Tables
 
@@ -84,7 +84,7 @@ The tables have one row per method and case. A dash means the metric is undefine
 |  |  |  | Summed error | +11% [+1%, +21%] | +5% | +6% | – |  |
 |  |  |  | mapomatic | +16% [+6%, +26%] | +12% | +6% | – |  |
 |  |  |  | v1 score | +11% [+1%, +21%] | +5% | +5% | – | same choice old and new |
-| FakeTorino, 12 months | A | 5.86e-02 | Decoder-graph | -439% [-442%, -437%] | +15% | +93% | -4.95 [-5.01, -4.89] | uses 2 dead couplers |
+| FakeTorino, 12 months | A | 5.86e-02 | Decoder-graph | -439% [-442%, -437%] | +15% | +93% | -4.95 [-5.01, -4.89] | uses 2 uncalibrated couplers |
 |  |  |  | Summed error | +32% [+30%, +33%] | +52% | +77% | 0.43 [0.41, 0.45] |  |
 |  |  |  | mapomatic | -41% [-43%, -39%] | +2% | +77% | -0.56 [-0.58, -0.54] |  |
 |  |  |  | v1 score | -20% [-21%, -18%] | -23% | +92% | -0.22 [-0.24, -0.21] |  |
@@ -92,11 +92,11 @@ The tables have one row per method and case. A dash means the metric is undefine
 |  |  |  | Summed error | +38% [+37%, +40%] | +53% | +76% | 0.54 [0.52, 0.56] |  |
 |  |  |  | mapomatic | -36% [-37%, -34%] | -4% | +76% | -0.50 [-0.53, -0.48] |  |
 |  |  |  | v1 score | -17% [-19%, -16%] | -18% | +77% | -0.24 [-0.26, -0.22] |  |
-| FakeTorino, 12 months | D5 | 7.54e-03 | Decoder-graph | -504% [-511%, -496%] | -5% | +90% | -6.64 [-6.90, -6.39] | uses 2 dead couplers |
+| FakeTorino, 12 months | D5 | 7.54e-03 | Decoder-graph | -504% [-511%, -496%] | -5% | +90% | -6.64 [-6.90, -6.39] | uses 2 uncalibrated couplers |
 |  |  |  | Summed error | -46% [-50%, -41%] | -7% | +73% | -0.75 [-0.83, -0.67] |  |
 |  |  |  | mapomatic | -46% [-50%, -41%] | -7% | +73% | -0.75 [-0.83, -0.67] |  |
 |  |  |  | v1 score | -64% [-69%, -59%] | -30% | +73% | -1.05 [-1.14, -0.96] |  |
-| FakeTorino, 12 months | D7 | 2.78e-03 | Decoder-graph | -153% [-162%, -144%] | +37% | +96% | -2.15 [-2.34, -1.98] | uses 2 dead couplers |
+| FakeTorino, 12 months | D7 | 2.78e-03 | Decoder-graph | -153% [-162%, -144%] | +37% | +96% | -2.15 [-2.34, -1.98] | uses 2 uncalibrated couplers |
 |  |  |  | Summed error | +54% [+48%, +60%] | +59% | +84% | 0.87 [0.76, 0.98] |  |
 |  |  |  | mapomatic | -26% [-33%, -19%] | -14% | +84% | -0.42 [-0.54, -0.30] |  |
 |  |  |  | v1 score | -20% [-28%, -13%] | -16% | +84% | -0.33 [-0.45, -0.21] |  |
@@ -161,15 +161,15 @@ The tables have one row per method and case. A dash means the metric is undefine
 |  |  |  | Summed error | +32% [+30%, +34%] | +50% | +73% | 0.46 [0.43, 0.49] |  |
 |  |  |  | mapomatic | -31% [-34%, -29%] | -3% | +73% | -0.44 [-0.48, -0.41] |  |
 |  |  |  | v1 score | -31% [-33%, -28%] | -27% | +90% | -0.35 [-0.38, -0.33] |  |
-| FakeTorino, 12 months | B | 2.96e-02 | Decoder-graph | -799% [-803%, -795%] | -46% | +83% | -10.17 [-10.38, -9.97] | uses 2 dead couplers |
+| FakeTorino, 12 months | B | 2.96e-02 | Decoder-graph | -799% [-803%, -795%] | -46% | +83% | -10.17 [-10.38, -9.97] | uses 2 uncalibrated couplers |
 |  |  |  | Summed error | +41% [+39%, +42%] | +52% | +78% | 0.55 [0.52, 0.58] |  |
 |  |  |  | mapomatic | -25% [-28%, -23%] | -11% | +70% | -0.38 [-0.42, -0.35] |  |
 |  |  |  | v1 score | +52% [+50%, +54%] | +53% | +84% | 0.66 [0.63, 0.68] |  |
-| FakeTorino, 12 months | D5 | 3.54e-03 | Decoder-graph | -620% [-632%, -608%] | -25% | +90% | -7.49 [-7.91, -7.11] | uses 2 dead couplers |
+| FakeTorino, 12 months | D5 | 3.54e-03 | Decoder-graph | -620% [-632%, -608%] | -25% | +90% | -7.49 [-7.91, -7.11] | uses 2 uncalibrated couplers |
 |  |  |  | Summed error | -17% [-23%, -11%] | -4% | +66% | -0.29 [-0.40, -0.18] |  |
 |  |  |  | mapomatic | -17% [-23%, -11%] | -4% | +71% | -0.27 [-0.36, -0.17] |  |
 |  |  |  | v1 score | -60% [-66%, -53%] | -17% | +73% | -0.90 [-1.02, -0.78] |  |
-| FakeTorino, 12 months | D7 | 1.10e-03 | Decoder-graph | -195% [-206%, -182%] | +28% | +97% | -2.59 [-2.90, -2.33] | uses 2 dead couplers |
+| FakeTorino, 12 months | D7 | 1.10e-03 | Decoder-graph | -195% [-206%, -182%] | +28% | +97% | -2.59 [-2.90, -2.33] | uses 2 uncalibrated couplers |
 |  |  |  | Summed error | +53% [+44%, +61%] | +58% | +81% | 0.84 [0.69, 1.01] |  |
 |  |  |  | mapomatic | -49% [-61%, -37%] | -35% | +81% | -0.78 [-1.00, -0.58] |  |
 |  |  |  | v1 score | +53% [+44%, +61%] | +58% | +81% | 0.84 [0.69, 1.01] |  |

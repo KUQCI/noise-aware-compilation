@@ -1,14 +1,35 @@
 {
-  "schema": "noise-aware-compilation.freeze-f3-v3/1",
-  "status": "Records freeze step F3 (SPEC_V3.md section 8): the commit that froze both scores and the fast search, and the git blob of every frozen file at that commit. The commit is tagged v3-score-freeze locally; this session's git proxy refuses tag pushes, so this file names the commit. tests/test_v3_freeze.py checks the files against it and the freeze order (T3-F1).",
-  "commit": "66d2c36a67aff4260927b627fb4e7a737085b27f",
-  "tag": "v3-score-freeze",
+  "schema": "noise-aware-compilation.freeze-f3-v3/2",
+  "status": "Records freeze step F3 (SPEC_V3.md section 8): the first commit, which froze both scores and the fast search, with the git blob of every frozen file at it, and the second commit, which revision 4 allowed and X18 (revision 5) excepts, and which added the surface-code k alone. Both are tagged (annotated) and their hashes are recorded with a server-side timestamp before any conversion (DECISIONS_V3.md P2-38). tests/test_v3_freeze.py checks the files and parameters against them and the freeze order (T3-F1).",
+  "commits": [
+    {
+      "commit": "66d2c36a67aff4260927b627fb4e7a737085b27f",
+      "tag": "v3-score-freeze",
+      "froze": "both scores, the fast search, the frozen files and the repetition-code scaled-score parameters",
+      "parameters": [
+        "scaled_score",
+        "fast_search",
+        "frozen_files"
+      ]
+    },
+    {
+      "commit": "02c96067efc5c7c0737a4161eaef6f7e6c130dc8",
+      "tag": "v3-score-freeze-surface-k",
+      "froze": "the surface-code scaled score, k = 640 at grid step 0.05 (R3-S2, P2-27, P2-28)",
+      "parameters": [
+        "surface_scaled_score"
+      ]
+    }
+  ],
   "frozen_files_git_blobs": {
     "src/noise_aware_compilation/decoder_graph.py": "6cb34748b35e939c4b3dd39e9e5188088d465799",
     "src/noise_aware_compilation/placement.py": "3bd0079450cd063f53b54d40f47f7f3a35a782d5",
     "src/noise_aware_compilation/scaled_score.py": "c65e1ebcd481bfa737912ddcdcecf7ba5742ac63",
     "src/noise_aware_compilation/fast_search.py": "1f5c2c65696d7d155f5df70f508d92e20941885e",
-    "src/noise_aware_compilation/fast_lowering.py": "b22b38c07c613ec552e66e7162eb7ba9e9f4a369",
-    "configs_v3/score_freeze.json": "30e313027753d92ba8eceefde0e9dd2416c8d038"
+    "src/noise_aware_compilation/fast_lowering.py": "b22b38c07c613ec552e66e7162eb7ba9e9f4a369"
+  },
+  "score_freeze_git_blobs": {
+    "66d2c36a67aff4260927b627fb4e7a737085b27f": "30e313027753d92ba8eceefde0e9dd2416c8d038",
+    "02c96067efc5c7c0737a4161eaef6f7e6c130dc8": "1f01cfbbf5307a45be2aac9f02e0dc599bc09a40"
   }
 }

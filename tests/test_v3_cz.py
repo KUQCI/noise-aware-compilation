@@ -132,7 +132,7 @@ def test_stored_devices_match_a_fresh_conversion(name: str) -> None:
 def test_held_out_devices_are_not_converted_before_the_freeze() -> None:
     """X16: no held-out device file exists before freeze step F4."""
 
-    for name in ("kingston", "aachen", "berlin", "nighthawk"):
+    for name in ("boston", "pittsburgh", "berlin", "kingston", "aachen", "nighthawk"):
         assert not (RAW / f"props_{name}.json").exists()
         assert name not in stored_hashes()
 

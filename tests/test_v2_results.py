@@ -334,6 +334,13 @@ def test_figures_exist(report: str) -> None:
 
 
 def test_v1_results_untouched() -> None:
-    # X14: v2 adds files; it never changes v1's config, results or report.
-    changed = _git("diff", "--name-only", V1_TIP, "HEAD", "--", "configs", "results", "REPORT.md")
+    # X14: v2 adds files; it never changes v1's config, results or report. The one exception
+    # is the v3 banner (SPEC_V3.md revision 5, R1): REPORT.md minus that block is v1's.
+    changed = _git("diff", "--name-only", V1_TIP, "HEAD", "--", "configs", "results")
     assert changed == ""
+    v1 = _git("show", f"{V1_TIP}:REPORT.md")
+    now = (ROOT / "REPORT.md").read_text(encoding="utf-8")
+    start, end = "<!-- v3-banner:start -->", "<!-- v3-banner:end -->\n\n"
+    assert now.count(start) == 1 and now.count(end) == 1
+    without = now[: now.index(start)] + now[now.index(end) + len(end) :]
+    assert without.strip() == v1  # _git strips the trailing newline

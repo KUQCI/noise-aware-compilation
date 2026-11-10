@@ -49,8 +49,8 @@ remaining pairs. FakeJakartaV2 is unchanged.
 **Why.** The threshold comes from the conversion rule itself, not from the data, and applies
 to any device. v1 instead capped the entries at 1/15 per term. That kept one perfect and one
 always-failing direction per pair, which the K4 directional model then treated as real: the
-d=5 and d=7 fixed baselines ran a gate in the dead direction, several chosen placements sat
-on a dead coupler using its other direction, and dead-direction placements inflated the
+d=5 and d=7 fixed baselines ran a gate in the uncalibrated direction (error 1.0), several
+chosen placements sat on such a coupler using its other direction, and those placements inflated the
 all-placement average (see the v1 audit). T-L1 adds `L1-coupler-better`, which restores the
 removed pairs with both directions at the CX rule applied to the lower raw error, as the
 optimistic bound (the 1 being a reporting glitch). That variant changes the valid placement
@@ -216,7 +216,7 @@ Under the strict rev 2 wording, two tests failed on the rev 2 results:
 
 * **T-R2** on FakeHanoiV2 D7 N2: chosen vs fixed was *better* on seeds 1 and 3 and
   *indistinguishable* on seed 2 (pooled: *better*, −19%). Under rev 2 the d=7 fixed baseline
-  no longer runs a dead gate, so the gap is small enough that one seed's intervals overlap.
+  no longer runs an uncalibrated gate, so the gap is small enough that one seed's intervals overlap.
 * **T-P5** on FakeHanoiV2: chosen vs fixed was *indistinguishable* at 1 and 3 rounds and
   *better* at 5 rounds.
 

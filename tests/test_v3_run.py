@@ -324,7 +324,8 @@ def surface_run(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
     case = run_v3.cases(config)[0]
     with ProcessPoolExecutor(max_workers=2) as pool:
         path = run_v3.run_case(case, config, pool, workers=2, out_dir=tmp, machine_label="t")
-    return json.loads(path.read_text(encoding="utf-8"))
+    run: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    return run
 
 
 def test_surface_choices_and_sensitivity(surface_run: dict[str, Any]) -> None:

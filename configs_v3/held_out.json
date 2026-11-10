@@ -1,7 +1,9 @@
 {
-  "schema": "noise-aware-compilation.held-out-config-v3/1",
-  "status": "Freeze step F4 (SPEC_V3.md section 8), committed after the score freeze F3 (configs_v3/freeze_f3.json) and before any held-out device was converted, scored or simulated. Seen beforehand: what SPEC_V3.md section 1 lists. The held-out devices are converted only after Khaled's review of SPEC_V3.md; any change that review makes to this file is committed before the conversion and recorded in DECISIONS_V3.md. Every run of this config uses nac_bench.run_v3 at a clean commit that contains this file.",
+  "schema": "noise-aware-compilation.held-out-config-v3/2",
+  "spec_revision": 5,
+  "status": "Freeze step F4 (SPEC_V3.md section 8) at revision 5: committed after both F3 commits (configs_v3/freeze_f3.json) and before any held-out device was converted, scored or simulated. Seen beforehand: what SPEC_V3.md section 1 lists. F4 is the last commit that touches this file; it is tagged v3-held-out-config and its hash is recorded with a server-side timestamp before any conversion (DECISIONS_V3.md P2-38). Every run of this config uses nac_bench.run_v3 at a clean commit that contains this file.",
   "family": "v3-headline",
+  "isolation_family": "v3-decoder-graph-isolation",
   "settings": {
     "readout": "each qubit's reset flip probability equals its readout flip probability (P1-13, the headline setting)",
     "zero": "reset flip probability 0 on every qubit, as in the converted snapshots (the bridge to v1 and v2)"
@@ -14,12 +16,27 @@
   "headline_references": [
     "naive",
     "lowest-summed-error",
-    "qiskit-default-l1",
+    "qiskit-default-l2",
     "mapomatic"
   ],
+  "isolation_references": {
+    "repetition": [
+      "idle-aware-summed-error",
+      "v1"
+    ],
+    "surface": [
+      "idle-aware-summed-error"
+    ]
+  },
+  "device_roles": {
+    "confirmatory": "in the family; claims cite these devices",
+    "seen": "calibration partly seen before F4 (SPEC_V3.md section 1); every case runs, exploratory, never in the family or a claim",
+    "synthetic": "synthetic calibration; every case runs, exploratory, labelled synthetic"
+  },
   "devices": {
-    "kingston": {
+    "boston": {
       "lattice": "heavy-hex",
+      "role": "confirmatory",
       "synthetic_calibration": false,
       "circuits": [
         "A",
@@ -28,8 +45,9 @@
         "D7"
       ]
     },
-    "aachen": {
+    "pittsburgh": {
       "lattice": "heavy-hex",
+      "role": "confirmatory",
       "synthetic_calibration": false,
       "circuits": [
         "A",
@@ -40,6 +58,7 @@
     },
     "berlin": {
       "lattice": "square",
+      "role": "confirmatory",
       "synthetic_calibration": false,
       "circuits": [
         "A",
@@ -49,8 +68,31 @@
         "S5"
       ]
     },
+    "kingston": {
+      "lattice": "heavy-hex",
+      "role": "seen",
+      "synthetic_calibration": false,
+      "circuits": [
+        "A",
+        "B",
+        "D5",
+        "D7"
+      ]
+    },
+    "aachen": {
+      "lattice": "heavy-hex",
+      "role": "seen",
+      "synthetic_calibration": false,
+      "circuits": [
+        "A",
+        "B",
+        "D5",
+        "D7"
+      ]
+    },
     "nighthawk": {
       "lattice": "square",
+      "role": "synthetic",
       "synthetic_calibration": true,
       "circuits": [
         "A",
@@ -101,13 +143,23 @@
   "pilot_seed": 20261204,
   "sample_seed": 20261205,
   "seed_transpiler": 20261206,
-  "seed_note": "New and disjoint from every v1 (20261011-13), v2 (20261021-23, 20261031) and v3 Phase 1 (20261108-10) seed. Main-stage chunk k of a placement on base seed b: derive_seed('eval-v3-held-out', b, case_id, key, k); pilot: derive_seed('pilot-v3-held-out', pilot_seed, case_id, key, k); the R3-C5 random sample and the Nove checks: seeds derived from sample_seed and the case id ('sample-v3-held-out', 'check-v3-held-out')",
+  "seed_note": "New and disjoint from every v1 (20261011-13), v2 (20261021-23, 20261031) and v3 Phase 1 (20261108-10) seed. Main-stage chunk k of a placement on base seed b: derive_seed('eval-v3-held-out', b, case_id, key, k); pilot: derive_seed('pilot-v3-held-out', pilot_seed, case_id, key, k); the R3-C5 random sample and the Nove checks: seeds derived from sample_seed and the case id ('sample-v3-held-out', 'check-v3-held-out'); the d-round sensitivity run (R3-C10): pilot derive_seed('pilot-v3-rounds', pilot_seed, case_id, key, k) and main stage derive_seed('eval-v3-rounds', b, case_id, key, k); the correlated re-decode reuses the main stage's chunk seeds, so it decodes the same samples",
   "shots_rule": {
     "pilot_shots": 100000,
     "min_shots_per_seed": 200000,
-    "max_shots_per_seed": 25600000,
-    "expected_failures": 400,
-    "description": "R3-C6: every simulated placement gets one 100,000-shot pilot on the pilot seed; its main-stage shots per seed are the smallest 200,000 x 2^k with 3 x shots x p >= 400, capped at 25,600,000 (p = 0 gives the cap); only main-stage counts on the three base seeds enter any result"
+    "family": {
+      "expected_failures": 4000,
+      "max_shots_per_seed": 102400000
+    },
+    "other": {
+      "expected_failures": 400,
+      "max_shots_per_seed": 25600000
+    },
+    "family_placement_roles": [
+      "confirmatory",
+      "synthetic"
+    ],
+    "description": "R3-C6: every simulated placement gets one 100,000-shot pilot on the pilot seed; its main-stage shots per seed are the smallest 200,000 x 2^k with 3 x shots x p >= F, capped at C (p = 0 gives the cap). A family placement (the headline method's and the headline references' choices, at both settings, on the confirmatory and synthetic devices) gets F = 4,000 and C = 102,400,000; every other placement F = 400 and C = 25,600,000. Pilot counts set shots and may select (pilot-best) but never enter a failure rate; only main-stage counts on the three base seeds do"
   },
   "best_found": {
     "top": 30,
@@ -115,10 +167,14 @@
     "description": "R3-C5, on the square lattice at d=5 and d=7: every method's choice, the top 30 by the decoder-graph score, summed error and mapomatic's cost, and 100 uniform placements; every placement elsewhere"
   },
   "nove_checks_per_case": 200,
-  "scaled_score": {
-    "k": 10,
+  "surface_scaled_score": {
+    "k": 640,
     "step": 0.05
   },
+  "surface_k_sensitivity": [
+    10,
+    80
+  ],
   "fast_search": {
     "prefilter": 10,
     "starts": 30,
@@ -128,14 +184,42 @@
     "max_shift": 4,
     "max_evaluations": 20000
   },
+  "sensitivity": {
+    "applies_to": "the family placements of the confirmatory devices at the headline setting",
+    "correlated_matching": "R3-C10: the main stage's samples decoded again with PyMatching's correlated matching (enable_correlations=True)",
+    "rounds_equal_distance": {
+      "circuits": [
+        "D5",
+        "D7"
+      ],
+      "description": "R3-C10: D5 and D7 simulated again with d rounds, with their own pilot and the family's shots rule"
+    }
+  },
   "score_freeze_file": "configs_v3/score_freeze.json",
   "qiskit_version": "2.5.2",
   "mapomatic_version": "0.14.0",
   "verdict_rule": "P1-1: better when the upper end of the 95% Newcombe interval for P_L(choice) - P_L(reference) is below zero, worse when its lower end is above zero, otherwise tie; the same placement is a tie",
-  "test": "two-sided pooled two-proportion z-test on the main-stage failure counts pooled over the three base seeds; Holm's step-down correction over the family",
+  "test": "two-sided pooled two-proportion z-test on the main-stage failure counts pooled over the three base seeds; Holm's step-down correction over each family; better after Holm when Holm rejects and P_L(choice) - P_L(reference) < 0, worse after Holm when Holm rejects and the difference > 0",
   "alpha": 0.05,
   "claim_rules": {
-    "beats_min_cases": 5,
-    "description": "Per layout and reference: 'beats' when better after Holm in at least 5 of the layout's 8 repetition cases and worse after Holm in none; 'loses to' when worse after Holm in at least one (each named); otherwise 'no difference shown'. Surface code, per device and reference: 'beats' / 'loses to' when better / worse after Holm, otherwise 'no difference shown'"
+    "layouts": {
+      "heavy-hex": {
+        "devices": [
+          "boston",
+          "pittsburgh"
+        ],
+        "repetition_cases": 8,
+        "t": 5
+      },
+      "square": {
+        "devices": [
+          "berlin"
+        ],
+        "repetition_cases": 4,
+        "t": 3
+      }
+    },
+    "threshold_rule": "t = floor(n / 2) + 1: better after Holm in more than half of the layout's n repetition cases",
+    "description": "Per layout and reference, from the family at the headline setting: 'beats X on <devices> (<layout>), under this noise model' when better after Holm in at least t cases and worse in none; 'mixed against X ...: better in N cases, worse in M (named)' when better in at least one and worse in at least one; 'loses to X ... (named)' when worse in at least one and better in none; otherwise 'no difference shown against X ...'. Surface code, per confirmatory device and reference: 'beats' / 'loses to' when better / worse after Holm, otherwise 'no difference shown'. A case or comparison with no valid placement leaves the family and t does not change. The isolation family uses the same rules"
   }
 }

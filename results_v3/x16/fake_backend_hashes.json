@@ -1,0 +1,69 @@
+{
+ "all_identical": true,
+ "description": "X16 hash check: are the held-out fake-backend files the same in two runtime releases?\n\nUsage::\n\n    python scripts/check_fake_backend_hashes.py [--out results_v3/x16/fake_backend_hashes.json]\n\nThe X16 incident (SPEC_V3.md section 1) read aggregates from the held-out devices' files in\n``qiskit-ibm-runtime`` 0.52.0; this project converts from 0.50.0 (``requirements-lock.txt``).\nThis script compares the files' git blob hashes without opening any of them: it makes a\nblobless, bare clone of the public ``Qiskit/qiskit-ibm-runtime`` repository (trees only, no\nfile contents), lists each file's blob hash at both release tags with ``git ls-tree``, and\nhashes the installed 0.50.0 files with ``git hash-object``. No calibration value is read, no\nwheel is downloaded, and nothing is parsed.\n",
+ "git_blobs": {
+  "0.50.0": {
+   "conf_aachen.json": "421e7e11b19e5e151029c84f5f3707d83dd9a961",
+   "conf_berlin.json": "e56610b85a61cba8d7046012cb83f4d22bd5a78a",
+   "conf_boston.json": "41f948ed66bad78574cbe83a56b45786549fb86b",
+   "conf_kingston.json": "2994198860e57307772d78aba30f10f5c9695fbe",
+   "conf_nighthawk.json": "956ad7def4ada46f4d19edaf703c62d26b8e4f82",
+   "conf_pittsburgh.json": "5678d4e93d867fceef2d9768587c3711a4434fa0",
+   "props_aachen.json": "e9e2057de56d3c5b5dee487624ce419123660a42",
+   "props_berlin.json": "288382fe5570f0165dd5361029d0d42cbbae0c41",
+   "props_boston.json": "e428791c26cdf6049d58dfbdc97cfb96df54dd4c",
+   "props_kingston.json": "094c84dbbe16d7874f6c2b61d06802ae75c9e8d3",
+   "props_nighthawk.json": "76b31334887f9b150f3c10d8b7b54090b3def4f3",
+   "props_pittsburgh.json": "eb01d2a5606f8f1b15fe21d83b9c4d2b783e3c89"
+  },
+  "0.52.0": {
+   "conf_aachen.json": "421e7e11b19e5e151029c84f5f3707d83dd9a961",
+   "conf_berlin.json": "e56610b85a61cba8d7046012cb83f4d22bd5a78a",
+   "conf_boston.json": "41f948ed66bad78574cbe83a56b45786549fb86b",
+   "conf_kingston.json": "2994198860e57307772d78aba30f10f5c9695fbe",
+   "conf_nighthawk.json": "956ad7def4ada46f4d19edaf703c62d26b8e4f82",
+   "conf_pittsburgh.json": "5678d4e93d867fceef2d9768587c3711a4434fa0",
+   "props_aachen.json": "e9e2057de56d3c5b5dee487624ce419123660a42",
+   "props_berlin.json": "288382fe5570f0165dd5361029d0d42cbbae0c41",
+   "props_boston.json": "e428791c26cdf6049d58dfbdc97cfb96df54dd4c",
+   "props_kingston.json": "094c84dbbe16d7874f6c2b61d06802ae75c9e8d3",
+   "props_nighthawk.json": "76b31334887f9b150f3c10d8b7b54090b3def4f3",
+   "props_pittsburgh.json": "eb01d2a5606f8f1b15fe21d83b9c4d2b783e3c89"
+  },
+  "installed": {
+   "conf_aachen.json": "421e7e11b19e5e151029c84f5f3707d83dd9a961",
+   "conf_berlin.json": "e56610b85a61cba8d7046012cb83f4d22bd5a78a",
+   "conf_boston.json": "41f948ed66bad78574cbe83a56b45786549fb86b",
+   "conf_kingston.json": "2994198860e57307772d78aba30f10f5c9695fbe",
+   "conf_nighthawk.json": "956ad7def4ada46f4d19edaf703c62d26b8e4f82",
+   "conf_pittsburgh.json": "5678d4e93d867fceef2d9768587c3711a4434fa0",
+   "props_aachen.json": "e9e2057de56d3c5b5dee487624ce419123660a42",
+   "props_berlin.json": "288382fe5570f0165dd5361029d0d42cbbae0c41",
+   "props_boston.json": "e428791c26cdf6049d58dfbdc97cfb96df54dd4c",
+   "props_kingston.json": "094c84dbbe16d7874f6c2b61d06802ae75c9e8d3",
+   "props_nighthawk.json": "76b31334887f9b150f3c10d8b7b54090b3def4f3",
+   "props_pittsburgh.json": "eb01d2a5606f8f1b15fe21d83b9c4d2b783e3c89"
+  }
+ },
+ "identical": {
+  "conf_aachen.json": true,
+  "conf_berlin.json": true,
+  "conf_boston.json": true,
+  "conf_kingston.json": true,
+  "conf_nighthawk.json": true,
+  "conf_pittsburgh.json": true,
+  "props_aachen.json": true,
+  "props_berlin.json": true,
+  "props_boston.json": true,
+  "props_kingston.json": true,
+  "props_nighthawk.json": true,
+  "props_pittsburgh.json": true
+ },
+ "installed_version": "0.50.0",
+ "repository": "https://github.com/Qiskit/qiskit-ibm-runtime",
+ "schema": "noise-aware-compilation.x16-hash-check/1",
+ "tag_commits": {
+  "0.50.0": "f64f2dccc8c16463e3fdb0e67a60fbe1b9bb0209",
+  "0.52.0": "48d888af7b0a94543a6cc3a7d976e3f31ad965c2"
+ }
+}

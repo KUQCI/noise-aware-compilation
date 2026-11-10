@@ -5,7 +5,21 @@ chooses a SWAP-free placement of a QEC circuit's qubits on a device from that de
 calibrated noise, and measures in simulation whether that choice lowers the decoded logical
 error rate compared with a fixed placement and with every other valid placement.
 
-- Specification: [SPEC.md](SPEC.md) (binding; not edited).
+<!-- v3-banner:start -->
+> **v3 re-tests these results.** Read v1 and v2 with v3's re-analyses beside them:
+> [RESET.md](results_v3/reset/RESET.md), [REANALYSIS.md](results_v3/reanalysis/REANALYSIS.md)
+> and [DRIFT.md](results_v3/drift/DRIFT.md); the plan is [SPEC_V3.md](SPEC_V3.md). On
+> FakeAlgiers, v2's held-out device, with reset error = readout error, the decoder-graph score
+> beats the naive (fixed) placement in 4 of 4 cases and beats lowest summed error, Qiskit's
+> default transpile and mapomatic in 1 of 4 after Holm; the rest do not hold. Under real
+> calibration drift a stale choice can lose its gain: on FakeHanoi d=7 the decoder-graph
+> score's old choice became worse than naive, and on FakeFez and FakeTorino summed error kept
+> more of its gain than the score in three of four circuits each. v1's FakeHanoiV2 d=3 gains
+> turn into losses at reset = readout (banner in [REPORT.md](REPORT.md)).
+<!-- v3-banner:end -->
+
+- Specification: [SPEC.md](SPEC.md) (binding; revised three times, each revision recorded at
+  its top), with [SPEC_V2.md](SPEC_V2.md) and [SPEC_V3.md](SPEC_V3.md) for later versions.
 - Open choices and reasons: [DECISIONS.md](DECISIONS.md).
 - Results: [REPORT.md](REPORT.md), raw results in `results/runs/`, figures in `results/figures/`.
 
@@ -34,7 +48,7 @@ bit-flip repetition code and FakeJakartaV2's IBM file pair):
 
 <!-- worked-example:start -->
 ```bash
-python -m pip install "noise_aware_compilation @ git+https://github.com/KUQCI/noise-aware-compilation@claude/project-thread-vef0cz"
+python -m pip install "noise_aware_compilation @ git+https://github.com/KUQCI/noise-aware-compilation@main"
 nac example --out example
 nac convert --conf example/conf_jakarta.json --props example/props_jakarta.json --out my_device
 nac place --circuit example/repetition_d3_bitflip.stim --device my_device --out placed
@@ -48,7 +62,7 @@ package version; `placed/placed_circuit.stim` is the relabelled circuit. To skip
 conversion step, pass the IBM files directly (`--conf FILE --props FILE` instead of
 `--device`), or a shipped device by name (`--device jakarta` or `--device hanoi`).
 `--scorer` picks the selection score: `decoder-graph` (the default, chosen by the held-out
-comparison in REPORT_V2.md section 4) or `v1`. Run `nac --help` or `nac COMMAND --help` for every
+comparison in REPORT_V2.md section 4, which rests on its d=7 case; v3 re-tests it) or `v1`. Run `nac --help` or `nac COMMAND --help` for every
 option. Invalid input exits with code 1 and a one-line message; `nac --debug ...` shows the
 traceback.
 

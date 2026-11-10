@@ -228,6 +228,21 @@ def git_commit_of(path: str) -> str | None:
     return out[-1] if out else None
 
 
+#: v3's note on this report (SPEC_V3.md revision 5, R1 and R5); the rest is v1's, unchanged (X14)
+V3_BANNER = (
+    "<!-- v3-banner:start -->",
+    "> **Read with v3.** v3 re-ran the reset sensitivity of section 10 with both scores",
+    "> ([RESET.md](results_v3/reset/RESET.md) section 2). With reset error = readout error, the v1",
+    "> score lost to the fixed placement in three FakeHanoiV2 d=3 circuits on this report's seeds,",
+    "> under v3's difference rule: 3 rounds +11.4% [+6.3%, +16.6%], 5 rounds +6.0% [+2.2%, +9.8%]",
+    "> and phase-flip +6.1% [+0.3%, +12.3%]. The 5-round case is the −15.2% gain listed in",
+    "> section 1. On fresh seeds the loss replicates in one of the three (3 rounds, +10.5%); the",
+    "> other two are ties. The headline below assumes reset error 0, which IBM does not publish.",
+    "> The rest of this report is unchanged (X14); v3's plan is [SPEC_V3.md](SPEC_V3.md).",
+    "<!-- v3-banner:end -->",
+)
+
+
 def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root: Path) -> str:
     lines: list[str] = []
     w = lines.append
@@ -238,6 +253,9 @@ def build_report(summaries: dict[str, CaseSummary], figures_dir: Path, repo_root
     prov = any_raw["provenance"]
 
     w("# Noise-aware placement for Nove: v1 results report")
+    w("")
+    for line in V3_BANNER:
+        w(line)
     w("")
     w(
         "Every result in this report holds **under this noise model**: the Pauli-channel "
