@@ -1,11 +1,16 @@
 {
-  "schema": "noise-aware-compilation.score-freeze-v3/1",
-  "status": "Freeze step F3 (SPEC_V3.md section 8), tagged v3-score-freeze. Neither score, the fast search, the files below nor these parameters change after this commit (X18); every held-out and drift run file records a commit that contains it (F5).",
+  "schema": "noise-aware-compilation.score-freeze-v3/2",
+  "status": "Freeze step F3 (SPEC_V3.md section 8). The first F3 commit (tagged v3-score-freeze) froze both scores, the fast search, the files below and the repetition-code scaled-score parameters; the second (tagged v3-score-freeze-surface-k, revision 4's reopening, X18) added surface_scaled_score and changed nothing else. No score, file or parameter here changes after it; every held-out and drift run file records a commit that contains it (F5). configs_v3/freeze_f3.json names both commits.",
   "scaled_score": {
     "k": 10,
     "step": 0.05
   },
   "scaled_score_source": "R3-S2 by its fallback (P2-9): results_v3/scaled/calibration.json",
+  "surface_scaled_score": {
+    "k": 640,
+    "step": 0.05
+  },
+  "surface_scaled_score_source": "R3-S2's surface-code convergence check (P2-27: the criterion failed and its fallback gave k = 80) and Khaled's choice of k = 640 after seeing it (P2-28, a deviation): results_v3/scaled/surface_k_convergence.json",
   "fast_search": {
     "prefilter": 10,
     "starts": 30,
