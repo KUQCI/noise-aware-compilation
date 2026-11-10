@@ -1,4 +1,4 @@
-"""v3 held-out runner: SPEC_V3.md Part A and the surface code of Part C.
+"""v3 held-out runner: SPEC_V3.md Part A and the surface code of Part C (revision 5).
 
 Usage::
 
@@ -10,8 +10,9 @@ the fast search frozen at F3:
 
 1. **Selection (R3-C4).** Every valid placement is enumerated and lowered once by
    :class:`noise_aware_compilation.fast_lowering.Lowering`; the decoder-graph score, the v1
-   score and summed error are computed from that lowering on the workers, and a seeded sample
-   of placements is checked against Nove's own lowering. Each score's choice follows its own
+   score, summed error and the idle-aware summed error (revision 5) are computed from that
+   lowering on the workers, and a seeded sample of placements is checked against Nove's own
+   lowering. Each score's choice follows its own
    v1/v2 tie rule. Qiskit's default transpile at levels 1 to 3 and mapomatic run on the
    IBM-shaped CZ Target of the setting (R3-C9), mapomatic's layout costs on the workers;
    v2's VF2Layout baseline and the fast search (R3-C8) are recorded as exploratory. The
@@ -21,14 +22,23 @@ the fast search frozen at F3:
    decoder-graph score, by summed error and by mapomatic's cost, and 100 placements drawn
    uniformly (seeded).
 3. **Shots (R3-C6).** A 100,000-shot pilot on the pilot seed, then each placement's
-   main-stage shots per seed from its pilot count, on the three base seeds. Pilot counts are
-   recorded only so the shots rule can be checked; no result uses them.
-4. Writes ``<out>/runs/<case_id>.json`` and every placement's scores to
+   main-stage shots per seed from its pilot count, on the three base seeds: about 4,000
+   expected failures for a *family placement* (the headline method's and the headline
+   references' choices on the family's devices and FakeNighthawk), about 400 otherwise.
+   Pilot counts set the shots and may select (the exploratory *pilot-best* method of the
+   analysis) but never enter a failure rate (T3-C5).
+4. **Sensitivity (R3-C10, exploratory).** On the confirmatory devices at the headline
+   setting, every family placement's main-stage samples are decoded again with correlated
+   matching (:mod:`nac_bench.sensitivity_v3`), and the family placements of D5 and D7 are
+   simulated again in a memory of *d* rounds, with their own pilot and the family's shots.
+5. Writes ``<out>/runs/<case_id>.json`` and every placement's scores to
    ``<out>/scores/<case_id>.npz``, whose SHA-256 the run file records (the score files of the
    square-lattice cases run to hundreds of megabytes and stay out of git).
 
 Surface-code cases (R3-S4, R3-S5) score every embedding under both hook-safe schedules with
-the scaled score (headline) and v2's exact decoder-graph score, give summed error, the naive
+the scaled score at the frozen surface-code *k* (headline), at the sensitivity *k* values of
+R3-S2, with v2's exact decoder-graph score and with the idle-aware summed error, give summed
+error, the naive
 placement, Qiskit's default and mapomatic the default schedule, and simulate every
 candidate under the same shots rule.
 
@@ -62,7 +72,13 @@ from nac_bench.baselines_v3 import mapomatic_cost_chunk, mapomatic_version, run_
 from nac_bench.machine import machine
 from nac_bench.qiskit_layout import qiskit_layout, qiskit_version
 from nac_bench.run_reset import SETTINGS, _bench_source_sha256, git_state, noise_for
-from noise_aware_compilation.baselines import SUMMED_ERROR_METHOD, summed_error
+from nac_bench.sensitivity_v3 import CORRELATED_DECODER_DESCRIPTION, CorrelatedRedecode
+from noise_aware_compilation.baselines import (
+    IDLE_AWARE_SUMMED_ERROR_METHOD,
+    SUMMED_ERROR_METHOD,
+    idle_aware_summed_error,
+    summed_error,
+)
 from noise_aware_compilation.benchmark import provenance
 from noise_aware_compilation.circuits import repetition_code
 from noise_aware_compilation.decoder_graph import (
@@ -99,9 +115,15 @@ from noise_aware_compilation.surface_code import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-RUN_SCHEMA = "noise-aware-compilation.held-out-run-v3/1"
+RUN_SCHEMA = "noise-aware-compilation.held-out-run-v3/2"
+SPEC_REVISION = 5
 SEED_TAG = "eval-v3-held-out"
 PILOT_TAG = "pilot-v3-held-out"
+ROUNDS_SEED_TAG = "eval-v3-rounds"
+ROUNDS_PILOT_TAG = "pilot-v3-rounds"
+#: device roles (config ``devices.<name>.role``)
+CONFIRMATORY = "confirmatory"
+ROLES = (CONFIRMATORY, "seen", "synthetic")
 SAMPLE_TAG = "sample-v3-held-out"
 CHECK_TAG = "check-v3-held-out"
 SCORE_CHUNK = 2_000  # placements per scoring task
@@ -119,6 +141,8 @@ def load_config(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise TypeError("config must be a JSON object")
+    if data.get("spec_revision") != SPEC_REVISION:
+        raise ValueError(f"config is not for SPEC_V3.md revision {SPEC_REVISION}")
     data["_config_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
     return data
 
@@ -131,9 +155,12 @@ def cases(config: dict[str, Any]) -> list[dict[str, Any]]:
         if setting not in SETTINGS:
             raise ValueError(f"unknown reset setting {setting!r}")
         for device, info in config["devices"].items():
+            if info["role"] not in ROLES:
+                raise ValueError(f"unknown device role {info['role']!r}")
             base = {
                 "device": device,
                 "lattice": info["lattice"],
+                "role": info["role"],
                 "synthetic_calibration": bool(info["synthetic_calibration"]),
                 "setting": setting,
                 "headline_setting": setting == config["headline_setting"],
@@ -149,6 +176,29 @@ def cases(config: dict[str, Any]) -> list[dict[str, Any]]:
                     }
                 )
     return out
+
+
+def stage_rule(rule: dict[str, Any], family: bool) -> dict[str, int]:
+    """R3-C6's flat rule for a family placement (``family``) or any other placement."""
+
+    tier = rule["family" if family else "other"]
+    return {
+        "min_shots_per_seed": int(rule["min_shots_per_seed"]),
+        "max_shots_per_seed": int(tier["max_shots_per_seed"]),
+        "expected_failures": int(tier["expected_failures"]),
+    }
+
+
+def family_placements_apply(case: dict[str, Any], config: dict[str, Any]) -> bool:
+    """R3-C6: whether a case's family placements get the family's shots (both settings)."""
+
+    return bool(case["role"] in config["shots_rule"]["family_placement_roles"])
+
+
+def sensitivity_applies(case: dict[str, Any], config: dict[str, Any]) -> bool:
+    """R3-C10: the sensitivity runs cover the family's own cases."""
+
+    return case["role"] == CONFIRMATORY and bool(case["headline_setting"])
 
 
 def main_shots(failures: int, shots: int, rule: dict[str, Any], seeds: int) -> int:
@@ -196,32 +246,43 @@ def _schedules(distance: int, rounds: int) -> tuple[Schedule, ...]:
 
 def _score_chunk(
     args: tuple[str, str, CircuitKey, list[Placement]],
-) -> tuple[list[float], list[float], list[float]]:
-    """Decoder-graph score, v1 score and summed error of each placement of a chunk."""
+) -> tuple[list[float], list[float], list[float], list[float]]:
+    """Decoder-graph score, v1 score, summed error and idle-aware summed error of a chunk."""
 
     device, setting, key, chunk = args
     _stored, noise = _models(device, setting)
     circuit = _circuit(key)
     lowering = _lowering(device, setting, key)
-    dg, v1, summed = [], [], []
+    dg, v1, summed, idle = [], [], [], []
     for m in chunk:
         noisy = lowering.stim_circuit(m)
         dg.append(decoder_graph_score_from_dem(approximate_dem(noisy, decompose=True)))
         v1.append(v1_score_from_dem(approximate_dem(noisy, decompose=False)))
         summed.append(summed_error(circuit, noise, m))
-    return dg, v1, summed
+        idle.append(idle_aware_summed_error(noisy))
+    return dg, v1, summed, idle
 
 
 def _surface_score(
-    args: tuple[str, str, CircuitKey, Placement, int, float],
-) -> tuple[float, float, float]:
-    """Scaled score, exact decoder-graph score and summed error of one surface candidate."""
+    args: tuple[str, str, CircuitKey, Placement, int, float, tuple[int, ...]],
+) -> tuple[float, float, float, float, tuple[float, ...]]:
+    """Scaled score, exact decoder-graph score, summed error, idle-aware summed error and the
+    scaled score at each sensitivity *k* of one surface candidate."""
 
-    device, setting, key, mapping, k, step = args
+    device, setting, key, mapping, k, step, sensitivity = args
     _stored, noise = _models(device, setting)
-    dem = approximate_dem(_lowering(device, setting, key).stim_circuit(mapping), decompose=True)
-    scaled = scaled_score_from_graph(matching_graph(dem), ScaledParameters(k, step))
-    return scaled, decoder_graph_score_from_dem(dem), summed_error(_circuit(key), noise, mapping)
+    noisy = _lowering(device, setting, key).stim_circuit(mapping)
+    dem = approximate_dem(noisy, decompose=True)
+    graph = matching_graph(dem)
+    scaled = scaled_score_from_graph(graph, ScaledParameters(k, step))
+    others = tuple(scaled_score_from_graph(graph, ScaledParameters(j, step)) for j in sensitivity)
+    return (
+        scaled,
+        decoder_graph_score_from_dem(dem),
+        summed_error(_circuit(key), noise, mapping),
+        idle_aware_summed_error(noisy),
+        others,
+    )
 
 
 def _check_task(args: tuple[str, str, CircuitKey, Placement]) -> int:
@@ -241,6 +302,13 @@ def _evaluator(
 def _sim_task(args: tuple[str, str, CircuitKey, Placement, int, list[int]]) -> dict[str, int]:
     device, setting, key, mapping, shots, seeds = args
     return _evaluator(device, setting, key, mapping).run(shots, seeds).to_dict()
+
+
+def _redecode_task(
+    args: tuple[str, str, CircuitKey, Placement, int, list[int]],
+) -> dict[str, int]:
+    device, setting, key, mapping, shots, seeds = args
+    return CorrelatedRedecode(_evaluator(device, setting, key, mapping)).run(shots, seeds)
 
 
 def _mapomatic_chunks(pool: ProcessPoolExecutor, device: str, setting: str) -> Any:
@@ -286,12 +354,16 @@ def simulate(
     device: str,
     setting: str,
     case_id: str,
-    items: Sequence[tuple[CircuitKey, Placement, str]],
+    items: Sequence[tuple[CircuitKey, Placement, str, bool]],
     config: dict[str, Any],
+    *,
+    tags: tuple[str, str] = (PILOT_TAG, SEED_TAG),
 ) -> tuple[list[dict[str, Any]], dict[str, float]]:
-    """R3-C6 for each (circuit, placement, seed key): pilot, then main stage on every base seed."""
+    """R3-C6 for each (circuit, placement, seed key, family placement): pilot, then the main
+    stage on every base seed, with the family's or the other placements' shots rule."""
 
     rule = config["shots_rule"]
+    pilot_tag, seed_tag = tags
     pilot_seed = int(config["pilot_seed"])
     base_seeds = [int(s) for s in config["base_seeds"]]
     pilot_shots = int(rule["pilot_shots"])
@@ -306,18 +378,21 @@ def simulate(
                     key,
                     m,
                     pilot_shots,
-                    _chunk_seeds(PILOT_TAG, pilot_seed, case_id, seed_key, pilot_shots),
+                    _chunk_seeds(pilot_tag, pilot_seed, case_id, seed_key, pilot_shots),
                 )
-                for key, m, seed_key in items
+                for key, m, seed_key, _family in items
             ],
         )
     )
     pilot_seconds = time.perf_counter() - t
-    shots = [main_shots(p["logical_failures"], p["shots"], rule, len(base_seeds)) for p in pilot]
+    shots = [
+        main_shots(p["logical_failures"], p["shots"], stage_rule(rule, item[3]), len(base_seeds))
+        for p, item in zip(pilot, items, strict=True)
+    ]
     tasks, owners = [], []
-    for i, ((key, m, seed_key), n) in enumerate(zip(items, shots, strict=True)):
+    for i, ((key, m, seed_key, _family), n) in enumerate(zip(items, shots, strict=True)):
         for si, base in enumerate(base_seeds):
-            seeds = _chunk_seeds(SEED_TAG, base, case_id, seed_key, n)
+            seeds = _chunk_seeds(seed_tag, base, case_id, seed_key, n)
             for part in range(0, len(seeds), TASK_CHUNKS):
                 part_shots = min(TASK_CHUNKS * CHUNK_SHOTS, n - part * CHUNK_SHOTS)
                 tasks.append(
@@ -331,7 +406,7 @@ def simulate(
         totals[owner] = c if owner not in totals else totals[owner] + c
     main_seconds = time.perf_counter() - t
     rows = []
-    for i in range(len(items)):
+    for i, item in enumerate(items):
         per_seed = []
         for si, base in enumerate(base_seeds):
             c = totals[(i, si)]
@@ -340,6 +415,7 @@ def simulate(
             per_seed.append({"base_seed": base, **c.to_dict()})
         rows.append(
             {
+                "family_placement": bool(item[3]),
                 "pilot": {
                     "shots": pilot[i]["shots"],
                     "logical_failures": pilot[i]["logical_failures"],
@@ -349,6 +425,111 @@ def simulate(
             }
         )
     return rows, {"pilot": pilot_seconds, "main": main_seconds}
+
+
+def redecode(
+    pool: ProcessPoolExecutor,
+    device: str,
+    setting: str,
+    case_id: str,
+    items: Sequence[tuple[CircuitKey, Placement, str]],
+    rows: Sequence[dict[str, Any]],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """R3-C10: each item's main-stage samples decoded again with correlated matching.
+
+    ``rows`` are the items' main-stage rows; the uncorrelated count of every seed must equal
+    the main stage's, which proves both decoders saw the same syndromes.
+    """
+
+    tasks, owners = [], []
+    for i, ((key, m, seed_key), row) in enumerate(zip(items, rows, strict=True)):
+        n = int(row["shots_per_seed"])
+        for si, base in enumerate(int(s) for s in config["base_seeds"]):
+            seeds = _chunk_seeds(SEED_TAG, base, case_id, seed_key, n)
+            for part in range(0, len(seeds), TASK_CHUNKS):
+                part_shots = min(TASK_CHUNKS * CHUNK_SHOTS, n - part * CHUNK_SHOTS)
+                tasks.append(
+                    (device, setting, key, m, part_shots, seeds[part : part + TASK_CHUNKS])
+                )
+                owners.append((i, si))
+    totals: dict[tuple[int, int], dict[str, int]] = {}
+    for owner, c in zip(owners, pool.map(_redecode_task, tasks, chunksize=1), strict=True):
+        if owner in totals:
+            c = {k: totals[owner][k] + v for k, v in c.items()}
+        totals[owner] = c
+    out = []
+    for i, row in enumerate(rows):
+        per_seed = []
+        for si, main in enumerate(row["per_seed"]):
+            c = totals[(i, si)]
+            if (
+                c["uncorrelated_failures"] != main["logical_failures"]
+                or c["shots"] != main["shots"]
+            ):
+                raise RuntimeError("the re-decode did not reproduce the main stage's samples")
+            per_seed.append(
+                {
+                    "base_seed": main["base_seed"],
+                    "shots": c["shots"],
+                    "logical_failures": c["correlated_failures"],
+                }
+            )
+        out.append({"per_seed": per_seed})
+    return out
+
+
+def family_indices(
+    choices: dict[str, int | None], config: dict[str, Any], headline: str
+) -> set[int]:
+    """R3-C6's family placements of a case: the headline method's and the headline
+    references' choices (a placement chosen by several is one placement)."""
+
+    names = [headline, *config["headline_references"]]
+    return {i for name in names if (i := choices.get(name)) is not None}
+
+
+def run_sensitivity(
+    pool: ProcessPoolExecutor,
+    case: dict[str, Any],
+    config: dict[str, Any],
+    items: Sequence[tuple[CircuitKey, Placement, str]],
+    rows: Sequence[dict[str, Any]],
+) -> dict[str, Any]:
+    """R3-C10 on one case's family placements: the correlated re-decode and, for the
+    repetition circuits the config names, a memory of *d* rounds."""
+
+    device, setting, case_id = case["device"], case["setting"], case["case_id"]
+    spec = config["sensitivity"]
+    redecoded = redecode(pool, device, setting, case_id, items, rows, config)
+    out: dict[str, Any] = {
+        "correlated_matching": {
+            "decoder": CORRELATED_DECODER_DESCRIPTION,
+            "rows": [{"index": row["index"], **r} for row, r in zip(rows, redecoded, strict=True)],
+        },
+        "rounds_equal_distance": None,
+    }
+    label = case["circuit"]["label"]
+    if case["kind"] == "repetition" and label in spec["rounds_equal_distance"]["circuits"]:
+        distance = int(case["circuit"]["distance"])
+        longer = [
+            (("repetition", distance, distance, key[3]), m, seed_key, True)
+            for key, m, seed_key in items
+        ]
+        long_rows, _seconds = simulate(
+            pool,
+            device,
+            setting,
+            case_id,
+            longer,
+            config,
+            tags=(ROUNDS_PILOT_TAG, ROUNDS_SEED_TAG),
+        )
+        out["rounds_equal_distance"] = {
+            "rounds": distance,
+            "rows": [{"index": row["index"], **r} for row, r in zip(rows, long_rows, strict=True)],
+        }
+    return out
 
 
 def _save_scores(path: Path, arrays: dict[str, np.ndarray]) -> str:
@@ -361,15 +542,16 @@ def _save_scores(path: Path, arrays: dict[str, np.ndarray]) -> str:
 
 
 def _check_frozen(config: dict[str, Any]) -> tuple[ScaledParameters, SearchParameters]:
-    """The F3 parameters, which the config must repeat exactly."""
+    """The F3 parameters (the surface-code scaled score of the second F3 commit and the fast
+    search of the first), which the config must repeat exactly."""
 
     freeze_path = ROOT / config["score_freeze_file"]
     frozen = json.loads(freeze_path.read_text(encoding="utf-8"))
-    if frozen["scaled_score"] != config["scaled_score"]:
-        raise RuntimeError("the config's scaled-score parameters differ from the F3 freeze")
+    if frozen["surface_scaled_score"] != config["surface_scaled_score"]:
+        raise RuntimeError("the config's surface-code scaled score differs from the F3 freeze")
     if frozen["fast_search"] != config["fast_search"]:
         raise RuntimeError("the config's fast-search parameters differ from the F3 freeze")
-    scaled = config["scaled_score"]
+    scaled = config["surface_scaled_score"]
     return ScaledParameters(int(scaled["k"]), float(scaled["step"])), SearchParameters(
         **config["fast_search"]
     )
@@ -405,11 +587,14 @@ def _common_provenance(
 def _header(case: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
     return {
         "schema": RUN_SCHEMA,
+        "spec_revision": SPEC_REVISION,
         "case": case,
         "setting": case["setting"],
         "setting_description": config["settings"][case["setting"]],
         "config_file_sha256": config["_config_sha256"],
-        "family": config["family"] if case["headline_setting"] else None,
+        "family": config["family"]
+        if case["headline_setting"] and case["role"] == CONFIRMATORY
+        else None,
         "seeds": {
             "base_seeds": [int(s) for s in config["base_seeds"]],
             "pilot_seed": int(config["pilot_seed"]),
@@ -480,15 +665,18 @@ def run_repetition(
 
     t = time.perf_counter()
     chunks = [placements[i : i + SCORE_CHUNK] for i in range(0, n, SCORE_CHUNK)]
-    dg_parts, v1_parts, se_parts = [], [], []
-    for dg, v1, se in pool.map(_score_chunk, [(device, setting, key, c) for c in chunks]):
-        dg_parts.append(dg)
-        v1_parts.append(v1)
-        se_parts.append(se)
+    parts: dict[str, list[list[float]]] = {
+        "decoder_graph": [],
+        "v1": [],
+        "summed_error": [],
+        "idle_aware_summed_error": [],
+    }
+    for chunk_scores in pool.map(_score_chunk, [(device, setting, key, c) for c in chunks]):
+        for name, values in zip(parts, chunk_scores, strict=True):
+            parts[name].append(values)
     scores = {
-        "decoder_graph": np.concatenate([np.asarray(p, dtype=np.float64) for p in dg_parts]),
-        "v1": np.concatenate([np.asarray(p, dtype=np.float64) for p in v1_parts]),
-        "summed_error": np.concatenate([np.asarray(p, dtype=np.float64) for p in se_parts]),
+        name: np.concatenate([np.asarray(p, dtype=np.float64) for p in chunk_parts])
+        for name, chunk_parts in parts.items()
     }
     seconds["scoring"] = time.perf_counter() - t
 
@@ -501,11 +689,13 @@ def run_repetition(
     seconds["nove_checks"] = time.perf_counter() - t
 
     # Each score's ordering key: the scores' tie rule rounds to 12 significant digits;
-    # summed error's (R-B4) compares raw values. Ties go to enumeration order.
+    # summed error's (R-B4) and the idle-aware summed error compare raw values. Ties go to
+    # enumeration order.
     keys = {
         "decoder_graph": rounded(scores["decoder_graph"]),
         "v1": rounded(scores["v1"]),
         "summed_error": scores["summed_error"],
+        "idle_aware_summed_error": scores["idle_aware_summed_error"],
     }
     order = {name: np.argsort(k, kind="stable") for name, k in keys.items()}
 
@@ -548,6 +738,7 @@ def run_repetition(
         "decoder-graph": int(order["decoder_graph"][0]),
         "v1": int(order["v1"][0]),
         "lowest-summed-error": int(order["summed_error"][0]),
+        "idle-aware-summed-error": int(order["idle_aware_summed_error"][0]),
         "naive": 0,
         **{
             name: index_of(placements, record[name]["mapping"])
@@ -560,6 +751,7 @@ def run_repetition(
         "decoder-graph": {"method": DECODER_GRAPH_METHOD, "tie_break_rule": TIE_BREAK_RULE},
         "v1": {"method": SCORE_METHOD, "tie_break_rule": TIE_BREAK_RULE},
         "lowest-summed-error": {"method": SUMMED_ERROR_METHOD},
+        "idle-aware-summed-error": {"method": IDLE_AWARE_SUMMED_ERROR_METHOD},
         "naive": {"method": "the first valid placement in lexicographic order"},
         "qiskit-vf2": {
             "mapping": None if vf2.mapping is None else list(vf2.mapping),
@@ -585,6 +777,7 @@ def run_repetition(
                 "decoder_graph": float(scores["decoder_graph"][i]),
                 "v1": float(scores["v1"][i]),
                 "summed_error": float(scores["summed_error"][i]),
+                "idle_aware_summed_error": float(scores["idle_aware_summed_error"][i]),
                 "mapomatic_cost": None
                 if math.isnan(mapomatic_cost[i])
                 else float(mapomatic_cost[i]),
@@ -616,7 +809,14 @@ def run_repetition(
         chosen = {i for i in choices.values() if i is not None}
         simulated = sorted(chosen.union(*map(set, tops.values()), random_sample))
 
-    items = [(key, placements[i], ",".join(map(str, placements[i]))) for i in simulated]
+    family = (
+        family_indices(choices, config, "decoder-graph")
+        if family_placements_apply(case, config)
+        else set()
+    )
+    items = [
+        (key, placements[i], ",".join(map(str, placements[i])), i in family) for i in simulated
+    ]
     rows, sim_seconds = simulate(pool, device, setting, case_id, items, config)
     seconds["pilot"], seconds["main"] = sim_seconds["pilot"], sim_seconds["main"]
     in_sample = set(random_sample)
@@ -624,6 +824,17 @@ def run_repetition(
         {**describe(i), "in_random_sample": i in in_sample, **row}
         for i, row in zip(simulated, rows, strict=True)
     ]
+    sensitivity = None
+    if sensitivity_applies(case, config):
+        t = time.perf_counter()
+        sensitivity = run_sensitivity(
+            pool,
+            case,
+            config,
+            [(key, placements[i], items[k][2]) for k, i in enumerate(simulated) if i in family],
+            [r for i, r in zip(simulated, simulated_rows, strict=True) if i in family],
+        )
+        seconds["sensitivity"] = time.perf_counter() - t
 
     score_path = out_dir / "scores" / f"{case_id}.npz"
     sha = _save_scores(
@@ -662,13 +873,22 @@ def run_repetition(
             "random_sample": random_sample,
         },
         "simulated": simulated_rows,
+        "family_placements": sorted(family),
+        "sensitivity": sensitivity,
         "nove_checks": {"placements_checked": total_checked, "all_equal": True},
         "score_file": {
             "path": score_path.relative_to(ROOT).as_posix()
             if score_path.is_relative_to(ROOT)
             else str(score_path),
             "sha256": sha,
-            "arrays": ["placements", "decoder_graph", "v1", "summed_error", "mapomatic_cost"],
+            "arrays": [
+                "placements",
+                "decoder_graph",
+                "v1",
+                "summed_error",
+                "idle_aware_summed_error",
+                "mapomatic_cost",
+            ],
         },
         "score_summary": {
             **{name: summary(v) for name, v in scores.items()},
@@ -720,11 +940,12 @@ def run_surface(
 
     t = time.perf_counter()
     k, step = scaled_parameters.k, scaled_parameters.step
+    sensitivity_k = tuple(int(j) for j in config["surface_k_sensitivity"])
     scored = list(
         pool.map(
             _surface_score,
             [
-                (device, setting, ("surface", distance, rounds, s), m, k, step)
+                (device, setting, ("surface", distance, rounds, s), m, k, step, sensitivity_k)
                 for s, m in candidates
             ],
         )
@@ -757,6 +978,8 @@ def run_surface(
     scaled = [s[0] for s in scored]
     exact = [s[1] for s in scored]
     summed = [s[2] for s in scored]
+    idle = [s[3] for s in scored]
+    at_k = {j: [s[4][n] for s in scored] for n, j in enumerate(sensitivity_k)}
     default_circuit = _circuit(("surface", distance, rounds, DEFAULT_SCHEDULE))
     default_mappings = [candidates[i][1] for i in default]
 
@@ -782,6 +1005,8 @@ def run_surface(
         "scaled": pick(scaled, everything, _rounded),
         "exact-decoder-graph": pick(exact, everything, _rounded),
         "lowest-summed-error": pick(summed, default, float),
+        "idle-aware-summed-error": pick(idle, everything, float),
+        **{f"scaled-k{j}": pick(at_k[j], everything, _rounded) for j in sensitivity_k},
         "naive": default[0],
         **{
             name: default_index(record[name]["mapping"])
@@ -798,9 +1023,14 @@ def run_surface(
             entry["mapping"] = list(candidates[i][1])
         methods[name] = entry
 
+    family = (
+        family_indices(choices, config, "scaled")
+        if family_placements_apply(case, config)
+        else set()
+    )
     items = [
-        (("surface", distance, rounds, s), m, f"{s[0]}{s[1]}|" + ",".join(map(str, m)))
-        for s, m in candidates
+        (("surface", distance, rounds, s), m, f"{s[0]}{s[1]}|" + ",".join(map(str, m)), i in family)
+        for i, (s, m) in enumerate(candidates)
     ]
     rows, sim_seconds = simulate(pool, device, setting, case_id, items, config)
     seconds["pilot"], seconds["main"] = sim_seconds["pilot"], sim_seconds["main"]
@@ -813,18 +1043,31 @@ def run_surface(
                 "scaled": scaled[i],
                 "exact_decoder_graph": exact[i],
                 "summed_error": summed[i],
+                "idle_aware_summed_error": idle[i],
+                **{f"scaled_k{j}": at_k[j][i] for j in sensitivity_k},
             },
             **row,
         }
         for i, ((s, m), row) in enumerate(zip(candidates, rows, strict=True))
     ]
+    sensitivity = None
+    if sensitivity_applies(case, config):
+        t = time.perf_counter()
+        sensitivity = run_sensitivity(
+            pool,
+            case,
+            config,
+            [items[i][:3] for i in sorted(family)],
+            [simulated_rows[i] for i in sorted(family)],
+        )
+        seconds["sensitivity"] = time.perf_counter() - t
     return {
         **_header(case, config),
         "no_valid_placement": False,
         "placements": len(candidates),
         "schedules": [list(s) for s in schedules],
         "default_schedule": list(DEFAULT_SCHEDULE),
-        "scaled_parameters": {"k": k, "step": step},
+        "scaled_parameters": {"k": k, "step": step, "sensitivity_k": list(sensitivity_k)},
         "tie_break_rule": (
             "rounded score (12 significant digits), then the default schedule first, then the "
             "lexicographically smallest mapping; summed error compares raw values among "
@@ -839,6 +1082,8 @@ def run_surface(
             "every_placement": True,
         },
         "simulated": simulated_rows,
+        "family_placements": sorted(family),
+        "sensitivity": sensitivity,
         "nove_checks": {"placements_checked": total_checked, "all_equal": True},
         "provenance": _common_provenance(
             stored, noise, default_circuit, case, workers, machine_label, seconds

@@ -9,6 +9,13 @@ reset's the reset flip probability. Sums use :func:`math.fsum`, so the value is
 the correctly rounded sum and does not depend on operation order. Ties go to
 the lexicographically smallest mapping. Like every noise-aware method, it
 draws only from the candidate set of R-P1 (R-B6).
+
+*Idle-aware summed error* (SPEC_V3.md revision 5, B3): the same sum with idle
+noise included. For the placement's lowered noisy Stim circuit it is the sum,
+over every noise location, of that location's total error probability: a Pauli
+channel's summed probabilities (gate channels and idle channels alike), a
+measurement's readout flip and a reset's flip. It sees everything the simulator
+sees, as one number, with no decoder graph.
 """
 
 from __future__ import annotations
@@ -68,6 +75,61 @@ def summed_error(
     return math.fsum(operation_error_terms(circuit, noise, mapping))
 
 
+IDLE_AWARE_SUMMED_ERROR_METHOD = (
+    "Sum over every noise location of the placed, lowered noisy circuit of its total error "
+    "probability: each Pauli channel's summed probabilities (gates and idles), each "
+    "measurement's readout flip and each reset's flip; idle noise included."
+)
+
+#: noise instructions and the number of targets one application acts on
+_PAULI_NOISE = {
+    "PAULI_CHANNEL_1": 1,
+    "PAULI_CHANNEL_2": 2,
+    "X_ERROR": 1,
+    "Y_ERROR": 1,
+    "Z_ERROR": 1,
+    "DEPOLARIZE1": 1,
+    "DEPOLARIZE2": 2,
+}
+
+_MEASUREMENTS = frozenset({"M", "MX", "MY", "MZ", "MR", "MRX", "MRY", "MRZ"})
+
+
+def noise_location_terms(noisy: stim.Circuit) -> list[float]:
+    """Total error probability of every noise location of a lowered circuit, in order.
+
+    A Pauli channel on ``n`` target groups contributes ``n`` terms, each the sum of its
+    probabilities; a measurement with a flip probability contributes one term per measured
+    qubit. Any other noise instruction raises, so a model this rule does not cover is never
+    scored silently.
+    """
+
+    terms: list[float] = []
+    for instruction in _iter_flat(noisy):
+        name = instruction.name
+        try:
+            data = stim.gate_data(name)
+        except IndexError:
+            continue
+        args = instruction.gate_args_copy()
+        targets = [t for t in instruction.targets_copy() if t.is_qubit_target]
+        if name in _PAULI_NOISE:
+            total = math.fsum(args)
+            terms.extend(total for _ in range(len(targets) // _PAULI_NOISE[name]))
+        elif name in _MEASUREMENTS:
+            if args:
+                terms.extend(float(args[0]) for _ in targets)
+        elif data.is_noisy_gate or data.produces_measurements:
+            raise ValueError(f"no idle-aware summed-error rule for {name}")
+    return terms
+
+
+def idle_aware_summed_error(noisy: stim.Circuit) -> float:
+    """Idle-aware summed error of one placement's lowered noisy circuit (lower is better)."""
+
+    return math.fsum(noise_location_terms(noisy))
+
+
 def lowest_summed_error(
     circuit: nove.Circuit, device: nove.DeviceModel, noise: nove.HardwareNoiseModel
 ) -> PlacementResult:
@@ -89,9 +151,12 @@ def lowest_summed_error(
 
 
 __all__ = [
+    "IDLE_AWARE_SUMMED_ERROR_METHOD",
     "SUMMED_ERROR_METHOD",
     "Placement",
+    "idle_aware_summed_error",
     "lowest_summed_error",
+    "noise_location_terms",
     "operation_error_terms",
     "summed_error",
 ]
