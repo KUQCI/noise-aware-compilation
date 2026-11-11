@@ -177,7 +177,11 @@ def test_held_out_devices_are_converted_only_after_f4() -> None:
     assert f4, f"held-out device files present before F4: {present}"
     assert unchanged, "held-out device files present while the held-out config differs from F4"
     for path in present:
-        added = _git("log", "--diff-filter=A", "--format=%H", "--", str(path.relative_to(ROOT)))
+        rel = str(path.relative_to(ROOT))
+        # hashes.json predates v3 and also holds the development devices; what must descend
+        # from F4 is the latest commit to it, the one that wrote the held-out entries
+        shared = path.name == "hashes.json"
+        added = _git("log", "-1" if shared else "--diff-filter=A", "--format=%H", "--", rel)
         for commit in added.split():
             ancestor = subprocess.run(
                 ["git", "merge-base", "--is-ancestor", f4, commit], cwd=ROOT
