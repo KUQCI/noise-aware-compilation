@@ -51,6 +51,8 @@ CX_FACTOR = 1.25
 #: Largest CX gate_error the Pauli rule can represent (1.25 * e <= 1).
 MAX_PAULI_CX_ERROR = 1.0 / CX_FACTOR
 H_FACTOR = 1.5
+#: the largest sx error whose H channel (3 terms of 1.5 e / 3) is a Pauli channel (P2-56)
+MAX_PAULI_SX_ERROR = 1.0 / H_FACTOR
 _US_TO_NS = 1000.0
 
 
@@ -184,6 +186,29 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
     removed = set(removed_pairs)
     coupling = [(a, b) for a, b in coupling if (min(a, b), max(a, b)) not in removed]
 
+    # SPEC_V3.md revision 6, P2-56: a qubit whose sx error has no Pauli-channel representation
+    # (IBM's 1.0, uncalibrated) cannot be simulated, so every coupler it keeps is removed and
+    # no placement can use it. These pairs are not ``removed_couplers``: restoring them would
+    # bring back a qubit with no valid H channel.
+    bad_qubits: dict[int, float] = {}
+    for gate in props["gates"]:
+        if gate["gate"] == "sx":
+            error = _gate_fields(gate)["gate_error"][0]
+            if not 0.0 <= error <= MAX_PAULI_SX_ERROR:
+                bad_qubits[int(gate["qubits"][0])] = error
+    removed_qubits: list[dict[str, Any]] = []
+    for qubit in sorted(bad_qubits):
+        pairs = sorted({(min(a, b), max(a, b)) for a, b in coupling if qubit in (a, b)})
+        removed_qubits.append(
+            {"qubit": qubit, "sx_gate_error": bad_qubits[qubit], "pairs": [list(p) for p in pairs]}
+        )
+        notes.append(
+            f"qubit {qubit}: sx gate_error {bad_qubits[qubit]} is above {MAX_PAULI_SX_ERROR:.4f} "
+            f"and has no Pauli-channel representation, so its couplers {pairs} are removed and "
+            "it has no H channel; no placement can use it (P2-56)"
+        )
+    coupling = [(a, b) for a, b in coupling if a not in bad_qubits and b not in bad_qubits]
+
     operations: dict[nove.OperationKey, dict[str, float]] = {}
     cx_lengths: list[float] = []
     sx_lengths: list[float] = []
@@ -204,6 +229,8 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
             operations[nove.OperationKey(gate_name, qubits)] = parameters
             cx_lengths.append(length)
         elif name == "sx":
+            if qubits[0] in bad_qubits:
+                continue
             error = fields["gate_error"][0]
             length = _in_ns(*fields["gate_length"])
             parameters = dict(zip(ONE_QUBIT_LABELS, h_probabilities(error), strict=True))
@@ -218,8 +245,28 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
 
     qubit_parameters: dict[int, dict[str, float]] = {}
     readout_lengths: list[float] = []
+    coupled = {q for pair in coupling for q in pair}
     for qubit, entries in enumerate(props["qubits"]):
         fields = _qubit_fields(entries)
+        if "T1" not in fields or "T2" not in fields:
+            # P2-56: a qubit with no published T1 or T2 must have no coupler left; no placement
+            # can use it, so it idles without noise.
+            if qubit in coupled:
+                raise ValueError(f"qubit {qubit} has no T1 or T2 but keeps a coupler")
+            notes.append(
+                f"qubit {qubit}: no T1 or T2 in props and no coupler left; it cannot be placed, "
+                "so its idle rates are 0 (P2-56)"
+            )
+            readout_lengths.append(_in_ns(*fields["readout_length"]))
+            qubit_parameters[qubit] = {
+                "idle_x_rate": 0.0,
+                "idle_y_rate": 0.0,
+                "idle_z_rate": 0.0,
+                "readout_flip_probability": fields["readout_error"][0],
+                "reset_flip_probability": 0.0,
+                "source_readout_error": fields["readout_error"][0],
+            }
+            continue
         t1 = _in_ns(*fields["T1"])
         t2 = _in_ns(*fields["T2"])
         x, y, z, clamped = idle_rates(t1, t2)
@@ -289,6 +336,8 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
             "removed_couplers": removed_couplers,
             "calibration_sha256": snapshot.sha256,
             "provenance": provenance,
+            # only when there are any, so earlier devices keep their hashes (P2-56)
+            **({"removed_qubits": removed_qubits} if removed_qubits else {}),
         },
     )
     return ConvertedDevice(snapshot=snapshot, device=device, notes=tuple(notes))
@@ -302,6 +351,7 @@ def noise_model_from_snapshot(snapshot: nove.CalibrationSnapshot) -> nove.Hardwa
 
 __all__ = [
     "MAX_PAULI_CX_ERROR",
+    "MAX_PAULI_SX_ERROR",
     "ONE_QUBIT_LABELS",
     "SOURCE_PACKAGE",
     "SOURCE_PACKAGE_VERSION",

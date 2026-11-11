@@ -388,3 +388,37 @@ def test_t3_c3_qiskit_default_and_mapomatic_run_on_a_cz_device() -> None:
         mapo = mapomatic_choice(qc, SnapshotBackend("fez", target), 20261021, edges, candidates)
     assert mapo.failure is None and mapo.mapping in candidates
     assert mapo.num_layouts == len(candidates)
+
+
+def test_p2_56_uncalibrated_qubits_are_removed(tmp_path: Path) -> None:
+    """P2-56: a qubit with sx error 1.0 loses every coupler and its H channel, and a qubit with
+    no T1 or T2 is accepted only once it has no coupler left (on a modified FakeFez copy)."""
+
+    conf, props = _raw("fez")
+    bad, dead = 10, 11
+    for gate in props["gates"]:
+        if gate["gate"] == "sx" and gate["qubits"] in ([bad], [dead]):
+            for p in gate["parameters"]:
+                if p["name"] == "gate_error":
+                    p["value"] = 1.0
+    props["qubits"][dead] = [e for e in props["qubits"][dead] if e["name"] not in ("T1", "T2")]
+    (tmp_path / "conf.json").write_text(json.dumps(conf))
+    (tmp_path / "props.json").write_text(json.dumps(props))
+    converted = convert_fake_backend(tmp_path / "conf.json", tmp_path / "props.json")
+    device = converted.device
+    for q in (bad, dead):
+        assert all(q not in pair for pair in device.connectivity)
+        assert nove.OperationKey("H", (q,)) not in converted.snapshot.operation_parameters
+    removed = {r["qubit"]: r for r in device.metadata["removed_qubits"]}
+    assert set(removed) == {bad, dead} and removed[bad]["pairs"]
+    assert converted.snapshot.qubit_parameters[dead]["idle_x_rate"] == 0.0
+    nove.HardwareNoiseModel.from_calibration(converted.snapshot)
+    # the unmodified device has no removed qubits, so its stored hash is unchanged
+    assert "removed_qubits" not in load_device("fez").device.metadata
+
+    # a qubit with no T1 or T2 that keeps a coupler is refused
+    _, props = _raw("fez")
+    props["qubits"][dead] = [e for e in props["qubits"][dead] if e["name"] not in ("T1", "T2")]
+    (tmp_path / "props.json").write_text(json.dumps(props))
+    with pytest.raises(ValueError, match="no T1 or T2"):
+        convert_fake_backend(tmp_path / "conf.json", tmp_path / "props.json")
