@@ -10,12 +10,14 @@ error rate compared with a fixed placement and with every other valid placement.
 > [RESET.md](results_v3/reset/RESET.md), [REANALYSIS.md](results_v3/reanalysis/REANALYSIS.md)
 > and [DRIFT.md](results_v3/drift/DRIFT.md); the plan is [SPEC_V3.md](SPEC_V3.md). On
 > FakeAlgiers, v2's held-out device, with reset error = readout error, the decoder-graph score
-> beats the naive (fixed) placement in 4 of 4 cases and beats lowest summed error, Qiskit's
-> default transpile and mapomatic in 1 of 4 after Holm; the rest do not hold. Under real
-> calibration drift a stale choice can lose its gain: on FakeHanoi d=7 the decoder-graph
-> score's old choice became worse than naive, and on FakeFez and FakeTorino summed error kept
-> more of its gain than the score in three of four circuits each. v1's FakeHanoiV2 d=3 gains
-> turn into losses at reset = readout (banner in [REPORT.md](REPORT.md)).
+> beats the naive (fixed) placement in 4 of 4 cases and beats lowest summed error, Qiskit at
+> level 1 (level 2, the actual default, picks the same placement in every v2 case) and
+> mapomatic in 1 of 4 after Holm; the rest do not hold. Under real calibration drift a stale
+> choice can lose its gain: on FakeHanoi d=7 the decoder-graph score's old choice became worse
+> than naive, and at reset = readout, on FakeFez and FakeTorino, summed error kept more of its
+> gain than the score in three of four circuits each. At reset = readout the v1 score lost to
+> the naive placement in three FakeHanoiV2 d=3 circuits on v1's seeds (one, 5 rounds, had been
+> a gain); on fresh seeds one loss (3 rounds) replicates (banner in [REPORT.md](REPORT.md)).
 <!-- v3-banner:end -->
 
 - Specification: [SPEC.md](SPEC.md) (binding; revised three times, each revision recorded at
@@ -36,8 +38,9 @@ python -m pip install -e ".[report]"      # runtime + matplotlib for the report
 python -m pip install -e ".[dev]"         # adds pytest, ruff, mypy, networkx, scipy, qiskit-ibm-runtime
 ```
 
-Qiskit is never a runtime dependency; it is only in the `dev` extra, used by
-`scripts/fetch_device_files.py` to copy the fake-backend files.
+Qiskit is never a runtime dependency. It is only in the `dev` extra, through
+qiskit-ibm-runtime, which `scripts/fetch_device_files.py` uses to copy the fake-backend files,
+and in the `bench` extra (Qiskit 2.5.2 and mapomatic) for the v2 and v3 baselines.
 
 ## Place your own circuit (v2 command line)
 
@@ -60,11 +63,12 @@ cat placed/mapping.json
 the scorer, every valid candidate with its score, the SHA-256 of every input file and the
 package version; `placed/placed_circuit.stim` is the relabelled circuit. To skip the
 conversion step, pass the IBM files directly (`--conf FILE --props FILE` instead of
-`--device`), or a shipped device by name (`--device jakarta` or `--device hanoi`).
-`--scorer` picks the selection score: `decoder-graph` (the default, chosen by the held-out
-comparison in REPORT_V2.md section 4, which rests on its d=7 case; v3 re-tests it) or `v1`. Run `nac --help` or `nac COMMAND --help` for every
-option. Invalid input exits with code 1 and a one-line message; `nac --debug ...` shows the
-traceback.
+`--device`), or a shipped device by name (`algiers`, `fez`, `hanoi`, `jakarta`, `marrakesh`
+or `miami`; for example `--device hanoi`). `--scorer` picks the selection score:
+`decoder-graph` (the default, chosen by the held-out comparison in REPORT_V2.md section 4,
+which rests on its d=7 case; v3 re-tests it) or `v1`. Run `nac --help` or
+`nac COMMAND --help` for every option. Invalid input exits with code 1 and a one-line
+message; `nac --debug ...` shows the traceback.
 
 The same two operations are in Python, with the same inputs and outputs:
 

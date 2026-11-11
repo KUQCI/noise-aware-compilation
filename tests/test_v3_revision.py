@@ -1,10 +1,11 @@
-"""T3-F3: every part of v3 agrees on SPEC_V3.md revision 5, and the older documents carry it.
+"""T3-F3: every part of v3 agrees on SPEC_V3.md revision 6, and the older documents carry it.
 
 The spec, the held-out config, the score freeze, the F3 record, the runner, the analysis and
 the tests must name the same revision, devices and roles, references, family sizes, *k*,
 sensitivity *k*, shots tiers and claim thresholds. Any disagreement fails here, before a
-held-out device is converted. The last tests check revision 5's presentation edits (R1, R2,
-R9, R10 of ``REVIEW_PRE_F4.md``) so that they cannot quietly come undone.
+held-out device is converted. Revision 6 adds its settings, simulated sets, exploratory rows
+and claim wording. The last tests check revision 5's presentation edits (R1, R2, R9, R10 of
+``REVIEW_PRE_F4.md``) so that they cannot quietly come undone.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ FREEZE: dict[str, Any] = json.loads(
     (ROOT / "configs_v3" / "score_freeze.json").read_text(encoding="utf-8")
 )
 F3: dict[str, Any] = json.loads((ROOT / "configs_v3" / "freeze_f3.json").read_text("utf-8"))
-REVISION = 5
+REVISION = 6
 FAKE = {
     "boston": "FakeBoston",
     "pittsburgh": "FakePittsburgh",
@@ -54,7 +55,7 @@ def _row(key: str) -> str:
     return rows[0]
 
 
-def test_every_part_names_revision_5() -> None:
+def test_every_part_names_the_revision() -> None:
     revisions = [int(n) for n in re.findall(r"^\*\*Revision (\d+) \(", SPEC, re.MULTILINE)]
     assert max(revisions) == REVISION
     assert CONFIG["spec_revision"] == REVISION
@@ -71,7 +72,7 @@ def test_devices_and_roles_agree() -> None:
     assert "**Confirmatory, heavy-hex:** FakeBoston and FakePittsburgh" in devices
     assert "**Confirmatory, square lattice:** FakeBerlin" in devices
     assert "**Seen:** FakeKingston" in devices and "FakeAachen" in devices
-    assert "**Synthetic:** FakeNighthawk" in devices
+    assert "**Synthetic and seen:** FakeNighthawk" in devices
     # X16 binds every held-out device, and the not-converted test covers them all
     x16 = _row("X16")
     assert all(name in x16 for name in FAKE.values())
@@ -118,6 +119,51 @@ def test_references_and_family_sizes() -> None:
         "idle-aware-summed-error",
         "v1",
     }
+
+
+def test_revision_6_settings_and_sets_agree() -> None:
+    confirmatory = sorted(d for d, role in ROLES.items() if role == "confirmatory")
+    scope = CONFIG["setting_scope"]["directional"]
+    assert sorted(scope["devices"]) == confirmatory and scope["circuits"] == ["A", "D5", "D7"]
+    assert CONFIG["settings_order"] == ["readout", "zero", "directional"]
+    assert "A, D5 and D7 of the confirmatory devices" in _row("R3-C13")
+    best = CONFIG["best_found"]
+    assert (best["random"], best["top"], best["every_placement_cases"]) == (1000, 30, ["berlin-D5"])
+    assert best["every_placement_limit_hours"] == 24
+    assert "1,000 valid placements" in _row("R3-C5") and "24 wall hours" in _row("R3-C5")
+    assert CONFIG["circuits"]["S3"] == {
+        "kind": "surface",
+        "distance": 3,
+        "rounds": 3,
+        "family": False,
+    }
+    assert CONFIG["qiskit_seed_sweep"]["seeds"] == list(range(20261207, 20261217))
+    assert "20261207 to 20261216" in _row("R3-C14")
+    variants = set(CONFIG["grading_variants"]["variants"])
+    assert variants == {
+        "cz-duration-min",
+        "cz-duration-max",
+        "idle-z-x2",
+        "cz-without-1q",
+        "lognormal-0.1",
+        "lognormal-0.25",
+        "directional",
+    }
+    assert "`cz-without-1q`" in _row("K19")
+    assert "berlin" in CONFIG["claim_rules"]["device_notes"]
+
+
+def test_layout_claims_never_say_no_difference_shown() -> None:
+    """Revision 6: a layout below t says how many cases were better and makes no claim."""
+
+    wording = analysis_v3.layout_claim("naive", ["a"], [], 5, "on D", 8)
+    assert wording == (
+        "better after Holm in 1 of 8 cases (fewer than t = 5); no layout claim against naive on D"
+    )
+    table = SPEC[SPEC.index("**Claim rules**") : SPEC.index("**Secondary endpoints")]
+    rows = [line for line in table.splitlines() if line.startswith('| "')]
+    assert not [r for r in rows if r.startswith('| "no difference shown')]
+    assert "no layout claim" in CONFIG["claim_rules"]["description"]
 
 
 def test_surface_k_agrees_everywhere() -> None:

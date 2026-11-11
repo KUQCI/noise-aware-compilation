@@ -21,9 +21,9 @@ Every row is development data except FakeAlgiers rows, which are held out. P_L i
 | v1 | FakeHanoi d=3 X, N3-qubit | v1 score | all-placement average | −3.9% [−7.5%, −0.3%] | indistinguishable | better |
 | v2 | FakeAlgiers d=3 Z | v1 score | lowest summed error | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
 | v2 | FakeAlgiers d=3 Z | v1 score | Qiskit VF2Layout (v2 target) | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
-| v2 | FakeAlgiers d=3 Z | v1 score | Qiskit default, level 1 | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
-| v2 | FakeAlgiers d=3 Z | v1 score | Qiskit default, level 2 | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
-| v2 | FakeAlgiers d=3 Z | v1 score | Qiskit default, level 3 | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
+| v2 | FakeAlgiers d=3 Z | v1 score | Qiskit, level 1 | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
+| v2 | FakeAlgiers d=3 Z | v1 score | Qiskit, level 2 (the default) | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
+| v2 | FakeAlgiers d=3 Z | v1 score | Qiskit, level 3 | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
 | v2 | FakeAlgiers d=3 Z | v1 score | mapomatic | −7.5% [−12.6%, −2.2%] | indistinguishable | better |
 | v2 | FakeHanoi d=7 | v1 score | naive placement | −13.3% [−22.4%, −3.0%] | indistinguishable | better |
 
@@ -43,54 +43,56 @@ Every row is development data except FakeAlgiers rows, which are held out. P_L i
 | FakeJakarta d=3, 3 rounds, N2 | naive placement | −25.0% [−26.1%, −23.8%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeJakarta d=3, 5 rounds, N2 | naive placement | −23.3% [−24.2%, −22.5%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeJakarta d=3 X, N2 | naive placement | same placement | tie | 1.00 | 1.00 | no |
-| FakeJakarta d=2, N2 | naive placement | −7.7% [−8.2%, −7.1%] | better | < 1e−10 | < 1e−10 | yes |
+| FakeJakarta d=2, N2 (detection-event rate, M3) | naive placement | −7.7% [−8.2%, −7.1%] | better | < 1e−10 | < 1e−10 | yes |
 
 **v2-headline**: decoder-graph score vs naive placement, lowest summed error, Qiskit's default transpile (level 1) and mapomatic, on all 10 v2 cases. 40 comparisons at α = 0.05; 26 have a non-tie verdict and 26 hold after Holm.
+
+Level 1 stood for Qiskit's default when this family was labelled (P1-3, since superseded); the default is level 2 (P2-26), which picks the same placement as level 1 in 10 of 10 cases (section 3).
 
 | Case | vs | Change [95% CI] | Verdict | p | Holm p | Holds |
 | --- | --- | --- | --- | --- | --- | --- |
 | FakeAlgiers d=3 Z (held-out) | naive placement | −25.0% [−29.0%, −20.7%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeAlgiers d=3 Z (held-out) | lowest summed error | −11.7% [−16.5%, −6.5%] | better | 2.0e−5 | 4.2e−4 | yes |
-| FakeAlgiers d=3 Z (held-out) | Qiskit default, level 1 | −11.7% [−16.5%, −6.5%] | better | 2.0e−5 | 4.2e−4 | yes |
+| FakeAlgiers d=3 Z (held-out) | Qiskit, level 1 | −11.7% [−16.5%, −6.5%] | better | 2.0e−5 | 4.2e−4 | yes |
 | FakeAlgiers d=3 Z (held-out) | mapomatic | −11.7% [−16.5%, −6.5%] | better | 2.0e−5 | 4.2e−4 | yes |
 | FakeAlgiers d=3 X (held-out) | naive placement | −12.3% [−17.2%, −7.1%] | better | 7.8e−6 | 1.7e−4 | yes |
 | FakeAlgiers d=3 X (held-out) | lowest summed error | +2.0% [−3.9%, +8.2%] | tie | 0.52 | 1.00 | no |
-| FakeAlgiers d=3 X (held-out) | Qiskit default, level 1 | +2.0% [−3.9%, +8.2%] | tie | 0.52 | 1.00 | no |
+| FakeAlgiers d=3 X (held-out) | Qiskit, level 1 | +2.0% [−3.9%, +8.2%] | tie | 0.52 | 1.00 | no |
 | FakeAlgiers d=3 X (held-out) | mapomatic | +2.0% [−3.9%, +8.2%] | tie | 0.52 | 1.00 | no |
 | FakeAlgiers d=5 (held-out) | naive placement | −16.4% [−25.1%, −6.7%] | better | 1.4e−3 | 0.02 | yes |
 | FakeAlgiers d=5 (held-out) | lowest summed error | +0.5% [−10.4%, +12.8%] | tie | 0.93 | 1.00 | no |
-| FakeAlgiers d=5 (held-out) | Qiskit default, level 1 | +0.5% [−10.4%, +12.8%] | tie | 0.93 | 1.00 | no |
+| FakeAlgiers d=5 (held-out) | Qiskit, level 1 | +0.5% [−10.4%, +12.8%] | tie | 0.93 | 1.00 | no |
 | FakeAlgiers d=5 (held-out) | mapomatic | +0.5% [−10.4%, +12.8%] | tie | 0.93 | 1.00 | no |
 | FakeAlgiers d=7 (held-out) | naive placement | −40.5% [−46.3%, −34.2%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeAlgiers d=7 (held-out) | lowest summed error | −15.9% [−24.6%, −6.2%] | better | 1.9e−3 | 0.03 | yes |
-| FakeAlgiers d=7 (held-out) | Qiskit default, level 1 | same placement | tie | 1.00 | 1.00 | no |
+| FakeAlgiers d=7 (held-out) | Qiskit, level 1 | same placement | tie | 1.00 | 1.00 | no |
 | FakeAlgiers d=7 (held-out) | mapomatic | same placement | tie | 1.00 | 1.00 | no |
 | FakeHanoi d=3 Z | naive placement | −15.1% [−19.6%, −10.3%] | better | 5.3e−9 | 1.3e−7 | yes |
 | FakeHanoi d=3 Z | lowest summed error | same placement | tie | 1.00 | 1.00 | no |
-| FakeHanoi d=3 Z | Qiskit default, level 1 | same placement | tie | 1.00 | 1.00 | no |
+| FakeHanoi d=3 Z | Qiskit, level 1 | same placement | tie | 1.00 | 1.00 | no |
 | FakeHanoi d=3 Z | mapomatic | +0.7% [−4.9%, +6.7%] | tie | 0.80 | 1.00 | no |
 | FakeHanoi d=3 X | naive placement | same placement | tie | 1.00 | 1.00 | no |
 | FakeHanoi d=3 X | lowest summed error | −51.4% [−53.9%, −48.7%] | better | < 1e−10 | < 1e−10 | yes |
-| FakeHanoi d=3 X | Qiskit default, level 1 | −51.2% [−53.8%, −48.5%] | better | < 1e−10 | < 1e−10 | yes |
+| FakeHanoi d=3 X | Qiskit, level 1 | −51.2% [−53.8%, −48.5%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeHanoi d=3 X | mapomatic | −51.4% [−53.9%, −48.7%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeHanoi d=5 | naive placement | −53.9% [−58.5%, −48.8%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeHanoi d=5 | lowest summed error | −47.0% [−52.3%, −41.0%] | better | < 1e−10 | < 1e−10 | yes |
-| FakeHanoi d=5 | Qiskit default, level 1 | −47.0% [−52.3%, −41.0%] | better | < 1e−10 | < 1e−10 | yes |
+| FakeHanoi d=5 | Qiskit, level 1 | −47.0% [−52.3%, −41.0%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeHanoi d=5 | mapomatic | −31.6% [−38.9%, −23.5%] | better | < 1e−10 | 5.6e−10 | yes |
 | FakeHanoi d=7 | naive placement | −27.5% [−35.5%, −18.4%] | better | 7.4e−8 | 1.7e−6 | yes |
 | FakeHanoi d=7 | lowest summed error | −21.5% [−30.4%, −11.6%] | better | 6.6e−5 | 1.2e−3 | yes |
-| FakeHanoi d=7 | Qiskit default, level 1 | −48.4% [−53.8%, −42.4%] | better | < 1e−10 | < 1e−10 | yes |
+| FakeHanoi d=7 | Qiskit, level 1 | −48.4% [−53.8%, −42.4%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeHanoi d=7 | mapomatic | −21.5% [−30.4%, −11.6%] | better | 6.6e−5 | 1.2e−3 | yes |
 | FakeJakarta d=3 Z | naive placement | −23.7% [−24.8%, −22.5%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeJakarta d=3 Z | lowest summed error | −20.3% [−21.5%, −19.1%] | better | < 1e−10 | < 1e−10 | yes |
-| FakeJakarta d=3 Z | Qiskit default, level 1 | −20.3% [−21.5%, −19.1%] | better | < 1e−10 | < 1e−10 | yes |
+| FakeJakarta d=3 Z | Qiskit, level 1 | −20.3% [−21.5%, −19.1%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeJakarta d=3 Z | mapomatic | same placement | tie | 1.00 | 1.00 | no |
 | FakeJakarta d=3 X | naive placement | same placement | tie | 1.00 | 1.00 | no |
 | FakeJakarta d=3 X | lowest summed error | −29.4% [−29.9%, −28.8%] | better | < 1e−10 | < 1e−10 | yes |
-| FakeJakarta d=3 X | Qiskit default, level 1 | −29.4% [−29.9%, −28.8%] | better | < 1e−10 | < 1e−10 | yes |
+| FakeJakarta d=3 X | Qiskit, level 1 | −29.4% [−29.9%, −28.8%] | better | < 1e−10 | < 1e−10 | yes |
 | FakeJakarta d=3 X | mapomatic | −44.3% [−44.7%, −43.8%] | better | < 1e−10 | < 1e−10 | yes |
 
-## 3. What do Qiskit's default transpile and mapomatic choose?
+## 3. What do Qiskit's transpile levels and mapomatic choose?
 
 Both ran on the converted snapshot's published values: an IBM-shaped Target, and for mapomatic an adapter serving that Target as `properties()`. Qiskit 2.5.2, mapomatic 0.14.0, `seed_transpiler` = 20261021. *Pass* is the pass that produced the final layout, and *seeds* counts the distinct placements ten other transpiler seeds gave. mapomatic scores a placement and its mirror identically, so its pick between the two is arbitrary; *tied mean* is the mean P_L over its tied-best set.
 
@@ -111,7 +113,7 @@ The last column is context. The fake backend's own Target still lists the couple
 
 Each method's choice against the naive placement:
 
-| Case | Naive P_L | decoder-graph score | lowest summed error | Qiskit VF2Layout (v2 target) | Qiskit default, level 1 | Qiskit default, level 2 | Qiskit default, level 3 | mapomatic |
+| Case | Naive P_L | decoder-graph score | lowest summed error | Qiskit VF2Layout (v2 target) | Qiskit, level 1 | Qiskit, level 2 (the default) | Qiskit, level 3 | mapomatic |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | FakeAlgiers d=3 Z | 4.9e−3 | −25.0% [−29.0%, −20.7%] better | −15.1% [−19.5%, −10.4%] better | −15.1% [−19.5%, −10.4%] better | −15.1% [−19.5%, −10.4%] better | −15.1% [−19.5%, −10.4%] better | −15.1% [−19.5%, −10.4%] better | −15.1% [−19.5%, −10.4%] better |
 | FakeAlgiers d=3 X | 4.1e−3 | −12.3% [−17.2%, −7.1%] better | −14.0% [−18.8%, −8.9%] better | −14.0% [−18.8%, −8.9%] better | −14.0% [−18.8%, −8.9%] better | −14.0% [−18.8%, −8.9%] better | −14.0% [−18.8%, −8.9%] better | −14.0% [−18.8%, −8.9%] better |
@@ -128,7 +130,7 @@ Each method's choice against the naive placement:
 
 The best placement is picked on two seeds and measured on the third, rotating through all three. *Bias* is how much lower the in-sample best (picked and measured on the same data) is than this cross-fitted best. Regret is each choice's P_L relative to the cross-fitted best on the same folds; *tie* means the choice is not separated from it.
 
-| Case | In-sample best | Cross-fitted best | Bias | v1 score | decoder-graph score | lowest summed error | Qiskit default, level 1 | mapomatic |
+| Case | In-sample best | Cross-fitted best | Bias | v1 score | decoder-graph score | lowest summed error | Qiskit, level 1 | mapomatic |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | FakeAlgiers d=3 Z | 3.7e−3 | 3.7e−3 | −0.0% | +4.7% [−1.4%, +10.8%] tie | +0.0% [+0.0%, +0.0%] tie | +13.2% [+6.7%, +19.6%] worse | +13.2% [+6.7%, +19.6%] worse | +13.2% [+6.7%, +19.6%] worse |
 | FakeAlgiers d=3 X | 3.5e−3 | 3.6e−3 | −2.3% | −0.4% [−5.2%, +4.5%] tie | −0.4% [−5.2%, +4.5%] tie | −2.3% [−5.6%, +1.0%] tie | −2.3% [−5.6%, +1.0%] tie | −2.3% [−5.6%, +1.0%] tie |
@@ -158,7 +160,7 @@ v1 headline cases (real converted noise), the v1 score's choice:
 
 ## 5. How much of the gain survives drift, in absolute terms?
 
-M6 (retained / original gain) is reported only when the 95% interval of the original gain P_L(fixed) - P_L(true-model choice) has its lower end at or above half its estimate; the absolute retained gain is always reported. Gain is P_L(naive) − P_L(choice), so a negative gain means the method's own choice is worse than the naive placement. Shown at δ = 0.5; every strength is in the JSON.
+M6 (retained / original gain) is reported only when the 95% interval of the original gain P_L(fixed) - P_L(true-model choice) has its lower end at or above half its estimate; the absolute retained gain is always reported. Gain is P_L(naive) − P_L(choice), so a negative gain means the method's own choice is worse than the naive placement. Shown at δ = 0.5; every strength is in the JSON. The intervals come from this re-analysis's own bootstrap draws, so they differ slightly from the ones REPORT_V2.md printed for the same M6 values.
 
 | Case | Method | Gain, true model | Gain kept at δ = 0.5 | M6 |
 | --- | --- | --- | --- | --- |
@@ -191,7 +193,7 @@ M6 (retained / original gain) is reported only when the 95% interval of the orig
 
 Error rates fall about 60× from d=3 to d=7, so absolute differences shrink even when the relative gain does not. Decoder-graph score, Z-basis circuits with 3 rounds:
 
-| Case | vs naive | vs lowest summed error | vs Qiskit default, level 1 | vs mapomatic |
+| Case | vs naive | vs lowest summed error | vs Qiskit, level 1 | vs mapomatic |
 | --- | --- | --- | --- | --- |
 | FakeHanoi d=3 Z | −15.1% [−19.6%, −10.3%] | same placement | same placement | +0.7% [−4.9%, +6.7%] |
 | FakeHanoi d=5 | −53.9% [−58.5%, −48.8%] | −47.0% [−52.3%, −41.0%] | −47.0% [−52.3%, −41.0%] | −31.6% [−38.9%, −23.5%] |

@@ -222,8 +222,25 @@ def _count_task(args: tuple[str, int, str]) -> dict[str, Any]:
     return {"placements": count, "seconds": time.perf_counter() - t}
 
 
+def coupling_from_conf(path: Path, device_id: str) -> nove.DeviceModel:
+    """A device model with only the coupling map of the conf file at ``path``.
+
+    Only the fields ``coupling_map`` and ``n_qubits`` are used; no calibration value is read.
+    """
+
+    conf = json.loads(path.read_text(encoding="utf-8"))
+    pairs = sorted({(min(a, b), max(a, b)) for a, b in conf["coupling_map"]})
+    return nove.DeviceModel(
+        connectivity=pairs, device_id=device_id, metadata={"num_qubits": int(conf["n_qubits"])}
+    )
+
+
 def coupling_device(name: str) -> nove.DeviceModel:
-    """A device model with only ``name``'s coupling map: no calibration value is read."""
+    """A device model with only ``name``'s coupling map: no calibration value is read.
+
+    Called only by the timing pilot itself; the tests exercise :func:`coupling_from_conf` on a
+    development device's conf, so no test run opens a held-out device's file (X16).
+    """
 
     if name not in HELD_OUT:
         raise ValueError(f"{name} is not a held-out device")
@@ -236,11 +253,7 @@ def coupling_device(name: str) -> nove.DeviceModel:
         / name
         / f"conf_{name}.json"
     )
-    conf = json.loads(path.read_text(encoding="utf-8"))
-    pairs = sorted({(min(a, b), max(a, b)) for a, b in conf["coupling_map"]})
-    return nove.DeviceModel(
-        connectivity=pairs, device_id=name, metadata={"num_qubits": int(conf["n_qubits"])}
-    )
+    return coupling_from_conf(path, name)
 
 
 def _chunk_seeds(label: str, base: int, mapping: Placement, shots: int) -> list[int]:

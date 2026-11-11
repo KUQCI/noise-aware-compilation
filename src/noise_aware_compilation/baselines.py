@@ -12,10 +12,15 @@ draws only from the candidate set of R-P1 (R-B6).
 
 *Idle-aware summed error* (SPEC_V3.md revision 5, B3): the same sum with idle
 noise included. For the placement's lowered noisy Stim circuit it is the sum,
-over every noise location, of that location's total error probability: a Pauli
-channel's summed probabilities (gate channels and idle channels alike), a
-measurement's readout flip and a reset's flip. It sees everything the simulator
-sees, as one number, with no decoder graph.
+over every noise location on a qubit the placed circuit uses, of that location's
+total error probability: a Pauli channel's summed probabilities (gate channels
+and idle channels alike), a measurement's readout flip and a reset's flip. The
+lowering idles every device qubit up to the highest index it touches; channels
+on qubits that no gate, measurement or reset of the placed circuit acts on
+cannot change an outcome and are left out (SPEC_V3.md revision 6, P2-41), so the
+value does not grow with the placement's highest qubit index. It sees
+everything the simulator sees that can affect the outcome, as one number, with
+no decoder graph.
 """
 
 from __future__ import annotations
@@ -76,9 +81,10 @@ def summed_error(
 
 
 IDLE_AWARE_SUMMED_ERROR_METHOD = (
-    "Sum over every noise location of the placed, lowered noisy circuit of its total error "
-    "probability: each Pauli channel's summed probabilities (gates and idles), each "
-    "measurement's readout flip and each reset's flip; idle noise included."
+    "Sum over every noise location, on a qubit the placed circuit uses, of the placed, "
+    "lowered noisy circuit of its total error probability: each Pauli channel's summed "
+    "probabilities (gates and idles), each measurement's readout flip and each reset's "
+    "flip; idle noise included, channels on unused qubits excluded."
 )
 
 #: noise instructions and the number of targets one application acts on
@@ -98,14 +104,28 @@ _MEASUREMENTS = frozenset({"M", "MX", "MY", "MZ", "MR", "MRX", "MRY", "MRZ"})
 def noise_location_terms(noisy: stim.Circuit) -> list[float]:
     """Total error probability of every noise location of a lowered circuit, in order.
 
-    A Pauli channel on ``n`` target groups contributes ``n`` terms, each the sum of its
-    probabilities; a measurement with a flip probability contributes one term per measured
-    qubit. Any other noise instruction raises, so a model this rule does not cover is never
+    Only qubits that a non-noise operation (a gate, measurement or reset) acts on count:
+    a Pauli channel on ``n`` target groups contributes one term, the sum of its
+    probabilities, for each group whose qubits are all used, and a measurement with a flip
+    probability contributes one term per measured qubit. Channels on qubits the circuit
+    never operates on (the lowering idles every qubit up to the highest index) are left
+    out. Any other noise instruction raises, so a model this rule does not cover is never
     scored silently.
     """
 
+    instructions = list(_iter_flat(noisy))
+    used: set[int] = set()
+    for instruction in instructions:
+        if instruction.name in _PAULI_NOISE:
+            continue
+        try:
+            data = stim.gate_data(instruction.name)
+        except IndexError:
+            continue
+        if data.is_unitary or data.is_reset or data.produces_measurements:
+            used.update(t.value for t in instruction.targets_copy() if t.is_qubit_target)
     terms: list[float] = []
-    for instruction in _iter_flat(noisy):
+    for instruction in instructions:
         name = instruction.name
         try:
             data = stim.gate_data(name)
@@ -115,7 +135,9 @@ def noise_location_terms(noisy: stim.Circuit) -> list[float]:
         targets = [t for t in instruction.targets_copy() if t.is_qubit_target]
         if name in _PAULI_NOISE:
             total = math.fsum(args)
-            terms.extend(total for _ in range(len(targets) // _PAULI_NOISE[name]))
+            arity = _PAULI_NOISE[name]
+            groups = [targets[i : i + arity] for i in range(0, len(targets), arity)]
+            terms.extend(total for g in groups if all(t.value in used for t in g))
         elif name in _MEASUREMENTS:
             if args:
                 terms.extend(float(args[0]) for _ in targets)

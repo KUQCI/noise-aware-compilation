@@ -6,11 +6,12 @@ Usage::
 
 The X16 incident (SPEC_V3.md section 1) read aggregates from the held-out devices' files in
 ``qiskit-ibm-runtime`` 0.52.0; this project converts from 0.50.0 (``requirements-lock.txt``).
-This script compares the files' git blob hashes without opening any of them: it makes a
-blobless, bare clone of the public ``Qiskit/qiskit-ibm-runtime`` repository (trees only, no
-file contents), lists each file's blob hash at both release tags with ``git ls-tree``, and
-hashes the installed 0.50.0 files with ``git hash-object``. No calibration value is read, no
-wheel is downloaded, and nothing is parsed.
+This script compares the files' git blob hashes: it makes a blobless, bare clone of the
+public ``Qiskit/qiskit-ibm-runtime`` repository (trees only, no file contents), lists each
+file's blob hash at both release tags with ``git ls-tree``, checks that the installed
+``qiskit-ibm-runtime`` is 0.50.0, and hashes the installed files with ``git hash-object``.
+``git hash-object`` reads each installed file's bytes to hash them; nothing is parsed or
+printed, so no calibration value is read. No wheel is downloaded.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 REPO = "https://github.com/Qiskit/qiskit-ibm-runtime"
 TAGS = ("0.50.0", "0.52.0")
+INSTALLED_VERSION = "0.50.0"  # requirements-lock.txt
 DEVICES = ("boston", "pittsburgh", "berlin", "kingston", "aachen", "nighthawk")
 FILES = tuple(f"{kind}_{d}.json" for d in DEVICES for kind in ("conf", "props"))
 PREFIX = "qiskit_ibm_runtime/fake_provider/backends"
@@ -48,6 +50,9 @@ def tag_blobs(clone: Path, tag: str) -> dict[str, str]:
 
 
 def installed_blobs() -> dict[str, str]:
+    version = importlib.metadata.version("qiskit-ibm-runtime")
+    if version != INSTALLED_VERSION:
+        raise RuntimeError(f"qiskit-ibm-runtime {INSTALLED_VERSION} required, found {version}")
     spec = importlib.util.find_spec("qiskit_ibm_runtime")
     assert spec is not None and spec.origin is not None
     base = Path(spec.origin).parent / "fake_provider" / "backends"

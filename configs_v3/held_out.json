@@ -1,16 +1,18 @@
 {
   "schema": "noise-aware-compilation.held-out-config-v3/2",
-  "spec_revision": 5,
-  "status": "Freeze step F4 (SPEC_V3.md section 8) at revision 5: committed after both F3 commits (configs_v3/freeze_f3.json) and before any held-out device was converted, scored or simulated. Seen beforehand: what SPEC_V3.md section 1 lists. F4 is the last commit that touches this file; it is tagged v3-held-out-config and its hash is recorded with a server-side timestamp before any conversion (DECISIONS_V3.md P2-38). Every run of this config uses nac_bench.run_v3 at a clean commit that contains this file.",
+  "spec_revision": 6,
+  "status": "Freeze step F4 (SPEC_V3.md section 8) at revision 6: committed after both F3 commits (configs_v3/freeze_f3.json) and before any held-out device was converted, scored or simulated. Seen beforehand: what SPEC_V3.md section 1 lists. F4 is the last commit that touches this file; it is tagged v3-held-out-config-r6 (revision 5's F4 kept its tag v3-held-out-config) and its hash is recorded with a server-side timestamp before any conversion (DECISIONS_V3.md P2-38, P2-40). The code the runs use is frozen with it (configs_v3/freeze_f4.json, X17). Every run of this config uses nac_bench.run_v3 at a clean commit that contains this file.",
   "family": "v3-headline",
   "isolation_family": "v3-decoder-graph-isolation",
   "settings": {
     "readout": "each qubit's reset flip probability equals its readout flip probability (P1-13, the headline setting)",
-    "zero": "reset flip probability 0 on every qubit, as in the converted snapshots (the bridge to v1 and v2)"
+    "zero": "reset flip probability 0 on every qubit, as in the converted snapshots (the bridge to v1 and v2)",
+    "directional": "each qubit's readout and reset flip probability equal its published P(1|0) (prob_meas1_prep0), the direction a Z-basis repetition code meets when nothing has gone wrong; every other value as converted (R3-C13, revision 6, exploratory)"
   },
   "settings_order": [
     "readout",
-    "zero"
+    "zero",
+    "directional"
   ],
   "headline_setting": "readout",
   "headline_references": [
@@ -65,7 +67,8 @@
         "B",
         "D5",
         "D7",
-        "S5"
+        "S5",
+        "S3"
       ]
     },
     "kingston": {
@@ -99,7 +102,8 @@
         "B",
         "D5",
         "D7",
-        "S5"
+        "S5",
+        "S3"
       ]
     }
   },
@@ -132,9 +136,15 @@
       "kind": "surface",
       "distance": 5,
       "rounds": 5
+    },
+    "S3": {
+      "kind": "surface",
+      "distance": 3,
+      "rounds": 3,
+      "family": false
     }
   },
-  "circuit_note": "Native CZ circuits (R3-C2, R3-S4); the surface code is the rotated Z-memory with both hook-safe schedules as candidates",
+  "circuit_note": "Native CZ circuits (R3-C2, R3-S4); the surface code is the rotated Z-memory with both hook-safe schedules as candidates. S3, the d=3 surface code (revision 6), runs on the square-lattice devices for R3-R6's suppression check only; it is never in a family (\"family\": false)",
   "base_seeds": [
     20261201,
     20261202,
@@ -143,7 +153,7 @@
   "pilot_seed": 20261204,
   "sample_seed": 20261205,
   "seed_transpiler": 20261206,
-  "seed_note": "New and disjoint from every v1 (20261011-13), v2 (20261021-23, 20261031) and v3 Phase 1 (20261108-10) seed. Main-stage chunk k of a placement on base seed b: derive_seed('eval-v3-held-out', b, case_id, key, k); pilot: derive_seed('pilot-v3-held-out', pilot_seed, case_id, key, k); the R3-C5 random sample and the Nove checks: seeds derived from sample_seed and the case id ('sample-v3-held-out', 'check-v3-held-out'); the d-round sensitivity run (R3-C10): pilot derive_seed('pilot-v3-rounds', pilot_seed, case_id, key, k) and main stage derive_seed('eval-v3-rounds', b, case_id, key, k); the correlated re-decode reuses the main stage's chunk seeds, so it decodes the same samples",
+  "seed_note": "New and disjoint from every v1 (20261011-13), v2 (20261021-23, 20261031) and v3 Phase 1 (20261108-10) seed. Main-stage chunk k of a placement on base seed b: derive_seed('eval-v3-held-out', b, case_id, key, k); pilot: derive_seed('pilot-v3-held-out', pilot_seed, case_id, key, k); the R3-C5 random sample and the Nove checks: seeds derived from sample_seed and the case id ('sample-v3-held-out', 'check-v3-held-out'); the d-round sensitivity run (R3-C10): pilot derive_seed('pilot-v3-rounds', pilot_seed, case_id, key, k) and main stage derive_seed('eval-v3-rounds', b, case_id, key, k); the correlated re-decode reuses the main stage's chunk seeds, so it decodes the same samples. Revision 6 adds the Qiskit level 2 seed sweep (20261207 to 20261216) and the grading variants' tags ('eval-v3-variant:<name>', 'variant-v3-lognormal'). The fast search's seed, 20261108, was frozen at F3 and is a v3 Phase 1 seed; it draws the search's random starts, never a simulation sample, and stays as frozen (P2-46)",
   "shots_rule": {
     "pilot_shots": 100000,
     "min_shots_per_seed": 200000,
@@ -159,12 +169,24 @@
       "confirmatory",
       "synthetic"
     ],
-    "description": "R3-C6: every simulated placement gets one 100,000-shot pilot on the pilot seed; its main-stage shots per seed are the smallest 200,000 x 2^k with 3 x shots x p >= F, capped at C (p = 0 gives the cap). A family placement (the headline method's and the headline references' choices, at both settings, on the confirmatory and synthetic devices) gets F = 4,000 and C = 102,400,000; every other placement F = 400 and C = 25,600,000. Pilot counts set shots and may select (pilot-best) but never enter a failure rate; only main-stage counts on the three base seeds do"
+    "description": "R3-C6: every simulated placement gets one 100,000-shot pilot on the pilot seed; its main-stage shots per seed are the smallest 200,000 x 2^k with 3 x shots x p >= F, capped at C (p = 0 gives the cap). A family placement (the headline method's, the headline references' and, from revision 6, the isolation references' choices, at every setting, on the confirmatory and synthetic devices; at the directional setting also the headline setting's family placements) gets F = 4,000 and C = 102,400,000; every other placement F = 400 and C = 25,600,000. Pilot counts set shots and select pilot-best (R3-C12) but never enter a failure rate"
   },
   "best_found": {
     "top": 30,
-    "random": 100,
-    "description": "R3-C5, on the square lattice at d=5 and d=7: every method's choice, the top 30 by the decoder-graph score, summed error and mapomatic's cost, and 100 uniform placements; every placement elsewhere"
+    "random": 1000,
+    "top_by": [
+      "decoder_graph",
+      "v1",
+      "summed_error",
+      "idle_aware_summed_error",
+      "detection_rate",
+      "mapomatic"
+    ],
+    "every_placement_cases": [
+      "berlin-D5"
+    ],
+    "every_placement_limit_hours": 24,
+    "description": "R3-C5 (revision 6): every placement is simulated on the heavy-hex devices, at d=3 and on FakeBerlin at d=5; in the other square-lattice cases (FakeBerlin D7, FakeNighthawk D5 and D7) the simulated set is every method's choice, the Qiskit level 2 seed sweep's choices, the top 30 by the decoder-graph score, the v1 score, summed error, the idle-aware summed error, the detection rate and mapomatic's cost, and 1,000 uniform placements; percentiles and Spearman's rho there are computed over the uniform sample; FakeBerlin D5's main stage, projected from its own pilot stage in proportion to the shots (an upper bound), must fit in 24 wall hours at its setting, or that case falls back to the best-found union above and the run file and the report say so"
   },
   "nove_checks_per_case": 200,
   "surface_scaled_score": {
@@ -220,6 +242,103 @@
       }
     },
     "threshold_rule": "t = floor(n / 2) + 1: better after Holm in more than half of the layout's n repetition cases",
-    "description": "Per layout and reference, from the family at the headline setting: 'beats X on <devices> (<layout>), under this noise model' when better after Holm in at least t cases and worse in none; 'mixed against X ...: better in N cases, worse in M (named)' when better in at least one and worse in at least one; 'loses to X ... (named)' when worse in at least one and better in none; otherwise 'no difference shown against X ...'. Surface code, per confirmatory device and reference: 'beats' / 'loses to' when better / worse after Holm, otherwise 'no difference shown'. A case or comparison with no valid placement leaves the family and t does not change. The isolation family uses the same rules"
+    "device_notes": {
+      "berlin": "FakeBerlin's device-level calibration aggregates (medians, counts and ranges) were seen before F4 in the X16 incident (SPEC_V3.md section 1); no decision used them, and the square lattice has no unseen reserve"
+    },
+    "description": "Per layout and reference, from the family at the headline setting: 'beats X on <devices> (<layout>), under this noise model' when better after Holm in at least t cases and worse in none; 'mixed against X ...: better in N cases, worse in M (named)' when better in at least one and worse in at least one; 'loses to X ... (named)' when worse in at least one and better in none; otherwise 'better after Holm in N of n cases (fewer than t); no layout claim against X ...'. Surface code, per confirmatory device and reference: 'beats' / 'loses to' when better / worse after Holm, otherwise 'no difference shown'. Every layout claim also gives, per device, the cases better and worse after Holm out of that device's cases (revision 6). A case or comparison with no valid placement leaves the family and t does not change. The isolation family uses the same rules, and its 'beats' row reads 'the decoder graph helps beyond X ...' (revision 6). Every claim on a device listed in device_notes carries that note beside it (revision 6)"
+  },
+  "setting_scope": {
+    "directional": {
+      "devices": [
+        "boston",
+        "pittsburgh",
+        "berlin"
+      ],
+      "circuits": [
+        "A",
+        "D5",
+        "D7"
+      ],
+      "simulated_set": "choices",
+      "description": "R3-C13: the confirmatory devices' Z-basis repetition codes; every method selects under the directional model, and the simulated set is every choice at this setting plus every choice of the same case at the headline setting, so both are graded under it"
+    }
+  },
+  "qiskit_seed_sweep": {
+    "level": 2,
+    "seeds": [
+      20261207,
+      20261208,
+      20261209,
+      20261210,
+      20261211,
+      20261212,
+      20261213,
+      20261214,
+      20261215,
+      20261216
+    ],
+    "description": "R3-C14 (revision 6, exploratory): Qiskit's default at level 2 re-run with ten more transpiler seeds on every case; every mapping is recorded and simulated, and the report gives how often the seeds agree and how each distinct choice compares with the headline score"
+  },
+  "detection_rate": "R3-C16 (revision 6, exploratory): Kan et al.'s detection-rate proxy computed from the model, the mean over detectors of (1 - prod (1 - 2 p_e)) / 2 over the undecomposed approximate DEM; scored on every placement and candidate, compared with the headline score and every reference",
+  "surface_schedule_split": "R3-C17 (revision 6, exploratory): the scaled score held to the default schedule ('scaled-default-schedule'), and each default-schedule reference's embedding under the scaled choice's schedule ('<reference>@scaled-schedule'); every candidate is simulated, so these need no extra simulation",
+  "grading_variants": {
+    "applies_to": "R3-C15 (revision 6, exploratory): every family placement of the confirmatory devices at the headline setting, simulated under each variant and decoded with the selecting model's weights, with the other placements' shots rule from its own pilot count; seeds derive_seed('eval-v3-variant:<name>', b, case_id, key, k), log-normal draws derive_seed('variant-v3-lognormal', sample_seed, device, delta, draw)",
+    "variants": {
+      "cz-duration-min": {
+        "kinds": [
+          "repetition",
+          "surface"
+        ],
+        "description": "every CZ at the device's shortest published CZ length (K2)"
+      },
+      "cz-duration-max": {
+        "kinds": [
+          "repetition",
+          "surface"
+        ],
+        "description": "every CZ at the device's longest published CZ length (K2)"
+      },
+      "idle-z-x2": {
+        "kinds": [
+          "repetition",
+          "surface"
+        ],
+        "description": "each qubit's idle Z rate doubled (echoed T2 against none)"
+      },
+      "cz-without-1q": {
+        "kinds": [
+          "repetition",
+          "surface"
+        ],
+        "description": "each CZ's published error less its two qubits' published sx errors, the single-qubit Clifford layer IBM's two-qubit benchmark includes and the circuits charge again as H gates (K19)"
+      },
+      "lognormal-0.1": {
+        "kinds": [
+          "repetition",
+          "surface"
+        ],
+        "delta": 0.1,
+        "draws": 4,
+        "description": "independent log-normal factors exp(0.1 z) on every channel, then reset = readout"
+      },
+      "lognormal-0.25": {
+        "kinds": [
+          "repetition",
+          "surface"
+        ],
+        "delta": 0.25,
+        "draws": 4,
+        "description": "independent log-normal factors exp(0.25 z) on every channel, then reset = readout"
+      },
+      "directional": {
+        "kinds": [
+          "repetition"
+        ],
+        "bases": [
+          "Z"
+        ],
+        "description": "readout and reset at each qubit's P(1|0) (R3-C13)"
+      }
+    }
   }
 }

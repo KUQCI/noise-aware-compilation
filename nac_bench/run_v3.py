@@ -1,4 +1,4 @@
-"""v3 held-out runner: SPEC_V3.md Part A and the surface code of Part C (revision 5).
+"""v3 held-out runner: SPEC_V3.md Part A and the surface code of Part C (revision 6).
 
 Usage::
 
@@ -59,6 +59,7 @@ import os
 import random
 import sys
 import time
+import traceback
 import warnings
 from collections.abc import Callable, Sequence
 from concurrent.futures import ProcessPoolExecutor
@@ -68,10 +69,13 @@ from typing import Any
 import nove
 import numpy as np
 
+from nac_bench import detection_rate as detection
 from nac_bench.baselines_v3 import mapomatic_cost_chunk, mapomatic_version, run_baselines
+from nac_bench.directional import directional_noise, directional_snapshot
+from nac_bench.grading_variants import variant_model, variant_names
 from nac_bench.machine import machine
 from nac_bench.qiskit_layout import qiskit_layout, qiskit_version
-from nac_bench.run_reset import SETTINGS, _bench_source_sha256, git_state, noise_for
+from nac_bench.run_reset import _bench_source_sha256, git_state, noise_for
 from nac_bench.sensitivity_v3 import CORRELATED_DECODER_DESCRIPTION, CorrelatedRedecode
 from noise_aware_compilation.baselines import (
     IDLE_AWARE_SUMMED_ERROR_METHOD,
@@ -115,12 +119,18 @@ from noise_aware_compilation.surface_code import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-RUN_SCHEMA = "noise-aware-compilation.held-out-run-v3/2"
-SPEC_REVISION = 5
+RUN_SCHEMA = "noise-aware-compilation.held-out-run-v3/3"
+SPEC_REVISION = 6
 SEED_TAG = "eval-v3-held-out"
 PILOT_TAG = "pilot-v3-held-out"
 ROUNDS_SEED_TAG = "eval-v3-rounds"
 ROUNDS_PILOT_TAG = "pilot-v3-rounds"
+VARIANT_SEED_TAG = "eval-v3-variant"  # + ":" + the variant's name (R3-C15)
+#: setting -> the reset error of the IBM-shaped Target Qiskit and mapomatic read (R3-C9);
+#: "directional" also gives the Target each qubit's P(1|0) as its readout error (R3-C13)
+SETTINGS = {"zero": "none", "readout": "readout", "directional": "directional"}
+#: stages of a case, in order; a failure record names the one that raised
+NOVE_CHECK_STAGE = "nove_checks"
 #: device roles (config ``devices.<name>.role``)
 CONFIRMATORY = "confirmatory"
 ROLES = (CONFIRMATORY, "seen", "synthetic")
@@ -154,9 +164,12 @@ def cases(config: dict[str, Any]) -> list[dict[str, Any]]:
     for setting in config["settings_order"]:
         if setting not in SETTINGS:
             raise ValueError(f"unknown reset setting {setting!r}")
+        scope = (config.get("setting_scope") or {}).get(setting)
         for device, info in config["devices"].items():
             if info["role"] not in ROLES:
                 raise ValueError(f"unknown device role {info['role']!r}")
+            if scope is not None and device not in scope["devices"]:
+                continue
             base = {
                 "device": device,
                 "lattice": info["lattice"],
@@ -166,6 +179,8 @@ def cases(config: dict[str, Any]) -> list[dict[str, Any]]:
                 "headline_setting": setting == config["headline_setting"],
             }
             for label in info["circuits"]:
+                if scope is not None and label not in scope["circuits"]:
+                    continue
                 spec = config["circuits"][label]
                 out.append(
                     {
@@ -221,7 +236,18 @@ def main_shots(failures: int, shots: int, rule: dict[str, Any], seeds: int) -> i
 @functools.cache
 def _models(device: str, setting: str) -> tuple[StoredDevice, nove.HardwareNoiseModel]:
     stored = load_device(device)
+    if setting == "directional":
+        return stored, directional_noise(stored, device)
     return stored, noise_for(setting, stored)
+
+
+def _target_inputs(device: str, setting: str) -> tuple[nove.CalibrationSnapshot, str]:
+    """The snapshot and Target reset error Qiskit and mapomatic read at ``setting``."""
+
+    stored, _noise = _models(device, setting)
+    if setting == "directional":
+        return directional_snapshot(stored, device), "readout"
+    return stored.snapshot, SETTINGS[setting]
 
 
 @functools.cache
@@ -246,28 +272,31 @@ def _schedules(distance: int, rounds: int) -> tuple[Schedule, ...]:
 
 def _score_chunk(
     args: tuple[str, str, CircuitKey, list[Placement]],
-) -> tuple[list[float], list[float], list[float], list[float]]:
-    """Decoder-graph score, v1 score, summed error and idle-aware summed error of a chunk."""
+) -> tuple[list[float], list[float], list[float], list[float], list[float]]:
+    """Decoder-graph score, v1 score, summed error, idle-aware summed error and detection
+    rate of a chunk."""
 
     device, setting, key, chunk = args
     _stored, noise = _models(device, setting)
     circuit = _circuit(key)
     lowering = _lowering(device, setting, key)
-    dg, v1, summed, idle = [], [], [], []
+    dg, v1, summed, idle, rate = [], [], [], [], []
     for m in chunk:
         noisy = lowering.stim_circuit(m)
         dg.append(decoder_graph_score_from_dem(approximate_dem(noisy, decompose=True)))
-        v1.append(v1_score_from_dem(approximate_dem(noisy, decompose=False)))
+        flat = approximate_dem(noisy, decompose=False)
+        v1.append(v1_score_from_dem(flat))
         summed.append(summed_error(circuit, noise, m))
         idle.append(idle_aware_summed_error(noisy))
-    return dg, v1, summed, idle
+        rate.append(detection.detection_rate(flat))
+    return dg, v1, summed, idle, rate
 
 
 def _surface_score(
     args: tuple[str, str, CircuitKey, Placement, int, float, tuple[int, ...]],
-) -> tuple[float, float, float, float, tuple[float, ...]]:
-    """Scaled score, exact decoder-graph score, summed error, idle-aware summed error and the
-    scaled score at each sensitivity *k* of one surface candidate."""
+) -> tuple[float, float, float, float, tuple[float, ...], float]:
+    """Scaled score, exact decoder-graph score, summed error, idle-aware summed error, the
+    scaled score at each sensitivity *k* and the detection rate of one surface candidate."""
 
     device, setting, key, mapping, k, step, sensitivity = args
     _stored, noise = _models(device, setting)
@@ -282,6 +311,7 @@ def _surface_score(
         summed_error(_circuit(key), noise, mapping),
         idle_aware_summed_error(noisy),
         others,
+        detection.detection_rate(approximate_dem(noisy, decompose=False)),
     )
 
 
@@ -304,11 +334,95 @@ def _sim_task(args: tuple[str, str, CircuitKey, Placement, int, list[int]]) -> d
     return _evaluator(device, setting, key, mapping).run(shots, seeds).to_dict()
 
 
+def _main_task(
+    args: tuple[str, str, CircuitKey, Placement, int, list[int], bool],
+) -> tuple[dict[str, int], list[int] | None]:
+    """A main-stage task; family placements also return each chunk's failures."""
+
+    device, setting, key, mapping, shots, seeds, family = args
+    task = (device, setting, key, mapping, shots, seeds)
+    if family:
+        return _sim_chunks_task(task)
+    return _sim_task(task), None
+
+
+def _sim_chunks_task(
+    args: tuple[str, str, CircuitKey, Placement, int, list[int]],
+) -> tuple[dict[str, int], list[int]]:
+    """:func:`_sim_task` that also returns each chunk's failures (family placements, so the
+    correlated re-decode can be checked chunk by chunk, T3-C8)."""
+
+    device, setting, key, mapping, shots, seeds = args
+    evaluator = _evaluator(device, setting, key, mapping)
+    total: Counts | None = None
+    failures = []
+    remaining = shots
+    for seed in seeds[: -(-shots // CHUNK_SHOTS)]:
+        c = evaluator.run_chunk(min(CHUNK_SHOTS, remaining), seed)
+        failures.append(c.logical_failures)
+        total = c if total is None else total + c
+        remaining -= c.shots
+    assert total is not None
+    return total.to_dict(), failures
+
+
+@functools.cache
+def _variant_models(
+    device: str, setting: str, name: str, spec_json: str, sample_seed: int
+) -> tuple[nove.DeviceModel, nove.HardwareNoiseModel]:
+    stored, base = _models(device, setting)
+    return variant_model(stored, device, base, name, json.loads(spec_json), sample_seed)
+
+
+@functools.lru_cache(maxsize=4)
+def _variant_evaluator(
+    device: str,
+    setting: str,
+    key: CircuitKey,
+    mapping: Placement,
+    name: str,
+    spec_json: str,
+    sample_seed: int,
+) -> Any:
+    from nac_bench.run_drift import MultiDecoderEvaluator  # run_drift imports this module
+
+    stored, base = _models(device, setting)
+    return MultiDecoderEvaluator(
+        _circuit(key),
+        _variant_models(device, setting, name, spec_json, sample_seed),
+        {"selecting": (stored.device, base)},
+        mapping,
+    )
+
+
+def _variant_task(
+    args: tuple[str, str, CircuitKey, Placement, str, str, int, int, list[int]],
+) -> dict[str, int]:
+    """One variant's samples of one placement, decoded with the selecting model's weights."""
+
+    device, setting, key, mapping, name, spec_json, sample_seed, shots, seeds = args
+    evaluator = _variant_evaluator(device, setting, key, mapping, name, spec_json, sample_seed)
+    counts: Counts = evaluator.run(shots, seeds)["selecting"]
+    return counts.to_dict()
+
+
 def _redecode_task(
     args: tuple[str, str, CircuitKey, Placement, int, list[int]],
-) -> dict[str, int]:
+) -> dict[str, Any]:
     device, setting, key, mapping, shots, seeds = args
-    return CorrelatedRedecode(_evaluator(device, setting, key, mapping)).run(shots, seeds)
+    redecoder = CorrelatedRedecode(_evaluator(device, setting, key, mapping))
+    chunks = []
+    remaining = shots
+    for seed in seeds[: -(-shots // CHUNK_SHOTS)]:
+        size = min(CHUNK_SHOTS, remaining)
+        chunks.append(redecoder.run_chunk(size, seed))
+        remaining -= size
+    return {
+        "shots": shots,
+        "uncorrelated_failures": sum(a for a, _b in chunks),
+        "correlated_failures": sum(b for _a, b in chunks),
+        "chunks": chunks,
+    }
 
 
 def _mapomatic_chunks(pool: ProcessPoolExecutor, device: str, setting: str) -> Any:
@@ -358,9 +472,16 @@ def simulate(
     config: dict[str, Any],
     *,
     tags: tuple[str, str] = (PILOT_TAG, SEED_TAG),
+    limit_seconds: float | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, float]]:
     """R3-C6 for each (circuit, placement, seed key, family placement): pilot, then the main
-    stage on every base seed, with the family's or the other placements' shots rule."""
+    stage on every base seed, with the family's or the other placements' shots rule.
+
+    With ``limit_seconds`` (R3-C5's every-placement guard), the main stage's wall time is
+    projected from the pilot stage's, in proportion to the shots; the projection is an upper
+    bound, since every placement's main stage has at least as many shots per evaluator built
+    as its pilot. Over the limit, :class:`OverLimit` is raised before the main stage starts.
+    """
 
     rule = config["shots_rule"]
     pilot_tag, seed_tag = tags
@@ -389,21 +510,30 @@ def simulate(
         main_shots(p["logical_failures"], p["shots"], stage_rule(rule, item[3]), len(base_seeds))
         for p, item in zip(pilot, items, strict=True)
     ]
+    if limit_seconds is not None and items:
+        projected = pilot_seconds * len(base_seeds) * sum(shots) / (pilot_shots * len(items))
+        if projected > limit_seconds:
+            raise OverLimit(projected, limit_seconds)
     tasks, owners = [], []
-    for i, ((key, m, seed_key, _family), n) in enumerate(zip(items, shots, strict=True)):
+    for i, ((key, m, seed_key, family), n) in enumerate(zip(items, shots, strict=True)):
         for si, base in enumerate(base_seeds):
             seeds = _chunk_seeds(seed_tag, base, case_id, seed_key, n)
             for part in range(0, len(seeds), TASK_CHUNKS):
                 part_shots = min(TASK_CHUNKS * CHUNK_SHOTS, n - part * CHUNK_SHOTS)
                 tasks.append(
-                    (device, setting, key, m, part_shots, seeds[part : part + TASK_CHUNKS])
+                    (device, setting, key, m, part_shots, seeds[part : part + TASK_CHUNKS], family)
                 )
                 owners.append((i, si))
     t = time.perf_counter()
     totals: dict[tuple[int, int], Counts] = {}
-    for owner, counts in zip(owners, pool.map(_sim_task, tasks, chunksize=1), strict=True):
+    chunk_failures: dict[tuple[int, int], list[int]] = {}
+    for owner, (counts, chunks) in zip(
+        owners, pool.map(_main_task, tasks, chunksize=1), strict=True
+    ):
         c = Counts(**counts)
         totals[owner] = c if owner not in totals else totals[owner] + c
+        if chunks is not None:
+            chunk_failures.setdefault(owner, []).extend(chunks)
     main_seconds = time.perf_counter() - t
     rows = []
     for i, item in enumerate(items):
@@ -412,7 +542,10 @@ def simulate(
             c = totals[(i, si)]
             if c.shots != shots[i]:
                 raise RuntimeError("a placement's main-stage shots differ from the rule's")
-            per_seed.append({"base_seed": base, **c.to_dict()})
+            seed_row: dict[str, Any] = {"base_seed": base, **c.to_dict()}
+            if (i, si) in chunk_failures:
+                seed_row["chunk_failures"] = chunk_failures[(i, si)]
+            per_seed.append(seed_row)
         rows.append(
             {
                 "family_placement": bool(item[3]),
@@ -438,8 +571,9 @@ def redecode(
 ) -> list[dict[str, Any]]:
     """R3-C10: each item's main-stage samples decoded again with correlated matching.
 
-    ``rows`` are the items' main-stage rows; the uncorrelated count of every seed must equal
-    the main stage's, which proves both decoders saw the same syndromes.
+    ``rows`` are the items' main-stage rows. T3-C8: the uncorrelated count of every chunk
+    must equal the main stage's count of that chunk, which proves both decoders saw the same
+    syndromes; a row that does not reproduce raises, and the caller records the failure.
     """
 
     tasks, owners = [], []
@@ -453,40 +587,169 @@ def redecode(
                     (device, setting, key, m, part_shots, seeds[part : part + TASK_CHUNKS])
                 )
                 owners.append((i, si))
-    totals: dict[tuple[int, int], dict[str, int]] = {}
+    totals: dict[tuple[int, int], dict[str, Any]] = {}
     for owner, c in zip(owners, pool.map(_redecode_task, tasks, chunksize=1), strict=True):
         if owner in totals:
-            c = {k: totals[owner][k] + v for k, v in c.items()}
+            before = totals[owner]
+            c = {
+                "shots": before["shots"] + c["shots"],
+                "uncorrelated_failures": before["uncorrelated_failures"]
+                + c["uncorrelated_failures"],
+                "correlated_failures": before["correlated_failures"] + c["correlated_failures"],
+                "chunks": before["chunks"] + c["chunks"],
+            }
         totals[owner] = c
     out = []
     for i, row in enumerate(rows):
         per_seed = []
         for si, main in enumerate(row["per_seed"]):
             c = totals[(i, si)]
-            if (
-                c["uncorrelated_failures"] != main["logical_failures"]
-                or c["shots"] != main["shots"]
-            ):
-                raise RuntimeError("the re-decode did not reproduce the main stage's samples")
+            main_chunks = main.get("chunk_failures")
+            if main_chunks is None:
+                raise RuntimeError("the main stage kept no per-chunk counts for this placement")
+            plain = [a for a, _b in c["chunks"]]
+            if plain != list(main_chunks) or c["shots"] != main["shots"]:
+                raise RuntimeError("the re-decode did not reproduce the main stage's chunks")
             per_seed.append(
                 {
                     "base_seed": main["base_seed"],
                     "shots": c["shots"],
                     "logical_failures": c["correlated_failures"],
+                    "chunks_reproduced": len(plain),
                 }
             )
-        out.append({"per_seed": per_seed})
+        out.append({"per_seed": per_seed, "reproduced": True})
     return out
 
 
 def family_indices(
-    choices: dict[str, int | None], config: dict[str, Any], headline: str
+    choices: dict[str, int | None], config: dict[str, Any], headline: str, kind: str
 ) -> set[int]:
-    """R3-C6's family placements of a case: the headline method's and the headline
-    references' choices (a placement chosen by several is one placement)."""
+    """R3-C6's family placements of a case: the headline method's, the headline references'
+    and (revision 6) the isolation references' choices; a placement chosen by several is
+    one placement."""
 
-    names = [headline, *config["headline_references"]]
+    names = [headline, *config["headline_references"], *config["isolation_references"][kind]]
     return {i for name in names if (i := choices.get(name)) is not None}
+
+
+def every_placement(case: dict[str, Any], config: dict[str, Any]) -> bool:
+    """R3-C5: every placement is simulated on the heavy-hex devices, at d=3, and in the
+    square-lattice cases the config names (revision 6: FakeBerlin D5)."""
+
+    if case["lattice"] == "heavy-hex" or int(case["circuit"]["distance"]) == 3:
+        return True
+    return guarded(case, config)
+
+
+def guarded(case: dict[str, Any], config: dict[str, Any]) -> bool:
+    """R3-C5 (revision 6): a case simulated in full only because the config names it; its
+    main stage must fit in ``best_found.every_placement_limit_hours``, projected from its own
+    pilot stage, or it falls back to the best-found union."""
+
+    named = config["best_found"].get("every_placement_cases", [])
+    return f"{case['device']}-{case['circuit']['label']}" in named
+
+
+class OverLimit(RuntimeError):
+    """The main stage projects over its limit (R3-C5's every-placement guard)."""
+
+    def __init__(self, projected_seconds: float, limit_seconds: float) -> None:
+        super().__init__(
+            f"main stage projected at {projected_seconds / 3600:.1f} wall hours, "
+            f"over the {limit_seconds / 3600:g}-hour limit"
+        )
+        self.projected_seconds = projected_seconds
+        self.limit_seconds = limit_seconds
+
+
+def choices_only(case: dict[str, Any], config: dict[str, Any]) -> bool:
+    """R3-C13: a setting whose simulated set is only the choices (the directional one)."""
+
+    scope = (config.get("setting_scope") or {}).get(case["setting"]) or {}
+    return scope.get("simulated_set") == "choices"
+
+
+def qiskit_choice(record: dict[str, Any], placements: Sequence[Placement]) -> int | None:
+    """A Qiskit or mapomatic choice's index; None when the run records a failure (R3-C9)."""
+
+    if record.get("failure"):
+        return None
+    return index_of(placements, record["mapping"])
+
+
+def _failure(error: BaseException) -> dict[str, Any]:
+    return {
+        "failed": True,
+        "error": f"{type(error).__name__}: {error}",
+        "traceback": traceback.format_exc(limit=8),
+    }
+
+
+def grade_variants(
+    pool: ProcessPoolExecutor,
+    case: dict[str, Any],
+    config: dict[str, Any],
+    items: Sequence[tuple[CircuitKey, Placement, str]],
+    rows: Sequence[dict[str, Any]],
+) -> dict[str, Any]:
+    """R3-C15: each family placement simulated under each grading variant and decoded with
+    the selecting model's weights, with the other placements' shots rule from its own pilot
+    count (the variant run has no pilot of its own)."""
+
+    device, setting, case_id = case["device"], case["setting"], case["case_id"]
+    spec = config["grading_variants"]
+    spec_json = json.dumps(spec, sort_keys=True)
+    sample_seed = int(config["sample_seed"])
+    basis = case["circuit"].get("basis")
+    rule = stage_rule(config["shots_rule"], False)
+    base_seeds = [int(b) for b in config["base_seeds"]]
+    out: dict[str, Any] = {"decoder_weights": "the selecting model's", "variants": {}}
+    for name in variant_names(spec, case["kind"], basis):
+        tag = f"{VARIANT_SEED_TAG}:{name}"
+        tasks, owners, shots = [], [], []
+        for i, ((key, m, seed_key), row) in enumerate(zip(items, rows, strict=True)):
+            pilot = row["pilot"]
+            n = main_shots(
+                int(pilot["logical_failures"]), int(pilot["shots"]), rule, len(base_seeds)
+            )
+            shots.append(n)
+            for si, base in enumerate(base_seeds):
+                seeds = _chunk_seeds(tag, base, case_id, seed_key, n)
+                for part in range(0, len(seeds), TASK_CHUNKS):
+                    part_shots = min(TASK_CHUNKS * CHUNK_SHOTS, n - part * CHUNK_SHOTS)
+                    tasks.append(
+                        (
+                            device,
+                            setting,
+                            key,
+                            m,
+                            name,
+                            spec_json,
+                            sample_seed,
+                            part_shots,
+                            seeds[part : part + TASK_CHUNKS],
+                        )
+                    )
+                    owners.append((i, si))
+        totals: dict[tuple[int, int], Counts] = {}
+        for owner, counts in zip(owners, pool.map(_variant_task, tasks, chunksize=1), strict=True):
+            c = Counts(**counts)
+            totals[owner] = c if owner not in totals else totals[owner] + c
+        out["variants"][name] = {
+            "rows": [
+                {
+                    "index": row["index"],
+                    "shots_per_seed": shots[i],
+                    "per_seed": [
+                        {"base_seed": base, **totals[(i, si)].to_dict()}
+                        for si, base in enumerate(base_seeds)
+                    ],
+                }
+                for i, row in enumerate(rows)
+            ]
+        }
+    return out
 
 
 def run_sensitivity(
@@ -496,19 +759,21 @@ def run_sensitivity(
     items: Sequence[tuple[CircuitKey, Placement, str]],
     rows: Sequence[dict[str, Any]],
 ) -> dict[str, Any]:
-    """R3-C10 on one case's family placements: the correlated re-decode and, for the
-    repetition circuits the config names, a memory of *d* rounds."""
+    """R3-C10 and R3-C15 on one case's family placements: the correlated re-decode, for the
+    repetition circuits the config names a memory of *d* rounds, and the grading variants.
+    Each part that raises is recorded as failed and the others still run (exploratory)."""
 
     device, setting, case_id = case["device"], case["setting"], case["case_id"]
     spec = config["sensitivity"]
-    redecoded = redecode(pool, device, setting, case_id, items, rows, config)
-    out: dict[str, Any] = {
-        "correlated_matching": {
+    out: dict[str, Any] = {"rounds_equal_distance": None}
+    try:
+        redecoded = redecode(pool, device, setting, case_id, items, rows, config)
+        out["correlated_matching"] = {
             "decoder": CORRELATED_DECODER_DESCRIPTION,
             "rows": [{"index": row["index"], **r} for row, r in zip(rows, redecoded, strict=True)],
-        },
-        "rounds_equal_distance": None,
-    }
+        }
+    except Exception as error:
+        out["correlated_matching"] = _failure(error)
     label = case["circuit"]["label"]
     if case["kind"] == "repetition" and label in spec["rounds_equal_distance"]["circuits"]:
         distance = int(case["circuit"]["distance"])
@@ -516,20 +781,50 @@ def run_sensitivity(
             (("repetition", distance, distance, key[3]), m, seed_key, True)
             for key, m, seed_key in items
         ]
-        long_rows, _seconds = simulate(
-            pool,
-            device,
-            setting,
-            case_id,
-            longer,
-            config,
-            tags=(ROUNDS_PILOT_TAG, ROUNDS_SEED_TAG),
-        )
-        out["rounds_equal_distance"] = {
-            "rounds": distance,
-            "rows": [{"index": row["index"], **r} for row, r in zip(rows, long_rows, strict=True)],
-        }
+        try:
+            long_rows, _seconds = simulate(
+                pool,
+                device,
+                setting,
+                case_id,
+                longer,
+                config,
+                tags=(ROUNDS_PILOT_TAG, ROUNDS_SEED_TAG),
+            )
+            out["rounds_equal_distance"] = {
+                "rounds": distance,
+                "rows": [
+                    {"index": row["index"], **r} for row, r in zip(rows, long_rows, strict=True)
+                ],
+            }
+        except Exception as error:
+            out["rounds_equal_distance"] = _failure(error)
+    try:
+        out["grading_variants"] = grade_variants(pool, case, config, items, rows)
+    except Exception as error:
+        out["grading_variants"] = _failure(error)
     return out
+
+
+def readout_choices(case: dict[str, Any], out_dir: Path) -> dict[str, Any]:
+    """R3-C13: the headline-setting run of the same case, whose choices the directional run
+    also grades (it runs after the headline setting; the file must exist)."""
+
+    path = out_dir / "runs" / case["case_id"].replace(f"v3-{case['setting']}-", "v3-readout-", 1)
+    path = path.with_suffix(".json")
+    data = path.read_bytes()
+    raw = json.loads(data)
+    if raw.get("failed") or raw.get("no_valid_placement"):
+        raise RuntimeError(f"{path.name} has no choices to grade")
+    return {
+        "file": path.name,
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "choices": {
+            name: entry["index"]
+            for name, entry in raw["methods"].items()
+            if entry.get("index") is not None and not (entry.get("detail") or {}).get("failure")
+        },
+    }
 
 
 def _save_scores(path: Path, arrays: dict[str, np.ndarray]) -> str:
@@ -619,15 +914,46 @@ def _no_placement(
     reason: str,
     workers: int,
     machine_label: str | None,
+    circuit: nove.Circuit,
+    seconds: dict[str, float],
 ) -> dict[str, Any]:
-    commit, dirty = git_state()
+    """A run file for a case with no valid placement, with the same provenance as any run
+    (T3-R3, revision 6)."""
+
+    stored, noise = _models(case["device"], case["setting"])
     return {
         **_header(case, config),
         "no_valid_placement": True,
         "reason": reason,
+        "provenance": _common_provenance(
+            stored, noise, circuit, case, workers, machine_label, seconds
+        ),
+    }
+
+
+def failed_record(
+    case: dict[str, Any],
+    config: dict[str, Any],
+    stage: str,
+    error: BaseException,
+    workers: int,
+    machine_label: str | None,
+) -> dict[str, Any]:
+    """The run file of a case that raised (revision 6): which stage, and why. A failure in
+    the Nove check is R3-C4's pre-registered outcome (the case leaves the family); any other
+    failure stops the analysis until it is explained (``analysis_v3``)."""
+
+    commit, dirty = git_state()
+    return {
+        **_header(case, config),
+        "failed": True,
+        "no_valid_placement": False,
+        "stage": stage,
+        **_failure(error),
         "provenance": {
             "package_git_commit": commit,
             "package_git_dirty": dirty,
+            "nac_bench_source_sha256": _bench_source_sha256(),
             "lock_file_sha256": hashlib.sha256(LOCK_FILE.read_bytes()).hexdigest(),
             "reset_setting": case["setting"],
             "machine": machine(machine_label, workers=workers),
@@ -636,6 +962,12 @@ def _no_placement(
 
 
 # --- repetition-code cases ------------------------------------------------------------------
+
+Save = Callable[[dict[str, Any]], None]
+
+
+def _sweep_seeds(config: dict[str, Any]) -> list[int]:
+    return [int(x) for x in config["qiskit_seed_sweep"]["seeds"]]
 
 
 def run_repetition(
@@ -646,6 +978,8 @@ def run_repetition(
     workers: int,
     out_dir: Path,
     machine_label: str | None,
+    progress: dict[str, str],
+    save: Save,
 ) -> dict[str, Any]:
     _scaled, search_parameters = _check_frozen(config)
     device, setting, case_id = case["device"], case["setting"], case["case_id"]
@@ -655,14 +989,17 @@ def run_repetition(
     circuit = _circuit(key)
     seconds: dict[str, float] = {}
 
+    progress["stage"] = "enumeration"
     t = time.perf_counter()
     try:
         placements = enumerate_placements(circuit, stored.device)
     except NoValidPlacementError as error:
-        return _no_placement(case, config, str(error), workers, machine_label)
+        seconds["enumeration"] = time.perf_counter() - t
+        return _no_placement(case, config, str(error), workers, machine_label, circuit, seconds)
     n = len(placements)
     seconds["enumeration"] = time.perf_counter() - t
 
+    progress["stage"] = "scoring"
     t = time.perf_counter()
     chunks = [placements[i : i + SCORE_CHUNK] for i in range(0, n, SCORE_CHUNK)]
     parts: dict[str, list[list[float]]] = {
@@ -670,6 +1007,7 @@ def run_repetition(
         "v1": [],
         "summed_error": [],
         "idle_aware_summed_error": [],
+        "detection_rate": [],
     }
     for chunk_scores in pool.map(_score_chunk, [(device, setting, key, c) for c in chunks]):
         for name, values in zip(parts, chunk_scores, strict=True):
@@ -680,6 +1018,7 @@ def run_repetition(
     }
     seconds["scoring"] = time.perf_counter() - t
 
+    progress["stage"] = NOVE_CHECK_STAGE
     t = time.perf_counter()
     rng = random.Random(derive_seed(CHECK_TAG, int(config["sample_seed"]), case_id))
     checked = rng.sample(range(n), min(int(config["nove_checks_per_case"]), n))
@@ -689,37 +1028,44 @@ def run_repetition(
     seconds["nove_checks"] = time.perf_counter() - t
 
     # Each score's ordering key: the scores' tie rule rounds to 12 significant digits;
-    # summed error's (R-B4) and the idle-aware summed error compare raw values. Ties go to
-    # enumeration order.
+    # summed error's (R-B4), the idle-aware summed error and the detection rate compare raw
+    # values. Ties go to enumeration order.
     keys = {
         "decoder_graph": rounded(scores["decoder_graph"]),
         "v1": rounded(scores["v1"]),
         "summed_error": scores["summed_error"],
         "idle_aware_summed_error": scores["idle_aware_summed_error"],
+        "detection_rate": scores["detection_rate"],
     }
     order = {name: np.argsort(k, kind="stable") for name, k in keys.items()}
 
+    progress["stage"] = "qiskit_and_mapomatic"
     t = time.perf_counter()
+    target_snapshot, target_reset = _target_inputs(device, setting)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         record = run_baselines(
             circuit,
-            stored.snapshot,
+            target_snapshot,
             stored.device,
             placements,
             int(config["seed_transpiler"]),
-            reset_error=SETTINGS[setting],
+            seed_sweep=_sweep_seeds(config),
+            reset_error=target_reset,
             map_chunks=_mapomatic_chunks(pool, device, setting),
             top=int(config["best_found"]["top"]),
+            sweep_levels=(int(config["qiskit_seed_sweep"]["level"]),),
         )
     costs = record["mapomatic"].pop("candidate_costs")
     mapomatic_cost = np.full(n, math.nan) if costs is None else np.asarray(costs, dtype=np.float64)
     mapomatic_top = record["mapomatic"].pop("top_layouts", [])
     seconds["qiskit_and_mapomatic"] = time.perf_counter() - t
+    progress["stage"] = "qiskit_vf2"
     t = time.perf_counter()
     vf2 = qiskit_layout(circuit, stored.device, noise, placements)
     seconds["qiskit_vf2"] = time.perf_counter() - t
 
+    progress["stage"] = "fast_search"
     t = time.perf_counter()
     search = FastSearch(circuit, stored.device, noise, placements)
     lowering = _lowering(device, setting, key)
@@ -728,22 +1074,31 @@ def run_repetition(
         dem = approximate_dem(lowering.stim_circuit(m), decompose=True)
         return decoder_graph_score_from_dem(dem)
 
-    found = search.run(score, search_parameters)
+    fast_detail: dict[str, Any] = {"parameters": config["fast_search"]}
+    found_index: int | None
+    try:
+        found = search.run(score, search_parameters)
+        found_index = index_of(placements, found.mapping)
+        fast_detail.update({"evaluations": found.evaluations, "descents": list(found.descents)})
+        if found_index is None or found.score != scores["decoder_graph"][found_index]:
+            # exploratory (R3-C8): recorded, and the case goes on
+            fast_detail["failure"] = "the fast search's score differs from the exhaustive one"
+            found_index = None
+    except Exception as error:
+        fast_detail.update(_failure(error))
+        fast_detail["failure"] = fast_detail.pop("error")
+        found_index = None
     seconds["fast_search"] = time.perf_counter() - t
-    found_index = index_of(placements, found.mapping)
-    if found_index is None or found.score != scores["decoder_graph"][found_index]:
-        raise RuntimeError("the fast search's score differs from the exhaustive one")
 
+    level_names = ("qiskit-default-l1", "qiskit-default-l2", "qiskit-default-l3", "mapomatic")
     choices: dict[str, int | None] = {
         "decoder-graph": int(order["decoder_graph"][0]),
         "v1": int(order["v1"][0]),
         "lowest-summed-error": int(order["summed_error"][0]),
         "idle-aware-summed-error": int(order["idle_aware_summed_error"][0]),
+        "detection-rate": int(order["detection_rate"][0]),
         "naive": 0,
-        **{
-            name: index_of(placements, record[name]["mapping"])
-            for name in ("qiskit-default-l1", "qiskit-default-l2", "qiskit-default-l3", "mapomatic")
-        },
+        **{name: qiskit_choice(record[name], placements) for name in level_names},
         "qiskit-vf2": index_of(placements, vf2.mapping),
         "fast-search": found_index,
     }
@@ -752,21 +1107,15 @@ def run_repetition(
         "v1": {"method": SCORE_METHOD, "tie_break_rule": TIE_BREAK_RULE},
         "lowest-summed-error": {"method": SUMMED_ERROR_METHOD},
         "idle-aware-summed-error": {"method": IDLE_AWARE_SUMMED_ERROR_METHOD},
+        "detection-rate": {"method": detection.METHOD},
         "naive": {"method": "the first valid placement in lexicographic order"},
         "qiskit-vf2": {
             "mapping": None if vf2.mapping is None else list(vf2.mapping),
             "failure": vf2.failure,
             "stop_reason": vf2.stop_reason,
         },
-        "fast-search": {
-            "parameters": config["fast_search"],
-            "evaluations": found.evaluations,
-            "descents": list(found.descents),
-        },
-        **{
-            name: record[name]
-            for name in ("qiskit-default-l1", "qiskit-default-l2", "qiskit-default-l3", "mapomatic")
-        },
+        "fast-search": fast_detail,
+        **{name: record[name] for name in level_names},
     }
 
     def describe(i: int) -> dict[str, Any]:
@@ -774,10 +1123,7 @@ def run_repetition(
             "index": i,
             "mapping": list(placements[i]),
             "scores": {
-                "decoder_graph": float(scores["decoder_graph"][i]),
-                "v1": float(scores["v1"][i]),
-                "summed_error": float(scores["summed_error"][i]),
-                "idle_aware_summed_error": float(scores["idle_aware_summed_error"][i]),
+                **{name: float(scores[name][i]) for name in parts},
                 "mapomatic_cost": None
                 if math.isnan(mapomatic_cost[i])
                 else float(mapomatic_cost[i]),
@@ -793,49 +1139,84 @@ def run_repetition(
         else:
             entry["index"] = None
         methods[name] = entry
+    sweep = record["qiskit-default-l2"].get("seed_sweep_runs") or []
+    methods["qiskit-default-l2"]["seed_sweep_indices"] = [
+        None if r["failure"] else index_of(placements, r["mapping"]) for r in sweep
+    ]
 
     top = int(config["best_found"]["top"])
-    full = case["lattice"] == "heavy-hex" or int(spec["distance"]) == 3
+    full = every_placement(case, config)
+    only_choices = choices_only(case, config)
     sample_rng = random.Random(derive_seed(SAMPLE_TAG, int(config["sample_seed"]), case_id))
-    random_sample = sorted(sample_rng.sample(range(n), min(int(config["best_found"]["random"]), n)))
+    uniform = sorted(sample_rng.sample(range(n), min(int(config["best_found"]["random"]), n)))
+    random_sample = [] if full or only_choices else uniform
     tops = {
-        "decoder_graph": [int(i) for i in order["decoder_graph"][:top]],
-        "summed_error": [int(i) for i in order["summed_error"][:top]],
-        "mapomatic": [i for i in (index_of(placements, m) for m in mapomatic_top) if i is not None],
+        name: [int(i) for i in order[name][:top]]
+        for name in config["best_found"]["top_by"]
+        if name != "mapomatic"
     }
-    if full:
+    tops["mapomatic"] = [
+        i for i in (index_of(placements, m) for m in mapomatic_top) if i is not None
+    ]
+    chosen = {i for i in choices.values() if i is not None}
+    sweep_chosen = {i for i in methods["qiskit-default-l2"]["seed_sweep_indices"] if i is not None}
+    best_found_union = sorted(chosen.union(sweep_chosen, *map(set, tops.values()), uniform))
+    graded_from_headline: dict[str, Any] | None = None
+    if only_choices:
+        graded_from_headline = readout_choices(case, out_dir)
+        headline_chosen = set(graded_from_headline["choices"].values())
+        simulated = sorted(chosen | sweep_chosen | headline_chosen)
+        rule = "R3-C13: every choice, at this setting and at the headline setting"
+    elif full:
         simulated = list(range(n))
+        rule = "every placement"
     else:
-        chosen = {i for i in choices.values() if i is not None}
-        simulated = sorted(chosen.union(*map(set, tops.values()), random_sample))
+        simulated = best_found_union
+        rule = "R3-C5 best-found union"
 
     family = (
-        family_indices(choices, config, "decoder-graph")
+        family_indices(choices, config, "decoder-graph", "repetition")
         if family_placements_apply(case, config)
         else set()
     )
-    items = [
-        (key, placements[i], ",".join(map(str, placements[i])), i in family) for i in simulated
-    ]
-    rows, sim_seconds = simulate(pool, device, setting, case_id, items, config)
+    if graded_from_headline is not None and family:
+        family |= family_indices(
+            graded_from_headline["choices"], config, "decoder-graph", "repetition"
+        )
+
+    def items_of(indices: Sequence[int]) -> list[tuple[CircuitKey, Placement, str, bool]]:
+        return [
+            (key, placements[i], ",".join(map(str, placements[i])), i in family) for i in indices
+        ]
+
+    progress["stage"] = "simulation"
+    fallback: dict[str, Any] | None = None
+    limit = (
+        3600 * float(config["best_found"]["every_placement_limit_hours"])
+        if full and not only_choices and guarded(case, config)
+        else None
+    )
+    try:
+        rows, sim_seconds = simulate(
+            pool, device, setting, case_id, items_of(simulated), config, limit_seconds=limit
+        )
+    except OverLimit as over:
+        fallback = {
+            "projected_main_wall_hours": over.projected_seconds / 3600,
+            "limit_hours": over.limit_seconds / 3600,
+            "workers": workers,
+        }
+        full, simulated, random_sample = False, best_found_union, uniform
+        rule = "R3-C5 best-found union (every placement's main stage projected over its limit)"
+        rows, sim_seconds = simulate(pool, device, setting, case_id, items_of(simulated), config)
     seconds["pilot"], seconds["main"] = sim_seconds["pilot"], sim_seconds["main"]
     in_sample = set(random_sample)
     simulated_rows = [
         {**describe(i), "in_random_sample": i in in_sample, **row}
         for i, row in zip(simulated, rows, strict=True)
     ]
-    sensitivity = None
-    if sensitivity_applies(case, config):
-        t = time.perf_counter()
-        sensitivity = run_sensitivity(
-            pool,
-            case,
-            config,
-            [(key, placements[i], items[k][2]) for k, i in enumerate(simulated) if i in family],
-            [r for i, r in zip(simulated, simulated_rows, strict=True) if i in family],
-        )
-        seconds["sensitivity"] = time.perf_counter() - t
 
+    progress["stage"] = "score_file"
     score_path = out_dir / "scores" / f"{case_id}.npz"
     sha = _save_scores(
         score_path,
@@ -856,7 +1237,7 @@ def run_repetition(
             "max": float(finite.max()),
         }
 
-    return {
+    payload: dict[str, Any] = {
         **_header(case, config),
         "no_valid_placement": False,
         "placements": n,
@@ -866,29 +1247,24 @@ def run_repetition(
         "headline_method": "decoder-graph",
         "headline_references": list(config["headline_references"]),
         "simulated_set": {
-            "rule": "every placement" if full else "R3-C5 best-found union",
+            "rule": rule,
             "size": len(simulated),
-            "every_placement": full,
-            "top": tops if not full else None,
+            "every_placement": full and not only_choices,
+            "top": tops if not (full or only_choices) else None,
             "random_sample": random_sample,
+            "headline_setting_choices": graded_from_headline,
+            "every_placement_fallback": fallback,
         },
         "simulated": simulated_rows,
         "family_placements": sorted(family),
-        "sensitivity": sensitivity,
+        "sensitivity": None,
         "nove_checks": {"placements_checked": total_checked, "all_equal": True},
         "score_file": {
             "path": score_path.relative_to(ROOT).as_posix()
             if score_path.is_relative_to(ROOT)
             else str(score_path),
             "sha256": sha,
-            "arrays": [
-                "placements",
-                "decoder_graph",
-                "v1",
-                "summed_error",
-                "idle_aware_summed_error",
-                "mapomatic_cost",
-            ],
+            "arrays": ["placements", *parts, "mapomatic_cost"],
         },
         "score_summary": {
             **{name: summary(v) for name, v in scores.items()},
@@ -898,6 +1274,21 @@ def run_repetition(
             stored, noise, circuit, case, workers, machine_label, seconds
         ),
     }
+    if sensitivity_applies(case, config):
+        # The main result is on disk before the exploratory runs start (revision 6).
+        payload["sensitivity"] = {"pending": True}
+        save(payload)
+        progress["stage"] = "sensitivity"
+        t = time.perf_counter()
+        payload["sensitivity"] = run_sensitivity(
+            pool,
+            case,
+            config,
+            [(key, m, seed_key) for key, m, seed_key, fam in items_of(simulated) if fam],
+            [r for i, r in zip(simulated, simulated_rows, strict=True) if i in family],
+        )
+        seconds["sensitivity"] = time.perf_counter() - t
+    return payload
 
 
 # --- surface-code cases ---------------------------------------------------------------------
@@ -911,6 +1302,8 @@ def run_surface(
     workers: int,
     out_dir: Path,
     machine_label: str | None,
+    progress: dict[str, str],
+    save: Save,
 ) -> dict[str, Any]:
     scaled_parameters, _search = _check_frozen(config)
     device, setting, case_id = case["device"], case["setting"], case["case_id"]
@@ -919,6 +1312,7 @@ def run_surface(
     stored, noise = _models(device, setting)
     seconds: dict[str, float] = {}
 
+    progress["stage"] = "enumeration"
     t = time.perf_counter()
     schedules = _schedules(distance, rounds)
     if DEFAULT_SCHEDULE not in schedules:
@@ -932,12 +1326,20 @@ def run_surface(
         except NoValidPlacementError:
             embeddings = []
         candidates.extend((schedule, m) for m in embeddings)
+    default_circuit = _circuit(("surface", distance, rounds, DEFAULT_SCHEDULE))
+    seconds["enumeration"] = time.perf_counter() - t
     if not candidates:
         return _no_placement(
-            case, config, "no SWAP-free embedding of the surface-code patch", workers, machine_label
+            case,
+            config,
+            "no SWAP-free embedding of the surface-code patch",
+            workers,
+            machine_label,
+            default_circuit,
+            seconds,
         )
-    seconds["enumeration"] = time.perf_counter() - t
 
+    progress["stage"] = "scoring"
     t = time.perf_counter()
     k, step = scaled_parameters.k, scaled_parameters.step
     sensitivity_k = tuple(int(j) for j in config["surface_k_sensitivity"])
@@ -951,6 +1353,7 @@ def run_surface(
         )
     )
     seconds["scoring"] = time.perf_counter() - t
+    progress["stage"] = NOVE_CHECK_STAGE
     t = time.perf_counter()
     rng = random.Random(derive_seed(CHECK_TAG, int(config["sample_seed"]), case_id))
     checked = rng.sample(
@@ -980,19 +1383,23 @@ def run_surface(
     summed = [s[2] for s in scored]
     idle = [s[3] for s in scored]
     at_k = {j: [s[4][n] for s in scored] for n, j in enumerate(sensitivity_k)}
-    default_circuit = _circuit(("surface", distance, rounds, DEFAULT_SCHEDULE))
+    rate = [s[5] for s in scored]
     default_mappings = [candidates[i][1] for i in default]
 
+    progress["stage"] = "qiskit_and_mapomatic"
     t = time.perf_counter()
+    target_snapshot, target_reset = _target_inputs(device, setting)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         record = run_baselines(
             default_circuit,
-            stored.snapshot,
+            target_snapshot,
             stored.device,
             default_mappings,
             int(config["seed_transpiler"]),
-            reset_error=SETTINGS[setting],
+            seed_sweep=_sweep_seeds(config),
+            reset_error=target_reset,
+            sweep_levels=(int(config["qiskit_seed_sweep"]["level"]),),
         )
     record["mapomatic"].pop("candidate_costs")
     seconds["qiskit_and_mapomatic"] = time.perf_counter() - t
@@ -1001,30 +1408,57 @@ def run_surface(
         j = index_of(default_mappings, mapping)
         return None if j is None else default[j]
 
+    level_names = ("qiskit-default-l1", "qiskit-default-l2", "qiskit-default-l3", "mapomatic")
     choices: dict[str, int | None] = {
         "scaled": pick(scaled, everything, _rounded),
         "exact-decoder-graph": pick(exact, everything, _rounded),
         "lowest-summed-error": pick(summed, default, float),
         "idle-aware-summed-error": pick(idle, everything, float),
+        "detection-rate": pick(rate, everything, float),
         **{f"scaled-k{j}": pick(at_k[j], everything, _rounded) for j in sensitivity_k},
+        # R3-C17 (revision 6, exploratory): the scaled score held to the default schedule
+        "scaled-default-schedule": pick(scaled, default, _rounded),
         "naive": default[0],
         **{
-            name: default_index(record[name]["mapping"])
-            for name in ("qiskit-default-l1", "qiskit-default-l2", "qiskit-default-l3", "mapomatic")
+            name: None if record[name].get("failure") else default_index(record[name]["mapping"])
+            for name in level_names
         },
     }
+    # R3-C17: each default-schedule reference's embedding under the scaled choice's schedule,
+    # so the comparison with the scaled score can be split into placement and schedule.
+    scaled_schedule = candidates[choices["scaled"]][0] if choices["scaled"] is not None else None
+    position = {c: i for i, c in enumerate(candidates)}
+    derived: dict[str, str] = {}
+    for name in ["naive", "lowest-summed-error", *level_names[1:]]:
+        i = choices.get(name)
+        if i is None or scaled_schedule is None:
+            continue
+        twin = position.get((scaled_schedule, candidates[i][1]))
+        choices[f"{name}@scaled-schedule"] = twin
+        derived[f"{name}@scaled-schedule"] = name
     methods = {}
     for name, i in choices.items():
         entry: dict[str, Any] = {"index": i}
         if name in record:
             entry["detail"] = record[name]
+        elif name in derived:
+            entry["detail"] = {
+                "derived_from": derived[name],
+                "rule": "the same embedding under the scaled choice's schedule (R3-C17)",
+            }
+        elif name == "detection-rate":
+            entry["detail"] = {"method": detection.METHOD}
         if i is not None:
             entry["schedule"] = list(candidates[i][0])
             entry["mapping"] = list(candidates[i][1])
         methods[name] = entry
+    sweep = record["qiskit-default-l2"].get("seed_sweep_runs") or []
+    methods["qiskit-default-l2"]["seed_sweep_indices"] = [
+        None if r["failure"] else default_index(r["mapping"]) for r in sweep
+    ]
 
     family = (
-        family_indices(choices, config, "scaled")
+        family_indices(choices, config, "scaled", "surface")
         if family_placements_apply(case, config)
         else set()
     )
@@ -1032,6 +1466,7 @@ def run_surface(
         (("surface", distance, rounds, s), m, f"{s[0]}{s[1]}|" + ",".join(map(str, m)), i in family)
         for i, (s, m) in enumerate(candidates)
     ]
+    progress["stage"] = "simulation"
     rows, sim_seconds = simulate(pool, device, setting, case_id, items, config)
     seconds["pilot"], seconds["main"] = sim_seconds["pilot"], sim_seconds["main"]
     simulated_rows = [
@@ -1044,24 +1479,14 @@ def run_surface(
                 "exact_decoder_graph": exact[i],
                 "summed_error": summed[i],
                 "idle_aware_summed_error": idle[i],
+                "detection_rate": rate[i],
                 **{f"scaled_k{j}": at_k[j][i] for j in sensitivity_k},
             },
             **row,
         }
         for i, ((s, m), row) in enumerate(zip(candidates, rows, strict=True))
     ]
-    sensitivity = None
-    if sensitivity_applies(case, config):
-        t = time.perf_counter()
-        sensitivity = run_sensitivity(
-            pool,
-            case,
-            config,
-            [items[i][:3] for i in sorted(family)],
-            [simulated_rows[i] for i in sorted(family)],
-        )
-        seconds["sensitivity"] = time.perf_counter() - t
-    return {
+    payload = {
         **_header(case, config),
         "no_valid_placement": False,
         "placements": len(candidates),
@@ -1083,15 +1508,56 @@ def run_surface(
         },
         "simulated": simulated_rows,
         "family_placements": sorted(family),
-        "sensitivity": sensitivity,
+        "sensitivity": None,
         "nove_checks": {"placements_checked": total_checked, "all_equal": True},
         "provenance": _common_provenance(
             stored, noise, default_circuit, case, workers, machine_label, seconds
         ),
     }
+    if sensitivity_applies(case, config):
+        payload["sensitivity"] = {"pending": True}
+        save(payload)
+        progress["stage"] = "sensitivity"
+        t = time.perf_counter()
+        payload["sensitivity"] = run_sensitivity(
+            pool,
+            case,
+            config,
+            [items[i][:3] for i in sorted(family)],
+            [simulated_rows[i] for i in sorted(family)],
+        )
+        seconds["sensitivity"] = time.perf_counter() - t
+    return payload
 
 
 # --- driver ---------------------------------------------------------------------------------
+
+
+class CaseFailed(RuntimeError):
+    """A case raised; its failure record is on disk (revision 6)."""
+
+
+def _write(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Compact: a heavy-hex d=7 case holds thousands of simulated placements.
+    text = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(text + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def _keep_failed(path: Path) -> None:
+    """Move an earlier failure record aside (``runs/failed/``) so it is never overwritten."""
+
+    if not path.exists():
+        return
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not raw.get("failed"):
+        return
+    folder = path.parent / "failed"
+    folder.mkdir(exist_ok=True)
+    k = len(list(folder.glob(f"{path.stem}.*.json")))
+    path.replace(folder / f"{path.stem}.{k}.json")
 
 
 def run_case(
@@ -1103,21 +1569,49 @@ def run_case(
     out_dir: Path,
     machine_label: str | None,
 ) -> Path:
+    """Run one case and write its run file; a case that raises writes a failure record
+    naming its stage and raises :class:`CaseFailed` (revision 6)."""
+
     start = time.perf_counter()
     if qiskit_version() != config["qiskit_version"]:
         raise RuntimeError(f"qiskit {config['qiskit_version']} required, found {qiskit_version()}")
     if mapomatic_version() != config["mapomatic_version"]:
         raise RuntimeError(f"mapomatic {config['mapomatic_version']} required")
     run = run_repetition if case["kind"] == "repetition" else run_surface
-    payload = run(case, config, pool, workers=workers, out_dir=out_dir, machine_label=machine_label)
-    payload["wall_clock_seconds"] = time.perf_counter() - start
-    payload["workers"] = workers
     path = out_dir / "runs" / f"{case['case_id']}.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    # Compact: a heavy-hex d=7 case holds thousands of simulated placements.
-    text = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-    path.write_text(text + "\n", encoding="utf-8")
+    _keep_failed(path)
+    progress = {"stage": "start"}
+
+    def save(payload: dict[str, Any]) -> None:
+        payload["wall_clock_seconds"] = time.perf_counter() - start
+        payload["workers"] = workers
+        _write(path, payload)
+
+    try:
+        payload = run(
+            case,
+            config,
+            pool,
+            workers=workers,
+            out_dir=out_dir,
+            machine_label=machine_label,
+            progress=progress,
+            save=save,
+        )
+    except Exception as error:
+        save(failed_record(case, config, progress["stage"], error, workers, machine_label))
+        raise CaseFailed(f"{case['case_id']} failed in {progress['stage']}: {error}") from error
+    save(payload)
     return path
+
+
+def _existing_result(path: Path) -> bool:
+    """Whether ``path`` holds a finished run (a failure record or a pending one is re-run)."""
+
+    if not path.exists():
+        return False
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return not raw.get("failed") and raw.get("sensitivity") != {"pending": True}
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -1137,23 +1631,32 @@ def main(argv: Sequence[str] | None = None) -> int:
     if importlib.metadata.version("qiskit") != config["qiskit_version"]:
         parser.error(f"qiskit=={config['qiskit_version']} is required (bench extra)")
     wanted = set(args.only) if args.only else None
+    failed = []
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         for case in cases(config):
             if wanted is not None and case["case_id"] not in wanted:
                 continue
             target = args.out / "runs" / f"{case['case_id']}.json"
-            if args.skip_existing and target.exists():
+            if args.skip_existing and _existing_result(target):
                 continue
             t = time.perf_counter()
-            path = run_case(
-                case,
-                config,
-                pool,
-                workers=args.workers,
-                out_dir=args.out,
-                machine_label=args.machine_label,
-            )
+            try:
+                path = run_case(
+                    case,
+                    config,
+                    pool,
+                    workers=args.workers,
+                    out_dir=args.out,
+                    machine_label=args.machine_label,
+                )
+            except CaseFailed as error:
+                failed.append(case["case_id"])
+                print(f"FAILED {error}", file=sys.stderr, flush=True)
+                continue
             print(f"{case['case_id']}: {time.perf_counter() - t:.1f}s -> {path}", flush=True)
+    if failed:
+        print(f"{len(failed)} case(s) failed: {', '.join(failed)}", file=sys.stderr)
+        return 1
     return 0
 
 

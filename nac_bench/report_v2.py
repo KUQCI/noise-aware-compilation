@@ -36,17 +36,18 @@ V3_BANNER = (
     "> **Read with v3.** v3's re-analyses qualify four findings here. "
     "(1) On FakeAlgiers, the held-out device, with reset error = readout error, the "
     "decoder-graph score beats the fixed (naive) placement in 4 of 4 cases and beats lowest "
-    "summed error, Qiskit's default transpile and mapomatic in 1 of 4 after Holm; of the "
+    "summed error, Qiskit at level 1 (level 2, the actual default, picks the same placement in "
+    "every v2 case) and mapomatic in 1 of 4 after Holm; of the "
     "other three, d=5 is better by its interval but not after Holm (p = 0.16) and two are "
     "ties ([RESET.md](results_v3/reset/RESET.md) section 1). "
-    "(2) The largest gain, \u221240.5% [\u221246.3%, \u221234.2%] against the fixed placement "
-    "on FakeAlgiers d=7, is one case, and Qiskit's default transpile and mapomatic pick the "
-    "same placement there ([REANALYSIS.md](results_v3/reanalysis/REANALYSIS.md)). "
+    "(2) The largest held-out gain, \u221240.5% [\u221246.3%, \u221234.2%] against the fixed "
+    "placement on FakeAlgiers d=7, is one case, and Qiskit (levels 1 and 2) and mapomatic pick "
+    "the same placement there ([REANALYSIS.md](results_v3/reanalysis/REANALYSIS.md)). "
     '(3) The "Qiskit VF2Layout" baseline picks lowest summed error\'s placement in 9 of 10 '
     "cases, so it is close to a second copy of that baseline, not an independent Qiskit "
     "comparison. (4) Section 4's choice of the decoder-graph score as the default rests on the "
     "d=7 case: R-G7 is \u22120.059 [\u22120.105, \u22120.013] with it and \u22120.016 "
-    "[\u22120.060, +0.028] without it. v3 re-tests the score on unseen devices "
+    "[\u22120.060, +0.027] without it. v3 re-tests the score on unseen devices "
     "([SPEC_V3.md](SPEC_V3.md)). The rest of this report is unchanged.",
     "<!-- v3-banner:end -->",
 )

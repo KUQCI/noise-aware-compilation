@@ -99,8 +99,11 @@ class CrossFit:
 
     @property
     def oracle_bias(self) -> float:
-        """How much lower the in-sample best is than the cross-fitted best, relative."""
+        """How much lower the in-sample best is than the cross-fitted best, relative; NaN
+        when the cross-fitted best saw no failure (revision 6: no division by zero)."""
 
+        if self.best.estimate == 0:
+            return math.nan
         return (self.in_sample_best - self.best.estimate) / self.best.estimate
 
 
@@ -193,6 +196,11 @@ def cross_fit_regret(
     d_v = [0.0 if sm else cv + bv for sm, cv, bv in zip(same, c_v, b_v, strict=True)]
     absolute = _mean_interval(d_r, d_v)
     big_c, big_b = sum(c_r) / k, sum(b_r) / k
+    if big_b == 0:
+        # The cross-fitted best saw no failure on any held-out fold: the relative regret is
+        # undefined (revision 6); the absolute regret above still stands.
+        nan = math.nan
+        return Regret(absolute, Interval(nan, nan, nan), difference_verdict(absolute))
     var_c, var_b = sum(c_v) / k**2, sum(b_v) / k**2
     cov = sum(cv for sm, cv in zip(same, c_v, strict=True) if sm) / k**2
     ratio = big_c / big_b

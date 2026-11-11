@@ -404,11 +404,19 @@ def evaluate_layouts_in_chunks(
 
 @functools.cache
 def _stored_backend(device_name: str, reset_error: str) -> SnapshotBackend:
+    """The Target of a stored device; ``"directional"`` is the revision 6 setting (its
+    readout and reset errors at each qubit's P(1|0), :mod:`nac_bench.directional`)."""
+
     from noise_aware_compilation.devices import load_device
 
     stored = load_device(device_name)
-    target = native_target(stored.snapshot, stored.device, reset_error)
-    return SnapshotBackend(str(stored.snapshot.device_id), target)
+    snapshot = stored.snapshot
+    if reset_error == "directional":
+        from nac_bench.directional import directional_snapshot
+
+        snapshot, reset_error = directional_snapshot(stored, device_name), "readout"
+    target = native_target(snapshot, stored.device, reset_error)
+    return SnapshotBackend(str(snapshot.device_id), target)
 
 
 def mapomatic_cost_chunk(
@@ -511,12 +519,15 @@ def run_baselines(
     reset_error: str = "none",
     map_chunks: ChunkMap | None = None,
     top: int = 0,
+    sweep_levels: Sequence[int] = LEVELS,
 ) -> dict[str, Any]:
     """Every Step 6b selection for one case, as a JSON-ready record.
 
     ``map_chunks`` computes mapomatic's layout costs in chunks (same result); its tasks
     rebuild the backend from the stored device, so it needs a stored device. ``top`` keeps
     mapomatic's first ``top`` layouts in its own order (lowest cost first, its stable sort).
+    ``seed_sweep`` re-runs the levels in ``sweep_levels`` with each of its transpiler seeds
+    and records every mapping and failure (revision 6, R3-C14).
     """
 
     qc = qiskit_circuit(circuit)
@@ -526,7 +537,12 @@ def run_baselines(
     record: dict[str, Any] = {}
     for level in LEVELS:
         c = qiskit_default(qc, target, level, seed_transpiler, edges, allowed)
-        sweep = [qiskit_default(qc, target, level, s, edges, allowed).mapping for s in seed_sweep]
+        runs = (
+            [qiskit_default(qc, target, level, s, edges, allowed) for s in seed_sweep]
+            if level in sweep_levels
+            else []
+        )
+        sweep = [r.mapping for r in runs]
         record[f"qiskit-default-l{level}"] = {
             "mapping": None if c.mapping is None else list(c.mapping),
             "swap_free": c.swap_free,
@@ -535,9 +551,18 @@ def run_baselines(
             "stop_reasons": c.stop_reasons,
             "failure": c.failure,
             "seed_transpiler": seed_transpiler,
-            "seed_sweep": list(seed_sweep),
+            "seed_sweep": list(seed_sweep) if runs else [],
             "seed_sweep_distinct_mappings": len({m for m in sweep if m is not None}),
             "seed_sweep_matches_main": sum(1 for m in sweep if m == c.mapping),
+            "seed_sweep_runs": [
+                {
+                    "seed_transpiler": r.seed_transpiler,
+                    "mapping": None if r.mapping is None else list(r.mapping),
+                    "layout_pass": r.layout_pass,
+                    "failure": r.failure,
+                }
+                for r in runs
+            ],
             "selection_seconds": c.seconds,
         }
     backend = SnapshotBackend(str(snapshot.device_id), target)

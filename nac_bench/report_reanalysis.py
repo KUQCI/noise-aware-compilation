@@ -16,9 +16,9 @@ NAMES = {
     "decoder-graph": "decoder-graph score",
     "lowest-summed-error": "lowest summed error",
     "qiskit-vf2": "Qiskit VF2Layout (v2 target)",
-    "qiskit-default-l1": "Qiskit default, level 1",
-    "qiskit-default-l2": "Qiskit default, level 2",
-    "qiskit-default-l3": "Qiskit default, level 3",
+    "qiskit-default-l1": "Qiskit, level 1",
+    "qiskit-default-l2": "Qiskit, level 2 (the default)",
+    "qiskit-default-l3": "Qiskit, level 3",
     "mapomatic": "mapomatic",
     "fixed": "naive placement",
     "average": "all-placement average",
@@ -63,7 +63,9 @@ def _case(row: dict[str, Any]) -> str:
     cid = row["case_id"]
     if not cid.startswith("v2-"):
         device, label, *rest = cid.split("-")
-        return f"{DEVICE[device]} {V1_LABEL[label]}, {'-'.join(rest)}"
+        name = f"{DEVICE[device]} {V1_LABEL[label]}, {'-'.join(rest)}"
+        # circuit C (d=2) reports only the detection-event rate, SPEC.md's M3, not P_L
+        return name + (" (detection-event rate, M3)" if label == "C" else "")
     return _v2_case(cid)
 
 
@@ -157,6 +159,17 @@ def write_report(
             f"**{name}**: {fam['description']}. {fam['size']} comparisons at α = {fam['alpha']}; "
             f"{nontie} have a non-tie verdict and {holds} hold after Holm."
         )
+        if "qiskit-default-l1" in {m["reference"] for m in fam["members"]}:
+            same = sum(
+                rec["qiskit-default-l1"]["mapping"] == rec["qiskit-default-l2"]["mapping"]
+                for rec in step6b["cases"].values()
+            )
+            w("")
+            w(
+                "Level 1 stood for Qiskit's default when this family was labelled (P1-3, since "
+                "superseded); the default is level 2 (P2-26), which picks the same placement as "
+                f"level 1 in {same} of {len(step6b['cases'])} cases (section 3)."
+            )
         w("")
         w(
             _table(
@@ -178,7 +191,7 @@ def write_report(
         w("")
 
     first = next(iter(step6b["cases"].values()))
-    w("## 3. What do Qiskit's default transpile and mapomatic choose?")
+    w("## 3. What do Qiskit's transpile levels and mapomatic choose?")
     w("")
     w(
         "Both ran on the converted snapshot's published values: an IBM-shaped Target, and for mapomatic "
@@ -337,7 +350,9 @@ def write_report(
     w("")
     w(
         f"{result['m6_rule']}. Gain is P_L(naive) − P_L(choice), so a negative gain means the method's "
-        "own choice is worse than the naive placement. Shown at δ = 0.5; every strength is in the JSON."
+        "own choice is worse than the naive placement. Shown at δ = 0.5; every strength is in the JSON. "
+        "The intervals come from this re-analysis's own bootstrap draws, so they differ slightly "
+        "from the ones REPORT_V2.md printed for the same M6 values."
     )
     w("")
     rows = []
@@ -391,7 +406,7 @@ def write_report(
                 "Case",
                 "vs naive",
                 "vs lowest summed error",
-                "vs Qiskit default, level 1",
+                "vs Qiskit, level 1",
                 "vs mapomatic",
             ],
             rows,

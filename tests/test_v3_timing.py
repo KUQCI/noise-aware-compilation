@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from nac_bench import timing_pilot as tp
+from noise_aware_compilation.devices import load_device
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def test_main_shots_follow_the_r3_c6_rule() -> None:
@@ -17,13 +21,20 @@ def test_main_shots_follow_the_r3_c6_rule() -> None:
     assert tp.main_shots(1, 10_000_000) == tp.MAIN_MAX_SHOTS
 
 
-def test_held_out_coupling_devices_carry_no_calibration() -> None:
-    pytest.importorskip("qiskit_ibm_runtime")
-    device = tp.coupling_device("kingston")
+def test_coupling_devices_carry_no_calibration() -> None:
+    """The coupling-map reader, on a development device's conf (X16: no held-out file is
+    opened by a test). Its pairs are the stored device's couplers plus the removed ones."""
+
+    device = tp.coupling_from_conf(ROOT / "data" / "devices" / "conf_fez.json", "fez")
     assert device.gate_durations == {} and device.measurement_duration is None
     assert all(a < b for a, b in device.connectivity)
+    assert device.metadata == {"num_qubits": 156}
+    stored = load_device("fez").device
+    removed = {tuple(sorted(c["pair"])) for c in stored.metadata["removed_couplers"]}
+    live = {tuple(sorted(pair)) for pair in stored.connectivity}
+    assert set(device.connectivity) == live | removed
     with pytest.raises(ValueError):
-        tp.coupling_device("fez")
+        tp.coupling_device("fez")  # refused before any file is opened
 
 
 def _measured(placements: int) -> dict[str, Any]:

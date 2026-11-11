@@ -1,0 +1,300 @@
+{
+ "description": "How much the approximate detector model costs the decoder (SPEC_V3.md revision 6, K21).\n\nUsage::\n\n    python -m nac_bench.exact_dem_check [--out results_v3/k1/exact_dem.json]\n\nv1's K1 says the decoder model is approximate because Nove's own detector model refuses\ntwo-qubit channels with more than one Pauli term. An exact model exists for this noise: each\nCZ channel is 15 equal terms, which is DEPOLARIZE2 exactly, and each single-qubit Pauli\nchannel factors exactly into independent X, Y and Z flips. This check writes that exact\ncircuit, builds PyMatching from its detector model and from Stim's approximate one (the one\nevery run uses), and decodes the same samples with both, on development devices only (X16):\nFakeFez D5 and D7 and FakeMiami D5, five seeded placements each, 3 rounds, CZ, reset =\nreadout. It reports each model's failures, the shots on which the two decoders disagree and\nthe paired difference with a 95% interval, and the largest relative difference between the\ntwo models' mechanism probabilities.\n",
+ "rows": [
+  {
+   "device": "fez",
+   "distance": 5,
+   "failures_approximate_model": 1217,
+   "failures_exact_model": 1217,
+   "index": 420,
+   "max_relative_probability_difference": 0.013082086835345487,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0013910233716544504,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261112,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 5,
+   "failures_approximate_model": 574,
+   "failures_exact_model": 574,
+   "index": 431,
+   "max_relative_probability_difference": 0.007435879406240551,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0015905606487724901,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261212,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 5,
+   "failures_approximate_model": 1652,
+   "failures_exact_model": 1651,
+   "index": 783,
+   "max_relative_probability_difference": 0.011657408160420137,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0022254439115054446,
+   "only_approximate_fails": 5,
+   "only_exact_fails": 4,
+   "p_l_difference_95": [
+    -4.879999673333325e-06,
+    6.879999673333325e-06
+   ],
+   "p_l_difference_approximate_minus_exact": 1e-06,
+   "seed": 20261312,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 5,
+   "failures_approximate_model": 659,
+   "failures_exact_model": 659,
+   "index": 1034,
+   "max_relative_probability_difference": 0.006933857900417232,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0009863953799616341,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261412,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 5,
+   "failures_approximate_model": 487,
+   "failures_exact_model": 487,
+   "index": 1617,
+   "max_relative_probability_difference": 0.01076953738850588,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0009655734398508141,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261512,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 7,
+   "failures_approximate_model": 367,
+   "failures_exact_model": 368,
+   "index": 948,
+   "max_relative_probability_difference": 0.013082086835345487,
+   "mechanisms": 61,
+   "median_relative_probability_difference": 0.0018908625142249039,
+   "only_approximate_fails": 1,
+   "only_exact_fails": 2,
+   "p_l_difference_95": [
+    -4.394819017031688e-06,
+    2.3948190170316885e-06
+   ],
+   "p_l_difference_approximate_minus_exact": -1e-06,
+   "seed": 20261112,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 7,
+   "failures_approximate_model": 124,
+   "failures_exact_model": 124,
+   "index": 1994,
+   "max_relative_probability_difference": 0.011985418400328839,
+   "mechanisms": 61,
+   "median_relative_probability_difference": 0.0011673505901775485,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261212,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 7,
+   "failures_approximate_model": 114,
+   "failures_exact_model": 114,
+   "index": 2046,
+   "max_relative_probability_difference": 0.010196347105571586,
+   "mechanisms": 61,
+   "median_relative_probability_difference": 0.0017053388066771817,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261312,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 7,
+   "failures_approximate_model": 248,
+   "failures_exact_model": 247,
+   "index": 2900,
+   "max_relative_probability_difference": 0.015139355757399057,
+   "mechanisms": 61,
+   "median_relative_probability_difference": 0.0022254439115056146,
+   "only_approximate_fails": 2,
+   "only_exact_fails": 1,
+   "p_l_difference_95": [
+    -2.3948190170316885e-06,
+    4.394819017031688e-06
+   ],
+   "p_l_difference_approximate_minus_exact": 1e-06,
+   "seed": 20261412,
+   "shots": 1000000
+  },
+  {
+   "device": "fez",
+   "distance": 7,
+   "failures_approximate_model": 69,
+   "failures_exact_model": 69,
+   "index": 3566,
+   "max_relative_probability_difference": 0.009807657308114434,
+   "mechanisms": 61,
+   "median_relative_probability_difference": 0.0010729821935750853,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261512,
+   "shots": 1000000
+  },
+  {
+   "device": "miami",
+   "distance": 5,
+   "failures_approximate_model": 1819,
+   "failures_exact_model": 1819,
+   "index": 92223,
+   "max_relative_probability_difference": 0.02499965893080367,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0008238627934365618,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261112,
+   "shots": 1000000
+  },
+  {
+   "device": "miami",
+   "distance": 5,
+   "failures_approximate_model": 3287,
+   "failures_exact_model": 3286,
+   "index": 108798,
+   "max_relative_probability_difference": 0.0226238334755344,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.002368948525231627,
+   "only_approximate_fails": 2,
+   "only_exact_fails": 1,
+   "p_l_difference_95": [
+    -2.3948190170316885e-06,
+    4.394819017031688e-06
+   ],
+   "p_l_difference_approximate_minus_exact": 1e-06,
+   "seed": 20261212,
+   "shots": 1000000
+  },
+  {
+   "device": "miami",
+   "distance": 5,
+   "failures_approximate_model": 1314,
+   "failures_exact_model": 1314,
+   "index": 121354,
+   "max_relative_probability_difference": 0.009277837364088342,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0007423338023440472,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261312,
+   "shots": 1000000
+  },
+  {
+   "device": "miami",
+   "distance": 5,
+   "failures_approximate_model": 6174,
+   "failures_exact_model": 6174,
+   "index": 248659,
+   "max_relative_probability_difference": 0.0138272542199132,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.002105971734188676,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261412,
+   "shots": 1000000
+  },
+  {
+   "device": "miami",
+   "distance": 5,
+   "failures_approximate_model": 2938,
+   "failures_exact_model": 2938,
+   "index": 258823,
+   "max_relative_probability_difference": 0.04377212872671434,
+   "mechanisms": 41,
+   "median_relative_probability_difference": 0.0012158021149873057,
+   "only_approximate_fails": 0,
+   "only_exact_fails": 0,
+   "p_l_difference_95": [
+    0.0,
+    0.0
+   ],
+   "p_l_difference_approximate_minus_exact": 0.0,
+   "seed": 20261512,
+   "shots": 1000000
+  }
+ ],
+ "schema": "noise-aware-compilation.exact-dem-check/1",
+ "summary": {
+  "max_relative_probability_difference": 0.04377212872671434,
+  "median_relative_probability_difference": 0.0013910233716544504,
+  "placements": 15,
+  "placements_whose_paired_interval_excludes_zero": 0,
+  "relative_change_exact_over_approximate": -9.504348239319782e-05,
+  "total_failures_approximate_model": 21043,
+  "total_failures_exact_model": 21041
+ }
+}

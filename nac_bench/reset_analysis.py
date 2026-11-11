@@ -49,11 +49,11 @@ NAMES = {
     "decoder-graph": "decoder-graph score",
     "lowest-summed-error": "lowest summed error",
     "qiskit-vf2": "Qiskit VF2Layout (v2 target)",
-    "qiskit-default-l1": "Qiskit default, level 1",
-    "qiskit-default-l2": "Qiskit default, level 2",
-    "qiskit-default-l3": "Qiskit default, level 3",
+    "qiskit-default-l1": "Qiskit, level 1",
+    "qiskit-default-l2": "Qiskit, level 2 (the default)",
+    "qiskit-default-l3": "Qiskit, level 3",
     "mapomatic": "mapomatic",
-    "qiskit-default-l1-published": "Qiskit default, level 1, published Target",
+    "qiskit-default-l1-published": "Qiskit, level 1, published Target",
     "fixed": "naive placement",
     "average": "all-placement average",
 }
@@ -68,6 +68,7 @@ SHORT = {
     "mapomatic": "mapomatic",
     "qiskit-default-l1-published": "Qiskit L1 pub.",
 }
+RUN_NAME = {"v3 reset run": "v3 (fresh seeds)", "v2 run": "v2 (v2 seeds)"}
 DEVICE = {"jakarta": "FakeJakarta", "hanoi": "FakeHanoi", "algiers": "FakeAlgiers"}
 LABEL = {
     "A1": "d=3, 1 round",
@@ -305,8 +306,8 @@ def write_report(result: dict[str, Any], v1_rows: Sequence[dict[str, Any]], path
         "Every v1 and v2 headline used reset error 0, because IBM publishes no reset error. IBM "
         "resets a qubit by measuring it and flipping it on outcome 1, so a wrong readout leaves it "
         "in |1>: *reset = readout* sets each qubit's reset flip probability to its readout flip "
-        "probability. Every method selects under the model it is graded in; Qiskit's default and "
-        "mapomatic read an IBM-shaped Target whose reset carries the readout error. mapomatic's cost "
+        "probability. Every method selects under the model it is graded in; Qiskit's transpile "
+        "(levels 1 to 3) and mapomatic read an IBM-shaped Target whose reset carries the readout error. mapomatic's cost "
         "charges resets at the readout error in both settings, so its costs do not change; its pick "
         "between a placement and its mirror (an exact tie in its cost) can, because the level-3 "
         "transpile it starts from reads the reset error."
@@ -330,7 +331,10 @@ def write_report(result: dict[str, Any], v1_rows: Sequence[dict[str, Any]], path
         f"The pre-registered family is the {fam['description']}. **{held} of {fam['size']} comparisons "
         f"hold after Holm at α = {fam['alpha']} at reset = readout**, against {held0} of "
         f"{zero['size']} for the same comparisons at reset 0 (Phase 1, post hoc). A comparison "
-        "holds when its verdict is better or worse and its Holm-adjusted p is below α."
+        "holds when its verdict is better or worse and its Holm-adjusted p is below α. The "
+        "family was registered with level 1 as Qiskit's default; the default is level 2 "
+        "(`DECISIONS_V3.md` P2-26), which picks the same placement as level 1 in every case and "
+        "setting here (`reset.json`, key `choices`)."
     )
     w("")
     counts: dict[str, dict[str, int]] = {}
@@ -389,8 +393,9 @@ def write_report(result: dict[str, Any], v1_rows: Sequence[dict[str, Any]], path
     w(
         "v1's run with reset = readout (REPORT.md section 10, v1's seeds) turned the v1 score's "
         "FakeHanoi d=3 comparisons against the naive placement into losses or ties. The v1 rows "
-        "repeat those numbers under the difference rule; the v3 rows are this run's fresh seeds, "
-        "with both scores."
+        "repeat those numbers under the difference rule. The v3 rows are this run's fresh seeds, "
+        "with both scores; the v2 rows are v2's committed runs at reset 0 (3 rounds and X), "
+        "which this run did not repeat."
     )
     w("")
     table = []
@@ -418,6 +423,8 @@ def write_report(result: dict[str, Any], v1_rows: Sequence[dict[str, Any]], path
                         ]
                     )
             for setting in ("zero", "readout"):
+                first = _row(rows, key=_key(device, label), setting=setting, reference="fixed")
+                run = RUN_NAME[first["source"]] if first else "–"
                 cells = [
                     _cell(
                         _row(
@@ -430,9 +437,7 @@ def write_report(result: dict[str, Any], v1_rows: Sequence[dict[str, Any]], path
                     )
                     for m in SCORES
                 ]
-                table.append(
-                    [_case_name(device, label), SETTING_NAME[setting], "v3 (fresh seeds)", *cells]
-                )
+                table.append([_case_name(device, label), SETTING_NAME[setting], run, *cells])
     w(
         _table(
             ["Case", "Setting", "Run", "v1 score vs naive", "decoder-graph score vs naive"],
@@ -445,7 +450,7 @@ def write_report(result: dict[str, Any], v1_rows: Sequence[dict[str, Any]], path
     w("")
     w(
         "Change in P_L of each method's pick against the naive placement, with the verdict; "
-        "intervals are in `reset.json`. *Qiskit L1 pub.* is Qiskit's default on the Target as IBM "
+        "intervals are in `reset.json`. *Qiskit L1 pub.* is Qiskit at level 1 on the Target as IBM "
         "publishes it (reset without an error), as context."
     )
     w("")

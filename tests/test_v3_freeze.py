@@ -14,6 +14,8 @@ from typing import Any
 
 import pytest
 
+from nac_bench import freeze_f4
+
 ROOT = Path(__file__).resolve().parent.parent
 F3 = json.loads((ROOT / "configs_v3" / "freeze_f3.json").read_text(encoding="utf-8"))
 FIRST, SECOND = F3["commits"]
@@ -126,3 +128,50 @@ def test_drift_runs_follow_f3_and_the_held_out_config(history: None) -> None:
         assert _is_ancestor(FIRST["commit"], made_by), path.name
         assert _is_ancestor(f4[-1], made_by), path.name
         assert record["provenance"]["package_git_dirty"] is False, path.name
+
+
+# --- F4's code freeze (revision 6, X17) ------------------------------------------------------
+
+F4_RECORD = json.loads((ROOT / "configs_v3" / "freeze_f4.json").read_text(encoding="utf-8"))
+
+
+def test_f4_record_covers_the_run_code() -> None:
+    files = F4_RECORD["frozen_files_git_blobs"]
+    for path in (
+        "nac_bench/run_v3.py",
+        "nac_bench/analysis_v3.py",
+        "nac_bench/stats_v3.py",
+        "src/noise_aware_compilation/baselines.py",
+        "requirements-lock.txt",
+        "SPEC_V3.md",
+        "configs_v3/held_out.json",
+    ):
+        assert path in files, path
+    assert F4_RECORD["schema"] == freeze_f4.SCHEMA
+
+
+def test_code_unchanged_since_f4() -> None:
+    """X17 (revision 6): no file the runs or the analysis use changes after F4 unless the
+    record lists it with a reason."""
+
+    assert freeze_f4.differences(F4_RECORD) == []
+    changed = F4_RECORD.get("changed_after_f4") or {}
+    for path, reason in changed.items():
+        assert reason.strip(), path
+    if not any(path.startswith("nac_bench/") for path in changed):
+        # the hash every run file records, which the analysis checks against this record
+        assert (
+            F4_RECORD["nac_bench_source_sha256"] == freeze_f4.current()["nac_bench_source_sha256"]
+        )
+
+
+def test_f4_pin_is_the_held_out_config_commit(history: None) -> None:
+    """Once pinned, F4's hash is the last commit touching the held-out config; the record's
+    own blobs are what that commit holds."""
+
+    if not F4_RECORD["f4_commit"]:
+        pytest.skip("F4 is not pinned yet (the commit after F4 pins it)")
+    f4 = F4_RECORD["f4_commit"]
+    assert f4 == f4_commit()
+    for path, blob in F4_RECORD["frozen_files_git_blobs"].items():
+        assert _git("rev-parse", f"{f4}:{path}") == blob, path
