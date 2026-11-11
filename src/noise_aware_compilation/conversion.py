@@ -219,7 +219,7 @@ def convert_fake_backend(conf_path: str | Path, props_path: str | Path) -> Conve
         qubits = tuple(int(q) for q in gate["qubits"])
         fields = _gate_fields(gate)
         if name == ibm_gate:
-            if (min(qubits), max(qubits)) in removed:
+            if (min(qubits), max(qubits)) in removed or bad_qubits.keys() & set(qubits):
                 continue
             error = fields["gate_error"][0]
             length = _in_ns(*fields["gate_length"])

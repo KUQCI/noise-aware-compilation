@@ -67,6 +67,9 @@
   "nac_bench_source_sha256": "0498e5521732af54bd6de841b5cf3753d31cbe3e4df80b755faf6ad0c0a4b2d0",
   "lock_file_sha256": "6aba9005ae329113c5e0b637fb23a3210a3fc29846a0bf7ba427daf5b2ab59ce",
   "changed_after_f4": {
-    "src/noise_aware_compilation/conversion.py": "P2-56: converting the held-out devices after F4 found qubits whose published sx error is 1.0 (IBM's uncalibrated value), on FakeBoston, FakePittsburgh, FakeKingston, FakeAachen and FakeNighthawk, and one FakeKingston qubit with no T1 or T2. Such an H channel has no Pauli-channel representation, so the converter now removes the qubit's couplers (the coupler rule of SPEC.md rev 2 applied to a single-qubit gate) and the qubit cannot be placed. Devices without such a qubit convert exactly as before."
-  }
+    "src/noise_aware_compilation/conversion.py": "P2-56: converting the held-out devices after F4 found qubits whose published sx error is 1.0 (IBM's uncalibrated value), on FakeBoston, FakePittsburgh, FakeKingston, FakeAachen and FakeNighthawk, and one FakeKingston qubit with no T1 or T2. Such an H channel has no Pauli-channel representation, so the converter now removes the qubit's couplers (the coupler rule of SPEC.md rev 2 applied to a single-qubit gate) and the qubit cannot be placed. Devices without such a qubit convert exactly as before. A second fix in the same entry drops the two-qubit channels on a removed qubit's couplers, which the first launch on patty found still in the snapshot.",
+    "nac_bench/baselines_v3.py": "P2-56: the Qiskit target gives a removed qubit IBM's published sx error (1.0) at the mean sx length, since its H channel is gone, and leaves T1 and T2 unset for the FakeKingston qubit IBM publishes neither for. Devices without a removed qubit get the same target as before. The runner-source hash every run records changes with it; the runs record it as nac_bench_source_sha256_after_f4 below, which the analysis accepts in place of F4's.",
+    "nac_bench/analysis_v3.py": "P2-56: the provenance check accepts the runner-source hash named in nac_bench_source_sha256_after_f4 instead of F4's once a runner file is listed here."
+  },
+  "nac_bench_source_sha256_after_f4": "342985f1b343ceb2f75ab62ba2fec2bc71a5eae7a7f818f29873775ab4d1d2fb"
 }

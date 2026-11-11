@@ -158,11 +158,14 @@ def test_code_unchanged_since_f4() -> None:
     changed = F4_RECORD.get("changed_after_f4") or {}
     for path, reason in changed.items():
         assert reason.strip(), path
+    # the hash every run file records, which the analysis checks against this record: F4's,
+    # or after a listed change to the runner, the one the record names
+    now = freeze_f4.current()["nac_bench_source_sha256"]
     if not any(path.startswith("nac_bench/") for path in changed):
-        # the hash every run file records, which the analysis checks against this record
-        assert (
-            F4_RECORD["nac_bench_source_sha256"] == freeze_f4.current()["nac_bench_source_sha256"]
-        )
+        assert F4_RECORD["nac_bench_source_sha256"] == now
+        assert not F4_RECORD.get("nac_bench_source_sha256_after_f4")
+    else:
+        assert F4_RECORD["nac_bench_source_sha256_after_f4"] == now
 
 
 def test_f4_pin_is_the_held_out_config_commit(history: None) -> None:

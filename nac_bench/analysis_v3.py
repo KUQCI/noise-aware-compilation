@@ -948,7 +948,12 @@ def check_provenance(
             problems.append(f"{name}: run from a dirty tree")
         if not commit or not _is_ancestor(f4, commit, root):
             problems.append(f"{name}: commit {commit} does not descend from F4 {f4}")
-        if prov.get("nac_bench_source_sha256") != freeze["nac_bench_source_sha256"]:
+        # a runner file changed after F4 with a listed reason (X17) moves the hash once, to
+        # the one the record names (P2-56)
+        allowed = {freeze["nac_bench_source_sha256"]}
+        if freeze.get("nac_bench_source_sha256_after_f4"):
+            allowed = {freeze["nac_bench_source_sha256_after_f4"]}
+        if prov.get("nac_bench_source_sha256") not in allowed:
             problems.append(f"{name}: runner source differs from F4's")
         if prov.get("lock_file_sha256") != freeze["lock_file_sha256"]:
             problems.append(f"{name}: lock file differs from F4's")

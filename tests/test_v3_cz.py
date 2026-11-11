@@ -413,6 +413,15 @@ def test_p2_56_uncalibrated_qubits_are_removed(tmp_path: Path) -> None:
     for q in (bad, dead):
         assert all(q not in pair for pair in device.connectivity)
         assert nove.OperationKey("H", (q,)) not in converted.snapshot.operation_parameters
+    assert not any(
+        bad in key.targets or dead in key.targets
+        for key in converted.snapshot.operation_parameters
+        if len(key.targets) == 2
+    )
+    from nac_bench.baselines_v3 import native_target
+
+    target = native_target(converted.snapshot, device, "readout")
+    assert target["sx"][(bad,)].error == 1.0 and target.qubit_properties[dead].t1 is None
     removed = {r["qubit"]: r for r in device.metadata["removed_qubits"]}
     assert set(removed) == {bad, dead} and removed[bad]["pairs"]
     assert converted.snapshot.qubit_parameters[dead]["idle_x_rate"] == 0.0

@@ -91,9 +91,11 @@ def native_target(
     qubit = {int(q): p for q, p in snapshot.qubit_parameters.items()}
     if sorted(qubit) != list(range(num_qubits)):
         raise ValueError("snapshot qubits must be numbered 0..n-1")
+    # P2-56: a qubit IBM publishes no T1 or T2 for has no coupler and gets neither
     properties = [
         QubitProperties(
-            t1=float(qubit[q]["source_t1_ns"]) * NS, t2=float(qubit[q]["source_t2_ns"]) * NS
+            t1=float(qubit[q]["source_t1_ns"]) * NS if "source_t1_ns" in qubit[q] else None,
+            t2=float(qubit[q]["source_t2_ns"]) * NS if "source_t2_ns" in qubit[q] else None,
         )
         for q in range(num_qubits)
     ]
@@ -119,6 +121,16 @@ def native_target(
             )
     if set(two) != live:
         raise ValueError("every live coupler needs a calibrated two-qubit gate in both directions")
+    # P2-56: a removed qubit has no H channel; the Target gives it IBM's published sx error
+    # (1.0) at the mean sx length, as IBM's own Target does, and it has no coupler
+    removed = (device.metadata or {}).get("removed_qubits", ())
+    if removed and one:
+        mean_duration = sum(p.duration or 0.0 for p in one.values()) / len(one)
+        for entry in removed:
+            one.setdefault(
+                (int(entry["qubit"]),),
+                InstructionProperties(error=float(entry["sx_gate_error"]), duration=mean_duration),
+            )
     if set(one) != {(q,) for q in range(num_qubits)}:
         raise ValueError("every qubit needs a calibrated single-qubit gate")
     target.add_instruction(cls(), two)
