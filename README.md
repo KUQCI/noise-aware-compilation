@@ -18,6 +18,11 @@ error rate compared with a fixed placement and with every other valid placement.
 > gain than the score in three of four circuits each. At reset = readout the v1 score lost to
 > the naive placement in three FakeHanoiV2 d=3 circuits on v1's seeds (one, 5 rounds, had been
 > a gain); on fresh seeds one loss (3 rounds) replicates (banner in [REPORT.md](REPORT.md)).
+> v3's held-out results are in [REPORT_V3.md](REPORT_V3.md): on FakeBerlin (square lattice)
+> the decoder-graph score beats every reference in all 16 comparisons; on FakeBoston and
+> FakePittsburgh (heavy-hex) it beats the fixed placement in 8 of 8 but is mixed against
+> summed error, Qiskit's default and mapomatic (5 better, 1 worse of 8 each), and those
+> results do not survive most changed noise models.
 <!-- v3-banner:end -->
 
 - Specification: [SPEC.md](SPEC.md) (binding; revised three times, each revision recorded at
