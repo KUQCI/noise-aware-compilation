@@ -18,12 +18,11 @@ import json
 from pathlib import Path
 
 from freeze_guard import require_after_f4
-
 from noise_aware_compilation.conversion import convert_fake_backend
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "devices"
-OUT = ROOT / "src" / "noise_aware_compilation" / "device_data"
+OUT = ROOT.parent / "src" / "noise_aware_compilation" / "device_data"
 DEVICES = ("jakarta", "hanoi", "algiers", "fez", "marrakesh", "miami")
 #: v3 held-out devices (SPEC_V3.md section 3), converted only with --held-out after F4 (X16)
 HELD_OUT = ("boston", "pittsburgh", "berlin", "kingston", "aachen", "nighthawk")

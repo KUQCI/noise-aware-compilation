@@ -23,7 +23,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS = ROOT / "results_v3" / "held_out" / "analysis.json"
 FIGURE = ROOT / "results_v3" / "held_out" / "figures" / "forest.png"
-OUT = ROOT / "REPORT_V3.md"
+OUT = ROOT.parent / "docs" / "reports" / "REPORT_V3.md"
 
 DEV = {
     "boston": "FakeBoston",

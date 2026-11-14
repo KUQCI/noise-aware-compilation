@@ -68,6 +68,7 @@ def test_t_i8_runtime_dependencies_exclude_qiskit() -> None:
 
 
 def test_t_i8_imports_and_runs_with_qiskit_blocked(tmp_path: Path) -> None:
+    config = ROOT / "benchmarks" / "configs" / "benchmark.json"
     script = textwrap.dedent(
         f"""
         import sys, importlib.abc
@@ -78,7 +79,7 @@ def test_t_i8_imports_and_runs_with_qiskit_blocked(tmp_path: Path) -> None:
                 return None
         sys.meta_path.insert(0, Block())
         from noise_aware_compilation.benchmark import main
-        rc = main([{str(ROOT / "configs" / "benchmark.json")!r}, '--only', 'jakarta-A1-N1',
+        rc = main([{str(config)!r}, '--only', 'jakarta-A1-N1',
                    '--out', {str(tmp_path)!r}, '--workers', '1', '--allow-dirty'])
         assert rc == 0
         assert not any(m.startswith('qiskit') for m in sys.modules)
@@ -91,10 +92,10 @@ def test_t_i8_imports_and_runs_with_qiskit_blocked(tmp_path: Path) -> None:
 
 @pytest.mark.results
 def test_t_r1_same_seed_bit_identical(tmp_path: Path) -> None:
-    committed = ROOT / "results" / "runs" / "jakarta-A3-N2.json"
+    committed = ROOT / "benchmarks" / "results" / "runs" / "jakarta-A3-N2.json"
     if not committed.exists():
         pytest.skip("results not generated yet")
-    config = load_config(ROOT / "configs" / "benchmark.json")
+    config = load_config(ROOT / "benchmarks" / "configs" / "benchmark.json")
     spec = next(c for c in expand_cases(config) if c.case_id == "jakarta-A3-N2")
     path = run_case(spec, config, workers=2, out_dir=tmp_path)
     new = json.loads(path.read_text())

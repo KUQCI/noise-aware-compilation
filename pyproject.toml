@@ -8,7 +8,6 @@ version = "0.2.0"
 description = "Noise-aware SWAP-free qubit placement for QEC circuits, built on Nove"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache-2.0"}
 dependencies = [
   "nove @ git+https://github.com/KUQCI/nove@485b413",
   "numpy>=1.24",
@@ -17,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# v2 benchmark only (nac_bench/, outside the package): the Qiskit layout baseline (X15)
+# benchmarks only (benchmarks/nac_bench, outside the package): the Qiskit layout baseline (X15)
 bench = [
   "mapomatic==0.14.0",
   "matplotlib>=3.7",
@@ -48,8 +47,8 @@ noise_aware_compilation = ["device_data/*.json", "examples/*.json", "examples/*.
 
 [tool.pytest.ini_options]
 addopts = "--strict-config --strict-markers"
-pythonpath = ["."]
-testpaths = ["tests"]
+pythonpath = [".", "benchmarks", "benchmarks/scripts"]
+testpaths = ["tests", "benchmarks/tests"]
 markers = [
   "results: checks on the committed benchmark results files (needs results/runs)",
   "slow: simulation tests taking more than a few seconds",
@@ -58,15 +57,19 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["data", "results", "results_v2", "results_v3", "src/noise_aware_compilation/examples/*.json"]
+extend-exclude = ["benchmarks/data", "benchmarks/results", "benchmarks/results_v2", "benchmarks/results_v3", "src/noise_aware_compilation/examples/*.json"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["nac_bench", "noise_aware_compilation", "freeze_guard"]
+
 [tool.mypy]
 strict = true
-files = ["src", "tests", "scripts", "nac_bench"]
+files = ["src", "tests", "benchmarks/scripts", "benchmarks/nac_bench"]
 warn_unused_configs = true
+mypy_path = "benchmarks:benchmarks/scripts"
 
 [[tool.mypy.overrides]]
 module = ["stim", "pymatching", "networkx", "scipy", "matplotlib", "matplotlib.*", "qiskit", "qiskit.*", "mapomatic", "mapomatic.*", "qiskit_ibm_runtime"]
@@ -75,7 +78,7 @@ ignore_missing_imports = true
 [tool.ruff.lint.per-file-ignores]
 # The report generator writes Unicode typography (−, ×, –) into REPORT.md on purpose.
 "src/noise_aware_compilation/report.py" = ["RUF001", "E501"]
-"nac_bench/report_v2.py" = ["RUF001", "E501"]
-"nac_bench/report_reanalysis.py" = ["RUF001", "E501"]
-"nac_bench/reset_analysis.py" = ["RUF001", "E501"]
-"scripts/report_v3.py" = ["RUF001", "E501"]
+"benchmarks/nac_bench/report_v2.py" = ["RUF001", "E501"]
+"benchmarks/nac_bench/report_reanalysis.py" = ["RUF001", "E501"]
+"benchmarks/nac_bench/reset_analysis.py" = ["RUF001", "E501"]
+"benchmarks/scripts/report_v3.py" = ["RUF001", "E501"]

@@ -716,7 +716,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Write REPORT_V2.md from results_v2/runs")
     parser.add_argument("--config", type=Path, default=ROOT / "configs_v2" / "benchmark_v2.json")
     parser.add_argument("--runs", type=Path, default=ROOT / "results_v2" / "runs")
-    parser.add_argument("--out", type=Path, default=ROOT / "REPORT_V2.md")
+    parser.add_argument(
+        "--out", type=Path, default=ROOT.parent / "docs" / "reports" / "REPORT_V2.md"
+    )
     args = parser.parse_args(argv)
     config = json.loads(args.config.read_text(encoding="utf-8"))
     results = load(args.runs, config)

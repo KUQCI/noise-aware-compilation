@@ -116,7 +116,7 @@ def _committed_before(path: str, commit: str) -> bool:
     """The config at ``path`` was committed in ``commit`` or an ancestor of it."""
 
     first = subprocess.run(
-        ["git", "log", "--diff-filter=A", "--format=%H", "--", path],
+        ["git", "log", "--follow", "--diff-filter=A", "--format=%H", "--", path],
         cwd=ROOT,
         capture_output=True,
         text=True,

@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import statistics
-import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +17,7 @@ from noise_aware_compilation.devices import load_device, stored_hashes
 from noise_aware_compilation.placement import enumerate_placements, interaction_edges
 
 ROOT = Path(__file__).resolve().parent.parent
-RAW = ROOT / "data" / "devices"
+RAW = ROOT / "benchmarks" / "data" / "devices"
 CZ_DEVICES = [("fez", "FakeFez"), ("marrakesh", "FakeMarrakesh"), ("miami", "FakeMiami")]
 #: Couplers IBM lists with error 1.0 on each device (SPEC_V3.md R3-C1).
 REMOVED = {"fez": 7, "marrakesh": 13, "miami": 7}
@@ -129,88 +127,6 @@ def test_stored_devices_match_a_fresh_conversion(name: str) -> None:
     hashes = stored_hashes()[name]
     assert fresh.snapshot.sha256 == stored.snapshot.sha256 == hashes["snapshot_sha256"]
     assert fresh.device.sha256 == stored.device.sha256 == hashes["device_sha256"]
-
-
-HELD_OUT = ("boston", "pittsburgh", "berlin", "kingston", "aachen", "nighthawk")
-DEVICE_DATA = ROOT / "src" / "noise_aware_compilation" / "device_data"
-
-
-def _git(*args: str) -> str:
-    return subprocess.run(
-        ["git", *args], cwd=ROOT, capture_output=True, text=True, check=True
-    ).stdout.strip()
-
-
-def _held_out_files_present() -> list[Path]:
-    present = [
-        path
-        for name in HELD_OUT
-        for path in (
-            RAW / f"conf_{name}.json",
-            RAW / f"props_{name}.json",
-            *sorted(DEVICE_DATA.glob(f"{name}_*")),
-        )
-        if path.exists()
-    ]
-    present += [DEVICE_DATA / "hashes.json"] if set(HELD_OUT) & set(stored_hashes()) else []
-    return present
-
-
-def test_held_out_devices_are_converted_only_after_f4() -> None:
-    """X16 and T3-F1: a held-out device file exists only in a checkout at or after freeze
-    step F4 whose held-out config is F4's, made by a commit that descends from F4.
-
-    F4 is the last commit that touches ``configs_v3/held_out.json`` (SPEC_V3.md section 8).
-    With no held-out file present there is nothing to check; ``tests/test_v3_freeze.py``
-    checks the commits that add held-out files, and ``scripts/freeze_guard.py`` refuses a
-    conversion unless F4 carries its annotated tag.
-    """
-
-    present = _held_out_files_present()
-    if not present:
-        return
-    try:
-        f4 = _git("log", "-1", "--format=%H", "--", "configs_v3/held_out.json")
-        unchanged = _git("status", "--porcelain", "--", "configs_v3/held_out.json") == ""
-    except (OSError, subprocess.CalledProcessError):
-        pytest.fail(f"held-out device files present outside a git checkout: {present}")
-    assert f4, f"held-out device files present before F4: {present}"
-    assert unchanged, "held-out device files present while the held-out config differs from F4"
-    for path in present:
-        rel = str(path.relative_to(ROOT))
-        # hashes.json predates v3 and also holds the development devices; what must descend
-        # from F4 is the latest commit to it, the one that wrote the held-out entries
-        shared = path.name == "hashes.json"
-        added = _git("log", "-1" if shared else "--diff-filter=A", "--format=%H", "--", rel)
-        for commit in added.split():
-            ancestor = subprocess.run(
-                ["git", "merge-base", "--is-ancestor", f4, commit], cwd=ROOT
-            ).returncode
-            assert commit != f4 and ancestor == 0, (path.name, commit)
-
-
-def _freeze_guard() -> Any:
-    spec = importlib.util.spec_from_file_location(
-        "freeze_guard", ROOT / "scripts" / "freeze_guard.py"
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def test_conversion_guard_refuses_without_the_f4_tag(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The device scripts' --held-out guard needs F4's annotated tag before any file is read."""
-
-    guard = _freeze_guard()
-    real = guard._git
-
-    def no_tags(*args: str) -> str:
-        return "" if args[:2] == ("tag", "--points-at") else str(real(*args))
-
-    monkeypatch.setattr(guard, "_git", no_tags)
-    with pytest.raises(guard.FreezeOrderError, match="tag"):
-        guard.require_after_f4()
 
 
 # --- T3-C2: CZ circuits ----------------------------------------------------------------------

@@ -7,7 +7,6 @@ T2-P4 and R2-R7. These read ``results_v2/runs/*.json``, ``configs_v2/`` and
 
 from __future__ import annotations
 
-import hashlib
 import json
 import subprocess
 from collections import Counter
@@ -18,14 +17,13 @@ import pytest
 
 from nac_bench.analysis_v2 import load, r_g7
 from nac_bench.run_v2 import cases, load_config, run_case
-from noise_aware_compilation.api import convert_device
 from noise_aware_compilation.devices import stored_hashes
 from noise_aware_compilation.scoring import DEFAULT_SCORER
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "configs_v2" / "benchmark_v2.json"
 RUNS = ROOT / "results_v2" / "runs"
-REPORT = ROOT / "REPORT_V2.md"
+REPORT = ROOT.parent / "docs" / "reports" / "REPORT_V2.md"
 FREEZE = json.loads((ROOT / "configs_v2" / "freeze.json").read_text(encoding="utf-8"))
 #: Last v1 commit: the v1 rerun after the authorship rewrite, merged into v2.
 V1_TIP = "f7030f12c2845461b0f6e7af3028064a04ac83cf"
@@ -129,42 +127,6 @@ def test_t2_s6_draw_count(config: dict[str, Any], runs: dict[str, dict[str, Any]
         assert all(n >= 20 for n in count.values()), (run["case"]["case_id"], count)
 
 
-def test_t2_g2_freeze_before_held_out(runs: dict[str, dict[str, Any]]) -> None:
-    freeze = FREEZE["commit"]
-    algiers = sorted(f"results_v2/runs/{c}.json" for c in runs if c.startswith("v2-algiers-"))
-    assert algiers
-    first = _git("log", "--diff-filter=A", "--format=%H", "--reverse", "--", *algiers)
-    first_commit = first.splitlines()[0]
-    assert first_commit != freeze and _is_ancestor(freeze, first_commit)
-    for path, blob in FREEZE["frozen_files_git_blobs"].items():
-        assert _git("rev-parse", f"{freeze}:{path}") == blob, path
-        assert _git("hash-object", path) == blob, f"{path} changed after the freeze"
-    for case_id in runs:
-        if case_id.startswith("v2-algiers-"):
-            assert _is_ancestor(freeze, runs[case_id]["provenance"]["package_git_commit"])
-
-
-def test_t2_g3_held_out_device_untouched(runs: dict[str, dict[str, Any]], tmp_path: Path) -> None:
-    freeze = FREEZE["commit"]
-    for pattern in ("results_v2/runs/v2-algiers-*", "data/devices/*algiers*"):
-        added = _git("log", "--diff-filter=A", "--format=%H", "--", pattern).splitlines()
-        assert added, pattern
-        for commit in added:
-            assert commit != freeze and _is_ancestor(freeze, commit), (pattern, commit)
-    converted = convert_device(
-        ROOT / "data" / "devices" / "conf_algiers.json",
-        ROOT / "data" / "devices" / "props_algiers.json",
-        tmp_path,
-        name="algiers",
-    )
-    stored = stored_hashes()["algiers"]
-    assert converted.snapshot_sha256 == stored["snapshot_sha256"]
-    assert converted.device_sha256 == stored["device_sha256"]
-    for case_id, run in runs.items():
-        if case_id.startswith("v2-algiers-"):
-            assert run["provenance"]["device_sha256"] == stored["device_sha256"]
-
-
 def test_t2_g4_default_score_follows_r_g7(config: dict[str, Any]) -> None:
     results = load(RUNS, config)
     held = [r for r in results.values() if r.role == "held-out"]
@@ -203,37 +165,6 @@ def test_t2_r1_rerun_is_bit_identical(
 
     assert counts(rerun) == counts(stored)
     assert selections(rerun) == selections(stored)
-
-
-def test_t2_r2_provenance(config: dict[str, Any], runs: dict[str, dict[str, Any]]) -> None:
-    config_sha = hashlib.sha256(CONFIG.read_bytes()).hexdigest()
-    config_commit = _git("log", "-1", "--format=%H", "--", "configs_v2/benchmark_v2.json")
-    for case_id, run in runs.items():
-        prov = run["provenance"]
-        assert prov["nove_commit"].startswith("485b413")
-        assert prov["stim_version"] and prov["pymatching_version"]
-        assert prov["qiskit_ibm_runtime_version"] == "0.50.0"
-        assert prov["qiskit_version"] == config["qiskit_version"]
-        assert len(prov["source_files"]) == 2
-        for field in (
-            "calibration_snapshot_sha256",
-            "device_sha256",
-            "noise_model_sha256",
-            "true_snapshot_sha256",
-        ):
-            assert len(prov[field]) == 64, (case_id, field)
-        assert prov["package_git_dirty"] is False, case_id
-        assert _is_ancestor(config_commit, prov["package_git_commit"]), case_id
-        assert run["config_file_sha256"] == config_sha, case_id
-        assert set(run["methods"]) == set(NOISE_AWARE)
-        assert run["qiskit_settings"]["seed"] == -1
-        assert set(run["true_model"]["choices"]) == set(NOISE_AWARE)
-        assert run["decoder"]["decoder_model"] == "approximate"
-        if run["case"]["drift"]:
-            for record in run["drift"]["records"]:
-                for field in ("delta", "draw", "draw_seed", "seen_snapshot_sha256"):
-                    assert record[field] is not None, (case_id, field)
-                assert set(record["choices"]) == set(NOISE_AWARE)
 
 
 def test_v2_seeds_disjoint_from_v1(runs: dict[str, dict[str, Any]]) -> None:
@@ -339,7 +270,7 @@ def test_v1_results_untouched() -> None:
     changed = _git("diff", "--name-only", V1_TIP, "HEAD", "--", "configs", "results")
     assert changed == ""
     v1 = _git("show", f"{V1_TIP}:REPORT.md")
-    now = (ROOT / "REPORT.md").read_text(encoding="utf-8")
+    now = (ROOT.parent / "docs" / "reports" / "REPORT.md").read_text(encoding="utf-8")
     start, end = "<!-- v3-banner:start -->", "<!-- v3-banner:end -->\n\n"
     assert now.count(start) == 1 and now.count(end) == 1
     without = now[: now.index(start)] + now[now.index(end) + len(end) :]

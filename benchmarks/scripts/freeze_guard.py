@@ -20,7 +20,7 @@ HELD_OUT_CONFIG = "configs_v3/held_out.json"
 F3_RECORD = ROOT / "configs_v3" / "freeze_f3.json"
 F4_TAG_PREFIX = "v3-held-out-config"
 #: what the device scripts write; everything else must match HEAD
-OUTPUTS = ("data/devices", "src/noise_aware_compilation/device_data")
+OUTPUTS = ("data/devices", "../src/noise_aware_compilation/device_data")
 
 
 class FreezeOrderError(RuntimeError):

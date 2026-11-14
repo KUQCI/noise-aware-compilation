@@ -20,7 +20,7 @@ from noise_aware_compilation.conversion import (
 from noise_aware_compilation.devices import StoredDevice, load_device, stored_hashes
 
 ROOT = Path(__file__).resolve().parent.parent
-RAW = ROOT / "data" / "devices"
+RAW = ROOT / "benchmarks" / "data" / "devices"
 
 
 def _raw(name: str) -> tuple[dict[str, Any], dict[str, Any]]:

@@ -9,7 +9,7 @@ WORK="${1:-$(mktemp -d)}"
 python3 -m venv "$WORK/venv"
 "$WORK/venv/bin/pip" install -q --upgrade pip
 cd "$WORK"
-python3 - "$ROOT/README.md" > example.sh <<'PY'
+python3 - "$ROOT/../README.md" > example.sh <<'PY'
 import re, sys
 text = open(sys.argv[1], encoding="utf-8").read()
 block = re.search(r"<!-- worked-example:start -->\s*```bash\n(.*?)```", text, re.DOTALL).group(1)
