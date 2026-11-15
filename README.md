@@ -134,6 +134,17 @@ pytest tests              # package tests only
 
 To reproduce the benchmark results, see [benchmarks/README.md](benchmarks/README.md).
 
-## Citation
+## Next work
 
-If you use this package, please cite it using [CITATION.cff](CITATION.cff).
+- **Choose the gate order as well as the qubits.** In repetition codes, running the same
+  qubits in mirror order changes the result, and part of the measured gains came from that.
+  The tool should try both orders and report which one it picked.
+- **Hold up as calibration drifts.** Score each placement over several perturbed or older
+  calibrations and pick the one that does best on average, so a choice keeps its advantage
+  until the next recalibration.
+- **Offer the simpler scores alongside.** Idle-aware summed error is much cheaper to compute,
+  and users should be able to compare it with the decoder-graph score.
+- **A more faithful noise model** where it changes the choice: per-coupler gate durations,
+  readout errors by direction, and circuits that don't reset every round.
+- **Run on real hardware.** Every result so far is from simulation. A few runs on an IBM device
+  would show whether the gains hold up outside the model.
