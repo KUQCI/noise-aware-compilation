@@ -212,7 +212,7 @@ The headroom column gives the best and worst placements with 95% intervals; when
 | FakeHanoiV2 | 3 | 1.47e-03 [1.42e-03, 1.53e-03] | 1.51e-03 [1.46e-03, 1.57e-03] | 2.83e-03 [2.83e-03, 2.84e-03] | indistinguishable (3/3 seeds), pooled: indistinguishable | better (3/3 seeds), pooled: better |
 | FakeHanoiV2 | 5 | 1.38e-03 [1.34e-03, 1.42e-03] | 1.63e-03 [1.58e-03, 1.68e-03] | 2.63e-03 [2.63e-03, 2.64e-03] | better (3/3 seeds), pooled: better | better (3/3 seeds), pooled: better |
 
-This check (T-P5) uses the pooled verdicts. It passes when no two round counts give opposite verdicts for the same comparison; *indistinguishable* next to *better* or *worse* counts as consistent. Whether the verdicts are also identical is shown too.
+This check uses the pooled verdicts. It passes when no two round counts give opposite verdicts for the same comparison; *indistinguishable* next to *better* or *worse* counts as consistent. Whether the verdicts are also identical is shown too.
 
 - FakeJakartaV2: the verdicts (vs fixed / vs average) at 1, 3 and 5 rounds are better/better, better/better and better/better. None are opposite, and all are identical.
 - FakeHanoiV2: the verdicts at 1, 3 and 5 rounds are indistinguishable/better, indistinguishable/better and better/better. None are opposite, but they are not identical.
@@ -278,7 +278,7 @@ A faulty placement uses the planted qubit (readout error × 5) or runs a CX on t
 
 ## 9. Seed consistency and precision
 
-Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). The check (T-R2) passes when no two seeds give opposite verdicts for the same comparison; *indistinguishable* next to *better* or *worse* counts as consistent. *Pooled* is the verdict from all three seeds combined, which the claims rest on. No case has opposite verdicts, and 10 of 11 are identical across seeds.
+Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). The check passes when no two seeds give opposite verdicts for the same comparison; *indistinguishable* next to *better* or *worse* counts as consistent. *Pooled* is the verdict from all three seeds combined, which the claims rest on. No case has opposite verdicts, and 10 of 11 are identical across seeds.
 
 | Case | Seed 1 | Seed 2 | Seed 3 | Pooled | No opposite verdicts | Identical |
 |---|---|---|---|---|---|---|
@@ -294,9 +294,9 @@ Verdicts recomputed from each base seed's shots alone (vs fixed / vs average). T
 | hanoi-D5-N2 | better / better | better / better | better / better | better / better | yes | yes |
 | hanoi-D7-N2 | better / better | indistinguishable / better | better / better | better / better | yes | no |
 
-Precision (T-P4): under the converted and planted-fault conditions, every placement's Wilson half-width must be at most 10% of its P_L. Every placement meets it.
+Precision: under the converted and planted-fault conditions, every placement's Wilson half-width must be at most 10% of its P_L. Every placement meets it.
 
-| Case | Shots per seed | Placements meeting T-P4 |
+| Case | Shots per seed | Placements meeting the target |
 |---|---|---|
 | jakarta-A1-N2 | 200,000 | 8 of 8 |
 | jakarta-A1-N3-qubit | 200,000 | 8 of 8 |

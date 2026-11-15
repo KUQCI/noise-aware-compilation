@@ -2,7 +2,7 @@
 
 Calibration changes from day to day, so a placement chosen on today's calibration is run on a chip that has already moved. In this study we chose placements on an older IBM calibration snapshot and graded them on a newer one, as someone who had not recalibrated would. We also re-graded v2's synthetic drift in the same way.
 
-The study is exploratory but pre-registered: we committed both configurations before any run (`ab0fc85`, `e9742eb`; P2-22, P2-23). The 38 runs ran on one machine (patty) at the clean commit `ac177ab`, after the score freeze and the held-out configuration. Only development devices are involved, and nothing here is part of the main v3 test.
+The study is exploratory but pre-registered: we committed both configurations before any run (`ab0fc85`, `e9742eb`). The 38 runs ran on one machine (patty) at the clean commit `ac177ab`, after the score freeze and the held-out configuration. Only development devices are involved, and nothing here is part of the main v3 test.
 
 This page is a rewrite, for readability, of the reports our scripts generated. The originals ([DRIFT.md](https://github.com/KUQCI/noise-aware-compilation/blob/v3.0-results/results_v3/drift/DRIFT.md) and [UNCALIBRATED.md](https://github.com/KUQCI/noise-aware-compilation/blob/v3.0-results/results_v3/drift/uncalibrated/UNCALIBRATED.md)) are kept unchanged at tag `v3.0-results`, and every number here comes from them.
 
@@ -25,7 +25,7 @@ For each pair of snapshots, every method chooses a placement on the old snapshot
 
 The snapshot pairs are FakeHanoi after 14 days (2025-02-12 → 2025-02-26) and after 9 months (2024-05-27 → 2025-02-26), FakeFez after 1 month (2025-01-23 → 2025-02-26), and FakeTorino after 12 months (2024-02-28 → 2025-02-26).
 
-**Couplers that became uncalibrated.** A coupler that is valid in the old snapshot and reported with an error of 1.0 in the new one is simulated at a two-qubit error of 0.8, the converter's limit. IBM reports 1.0 when a coupler's value is stale, which does not mean the coupler is broken, so the real error is unknown in both directions: if it is near the old value, 0.8 overstates the harm, and if the coupler is out of service, 0.8 understates it. The harm shown for these placements is therefore neither an upper nor a lower bound (P2-22). Section 2 grades them again at the older value.
+**Couplers that became uncalibrated.** A coupler that is valid in the old snapshot and reported with an error of 1.0 in the new one is simulated at a two-qubit error of 0.8, the converter's limit. IBM reports 1.0 when a coupler's value is stale, which does not mean the coupler is broken, so the real error is unknown in both directions: if it is near the old value, 0.8 overstates the harm, and if the coupler is out of service, 0.8 understates it. The harm shown for these placements is therefore neither an upper nor a lower bound. Section 2 grades them again at the older value.
 
 **Metrics:**
 

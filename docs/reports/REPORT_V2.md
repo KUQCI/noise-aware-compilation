@@ -11,7 +11,7 @@ This page is a rewrite, for readability, of the report our script generated at t
 > 1. On FakeAlgiers with reset error equal to readout error, the decoder-graph score beats the fixed placement in 4 of 4 cases, but beats lowest summed error, Qiskit and mapomatic in only 1 of 4 after Holm's correction. Of the other three, d=5 is better by its interval but not after Holm (p = 0.16), and two are ties ([reset study](RESET.md), section 1).
 > 2. The largest held-out gain, −40.5% [−46.3%, −34.2%] against the fixed placement on FakeAlgiers d=7, is a single case, and Qiskit (levels 1 and 2) and mapomatic pick the same placement there ([re-analysis](REANALYSIS.md)). There the decoder-graph score and summed error chose the same qubits in mirror order, and our mirror check on FakeHanoi d=7 showed that such gaps follow the gate order, not the qubits (re-analysis, section 8).
 > 3. The "Qiskit VF2Layout" baseline picks lowest summed error's placement in 9 of 10 cases, so it is close to a second copy of that baseline, not an independent Qiskit comparison.
-> 4. Making the decoder-graph score the default (section 4) rests on the d=7 case: the R-G7 difference is −0.059 [−0.105, −0.013] with it and −0.016 [−0.060, +0.027] without it.
+> 4. Making the decoder-graph score the default (section 3) rests on the d=7 case: the R-G7 difference is −0.059 [−0.105, −0.013] with it and −0.016 [−0.060, +0.027] without it.
 >
 > The v1 overlap rule used below is also too strict: with an interval for the difference, 3 of v2's comparisons change from indistinguishable to better (re-analysis, section 1). v3 tested the score again on unseen devices ([REPORT_V3.md](REPORT_V3.md)).
 
@@ -19,7 +19,7 @@ This page is a rewrite, for readability, of the report our script generated at t
 
 ## Summary
 
-**1. Does placement still help with stale calibration?** (Section 3, development devices.) Mostly, at mild drift. We perturbed every calibration value with random noise of strength δ and let each method choose on the perturbed model, then graded the choice under the true one. M6 is the share of the original gain kept, and M7 counts the draws (out of 20) whose choice is worse than the fixed placement.
+**1. Does placement still help with stale calibration?** (Section 2, development devices.) Mostly, at mild drift. We perturbed every calibration value with random noise of strength δ and let each method choose on the perturbed model, then graded the choice under the true one. M6 is the share of the original gain kept, and M7 counts the draws (out of 20) whose choice is worse than the fixed placement.
 
 | Method | Cases where its δ = 0 choice beat fixed | Mean kept gain M6 at δ = 0.5 [95%] | Draws worse than fixed (M7) at δ = 0.5 (δ = 0) |
 | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ This page is a rewrite, for readability, of the report our script generated at t
 
 M6 above 1 means the choices made on the perturbed models were on average better than the method's own choice on the true model, which happens when that choice is far from the best placement.
 
-**2. Does it beat the methods people use?** (Section 2.) Pooled verdicts of each score's choice, as better–indistinguishable–worse counts:
+**2. Does it beat the methods people use?** (Section 1.) Pooled verdicts of each score's choice, as better–indistinguishable–worse counts:
 
 | Score | Devices | vs fixed | vs all-placement average | vs lowest summed error | vs Qiskit VF2Layout |
 | --- | --- | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ M6 above 1 means the choices made on the perturbed models were on average better
 | decoder-graph score | development devices (6 cases) | 4–2–0 | 6–0–0 | 5–1–0 | 5–1–0 |
 | decoder-graph score | FakeAlgiers (4 cases) | 4–0–0 | 4–0–0 | 2–2–0 | 2–2–0 |
 
-**3. Does the decoder-graph score choose better than the v1 score on an unseen device?** (Section 4.) On FakeAlgiers, yes. Its mean relative regret is lower, and the 95% interval of the difference excludes zero (decoder-graph minus v1 = −0.0594 [−0.1054, −0.0133]). By our pre-set rule R-G7, we made the decoder-graph score the default. This verdict covers only these four cases (A, B, D5 and D7 on FakeAlgiers).
+**3. Does the decoder-graph score choose better than the v1 score on an unseen device?** (Section 3.) On FakeAlgiers, yes. Its mean relative regret is lower, and the 95% interval of the difference excludes zero (decoder-graph minus v1 = −0.0594 [−0.1054, −0.0133]). By our pre-set rule R-G7, we made the decoder-graph score the default. This verdict covers only these four cases (A, B, D5 and D7 on FakeAlgiers).
 
 ## 1. Each score's choice against every baseline
 

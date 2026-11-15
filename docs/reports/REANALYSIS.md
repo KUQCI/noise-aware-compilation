@@ -58,7 +58,7 @@ Seven v1 comparisons and three of v2's own comparisons change. Each was called i
 
 **v2's main family:** the decoder-graph score against the naive placement, lowest summed error, Qiskit's default transpile and mapomatic, on all 10 v2 cases. Of the 40 comparisons at α = 0.05, 26 have a verdict other than tie, and all 26 hold after Holm.
 
-We labelled this family when we believed level 1 was Qiskit's default (P1-3). The default is in fact level 2 (P2-26), which picks the same placement as level 1 in all 10 cases (section 3).
+We labelled this family when we believed level 1 was Qiskit's default. The default is in fact level 2, which picks the same placement as level 1 in all 10 cases (section 3).
 
 | Case | vs | Change [95% CI] | Verdict | p | Holm p | Holds |
 | --- | --- | --- | --- | --- | --- | --- |

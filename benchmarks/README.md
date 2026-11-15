@@ -46,3 +46,7 @@ The v3 test was pre-registered: the score, code and configuration were frozen (a
 before the held-out devices were converted. This folder was reorganised afterwards, so the
 freeze checks, which verify every frozen file byte for byte, run at tag `v3.0-results`. See
 [docs/results.md](../docs/results.md#the-full-record).
+
+The code, configs and run files cite the plans and decision logs by file name and ID (for
+example `SPEC_V2.md R-G7` or `DECISIONS_V3.md P2-22`). Those files are not on `main`; they are
+at tag `v3.0-results`. The configs are frozen, so their text was left as it was.

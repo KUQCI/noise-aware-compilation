@@ -22,7 +22,7 @@ Every method chooses under the same model it is graded in. Qiskit's transpile (l
 
 ## 1. Does the decoder-graph score keep its main result at reset = readout?
 
-The pre-registered family is the decoder-graph score against the fixed placement, lowest summed error, Qiskit's default transpile and mapomatic, on v2's 10 cases with reset = readout: the same 40 comparisons as the re-analysis's v2 family, in the other reset setting. **23 of 40 comparisons hold after Holm at α = 0.05**, against 26 of 40 for the same comparisons at reset 0 (from the re-analysis, after the fact). A comparison holds when its verdict is better or worse and its Holm-adjusted p is below α. We registered the family with level 1 as Qiskit's default; the default is level 2 (P2-26), which picks the same placement as level 1 in every case and setting here.
+The pre-registered family is the decoder-graph score against the fixed placement, lowest summed error, Qiskit's default transpile and mapomatic, on v2's 10 cases with reset = readout: the same 40 comparisons as the re-analysis's v2 family, in the other reset setting. **23 of 40 comparisons hold after Holm at α = 0.05**, against 26 of 40 for the same comparisons at reset 0 (from the re-analysis, after the fact). A comparison holds when its verdict is better or worse and its Holm-adjusted p is below α. We registered the family with level 1 as Qiskit's default; the default is level 2, which picks the same placement as level 1 in every case and setting here.
 
 | Reference | better | tie | worse | hold after Holm |
 | --- | --- | --- | --- | --- |
