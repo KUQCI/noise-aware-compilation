@@ -26,8 +26,8 @@ cd benchmarks
 
 | Result | Command |
 | --- | --- |
-| v1 | `python -m noise_aware_compilation.benchmark configs/benchmark.json`, then `python -m noise_aware_compilation.report --out ../docs/reports/REPORT.md` |
-| v2 | `python -m nac_bench.run_v2 configs_v2/benchmark_v2.json`, then `python -m nac_bench.report_v2` |
+| v1 | `python -m noise_aware_compilation.benchmark configs/benchmark.json`, then `python -m noise_aware_compilation.report` (writes `REPORT.md` here) |
+| v2 | `python -m nac_bench.run_v2 configs_v2/benchmark_v2.json`, then `python -m nac_bench.report_v2` (writes `REPORT_V2.md` here) |
 | v3 re-analysis of v1 and v2 | `python -m nac_bench.reanalysis configs_v3/reanalysis.json` |
 | v3 reset study | `python -m nac_bench.run_reset configs_v3/reset_sensitivity.json` |
 | v3 drift | `python -m nac_bench.run_drift configs_v3/drift.json`, then the same with `--analyse` |
@@ -45,4 +45,4 @@ run files record their hashes.
 The v3 test was pre-registered: the score, code and configuration were frozen (as git tags)
 before the held-out devices were converted. This folder was reorganised afterwards, so the
 freeze checks, which verify every frozen file byte for byte, run at tag `v3.0-results`. See
-[docs/methodology/](../docs/methodology/README.md).
+[docs/results.md](../docs/results.md#the-full-record).

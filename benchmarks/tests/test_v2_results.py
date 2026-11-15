@@ -23,7 +23,6 @@ from noise_aware_compilation.scoring import DEFAULT_SCORER
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "configs_v2" / "benchmark_v2.json"
 RUNS = ROOT / "results_v2" / "runs"
-REPORT = ROOT.parent / "docs" / "reports" / "REPORT_V2.md"
 FREEZE = json.loads((ROOT / "configs_v2" / "freeze.json").read_text(encoding="utf-8"))
 #: Last v1 commit: the v1 rerun after the authorship rewrite, merged into v2.
 V1_TIP = "f7030f12c2845461b0f6e7af3028064a04ac83cf"
@@ -65,11 +64,6 @@ def runs(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
         assert path.exists(), f"missing results file {path.name}"
         out[case["case_id"]] = json.loads(path.read_text(encoding="utf-8"))
     return out
-
-
-@pytest.fixture(scope="module")
-def report() -> str:
-    return REPORT.read_text(encoding="utf-8")
 
 
 def _drift_runs(runs: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
@@ -178,100 +172,3 @@ def test_v2_seeds_disjoint_from_v1(runs: dict[str, dict[str, Any]]) -> None:
         v2 = set(run["seeds"]["base_seeds"]) | set(run["seeds"]["drift_seeds"])
         v2 |= {s for p in run["placements"] for ps in p["per_seed"] for s in ps["chunk_seeds"]}
         assert not v1 & v2, run["case"]["case_id"]
-
-
-def _drift_rows(report: str, title: str) -> dict[tuple[str, str], list[str]]:
-    section = report.split("## 3.")[1].split("## 4.")[0]
-    block = section.split(f"### {title}\n")[1].split("### ")[0]
-    rows = {}
-    for line in block.splitlines():
-        cells = [c.strip() for c in line.strip("|").split("|")]
-        if len(cells) == 6 and cells[0] in METHOD_NAMES.values():
-            rows[(cells[0], cells[1])] = cells
-    return rows
-
-
-def _titles(report: str) -> list[str]:
-    section = report.split("## 3.")[1].split("## 4.")[0]
-    return [line[4:].strip() for line in section.splitlines() if line.startswith("### ")]
-
-
-def test_t2_p1_p2_retained_gain_and_harm_rate(
-    config: dict[str, Any], runs: dict[str, dict[str, Any]], report: str
-) -> None:
-    titles = _titles(report)
-    assert len(titles) == len(_drift_runs(runs))
-    for title in titles:
-        rows = _drift_rows(report, title)
-        for method in NOISE_AWARE:
-            for delta in config["drift"]["strengths"]:
-                if delta == 0:
-                    continue
-                cells = rows[(METHOD_NAMES[method], f"{delta:g}")]
-                assert "[" in cells[2] or cells[2] == "no gain to retain", (title, method, delta)
-                assert "[" in cells[3], (title, method, delta)
-
-
-def test_t2_p3_baseline_comparison(runs: dict[str, dict[str, Any]], report: str) -> None:
-    section = report.split("## 2.")[1].split("## 3.")[0]
-    blocks = section.split("\n### ")[1:]
-    assert len(blocks) == len(runs)
-    for block in blocks:
-        for score in SCORE_NAMES.values():
-            for reference in (
-                "fixed",
-                "all-placement average",
-                "lowest summed error",
-                "Qiskit VF2Layout",
-            ):
-                rows = [
-                    line
-                    for line in block.splitlines()
-                    if line.startswith(f"| {score}") and f"| {reference}" in line
-                ]
-                assert len(rows) == 1, (block.splitlines()[0], score, reference)
-                assert "pooled:" in rows[0] and "seeds)" in rows[0]
-    assert "No two verdicts for one comparison are opposite across seeds: **yes**" in section
-
-
-def test_t2_p4_held_out_comparison(runs: dict[str, dict[str, Any]], report: str) -> None:
-    section = report.split("## 4.")[1].split("## 5.")[0]
-    held = [r for r in runs.values() if r["case"]["role"] == "held-out"]
-    assert len(held) == 4
-    for score in SCORE_NAMES.values():
-        rows = [line for line in section.splitlines() if f"| {score} |" in line]
-        assert len(rows) >= len(held), score
-    assert "R-G7 calculation" in section
-    assert "This verdict covers only these four cases" in section
-    assert "This verdict covers only these four cases" in report.split("## 2.")[0]
-
-
-def test_r2_r7_development_devices_labelled(report: str) -> None:
-    header = report.split("## 1.")[0]
-    assert "development-device results" in header
-    assert "Only FakeAlgiers is the real test" in header
-    section = report.split("## 2.")[1].split("## 3.")[0]
-    for line in section.splitlines():
-        if line.startswith("### FakeJakartaV2") or line.startswith("### FakeHanoiV2"):
-            assert line.endswith("(development device)"), line
-        elif line.startswith("### FakeAlgiers"):
-            assert line.endswith("(held-out device)"), line
-
-
-def test_figures_exist(report: str) -> None:
-    for line in report.splitlines():
-        if line.startswith("!["):
-            assert (ROOT / line.split("](")[1].rstrip(")")).exists(), line
-
-
-def test_v1_results_untouched() -> None:
-    # X14: v2 adds files; it never changes v1's config, results or report. The one exception
-    # is the v3 banner (SPEC_V3.md revision 5, R1): REPORT.md minus that block is v1's.
-    changed = _git("diff", "--name-only", V1_TIP, "HEAD", "--", "configs", "results")
-    assert changed == ""
-    v1 = _git("show", f"{V1_TIP}:REPORT.md")
-    now = (ROOT.parent / "docs" / "reports" / "REPORT.md").read_text(encoding="utf-8")
-    start, end = "<!-- v3-banner:start -->", "<!-- v3-banner:end -->\n\n"
-    assert now.count(start) == 1 and now.count(end) == 1
-    without = now[: now.index(start)] + now[now.index(end) + len(end) :]
-    assert without.strip() == v1  # _git strips the trailing newline

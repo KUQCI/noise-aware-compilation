@@ -1,13 +1,12 @@
-"""Checks on the committed benchmark results and REPORT.md.
+"""Checks on the committed v1 benchmark results.
 
 T-C4, T-C7, T-F1, T-F2, T-F3, T-F4, T-I5 (results part), T-P1-T-P6, T-R2, T-R3,
-T-L1, T-L2. These read ``results/runs/*.json`` and ``REPORT.md``.
+T-L1, T-L2. These read ``results/runs/*.json``. The checks on REPORT.md run at tag v3.0-results.
 """
 
 from __future__ import annotations
 
 import json
-import math
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -27,7 +26,6 @@ from noise_aware_compilation.benchmark import expand_cases, load_config
 ROOT = Path(__file__).resolve().parent.parent
 RUNS = ROOT / "results" / "runs"
 L1_VARIANTS = ("L1-cx-min", "L1-cx-max", "L1-reset-readout", "L1-coupler-better")
-REPORT = ROOT.parent / "docs" / "reports" / "REPORT.md"
 
 pytestmark = [
     pytest.mark.results,
@@ -38,11 +36,6 @@ pytestmark = [
 @pytest.fixture(scope="module")
 def summaries() -> dict[str, CaseSummary]:
     return load_summaries(RUNS)
-
-
-@pytest.fixture(scope="module")
-def report() -> str:
-    return REPORT.read_text(encoding="utf-8")
 
 
 @pytest.fixture(scope="module")
@@ -115,15 +108,6 @@ def test_t_f1_only_the_mapping_differs(summaries: dict[str, CaseSummary]) -> Non
         assert len({tuple(m) for m in mappings}) == len(mappings)
 
 
-def test_t_f2_uniform_noise_null(summaries: dict[str, CaseSummary], report: str) -> None:
-    cases = _base(summaries, "N1")
-    assert cases
-    for s in cases:
-        assert s.homogeneity.p_value > 0.01, (s.case_id, s.homogeneity)
-    section = report.split("## 7.")[1].split("## 8.")[0]
-    assert section.count("**no gain** under N1") == len(cases)
-
-
 def test_t_f3_seed_separation(summaries: dict[str, CaseSummary]) -> None:
     for s in summaries.values():
         selection = set(s.raw["selection"]["selection_seeds"]) | set(
@@ -148,41 +132,6 @@ def test_t_i5_results_record_approximate_decoder(summaries: dict[str, CaseSummar
         assert s.raw["decoder"]["decoder"] == "pymatching"
 
 
-def test_t_p1_main_comparison(summaries: dict[str, CaseSummary], report: str) -> None:
-    for s in summaries.values():
-        for comp in (s.vs_fixed, s.vs_average):
-            assert comp.verdict in {"better", "indistinguishable", "worse"}
-            assert comp.absolute.low <= comp.absolute.estimate <= comp.absolute.high
-    headline = report.split("## 1.")[1].split("## 2.")[0]
-    rows = [line for line in headline.splitlines() if line.startswith("| Fake")]
-    assert len(rows) == len(_base(summaries, "N2"))
-    for row in rows:
-        verdicts = [v for v in ("better", "indistinguishable", "worse") if f"**{v}**" in row]
-        assert row.count("**") == 4 and verdicts  # one verdict per comparison
-        assert row.count("rel ") == 2  # absolute and relative differences
-
-
-def test_t_p2_regret_everywhere(summaries: dict[str, CaseSummary], report: str) -> None:
-    section = report.split("## 3.")[1].split("## 4.")[0]
-    for s in summaries.values():
-        assert s.chosen_rank >= 1
-        assert not math.isnan(s.regret.estimate)
-    assert section.count(" of ") >= len(
-        [s for s in summaries.values() if s.case["variant"] == "base"]
-    )
-
-
-def test_t_p3_score_validity_reported_and_flagged(
-    summaries: dict[str, CaseSummary], report: str
-) -> None:
-    section = report.split("## 3.")[1].split("## 4.")[0]
-    for s in summaries.values():
-        if s.case["variant"] != "base":
-            continue
-        if not math.isnan(s.spearman) and s.spearman < 0:
-            assert f"{s.spearman:+.3f} ⚠ negative" in section
-
-
 def test_t_p4_precision(summaries: dict[str, CaseSummary]) -> None:
     failing = [
         (s.case_id, p.mapping)
@@ -192,16 +141,6 @@ def test_t_p4_precision(summaries: dict[str, CaseSummary]) -> None:
         if not precision_ok(p)
     ]
     assert not failing, failing[:10]
-
-
-def test_t_p5_per_round_consistency(summaries: dict[str, CaseSummary], report: str) -> None:
-    # SPEC.md rev 3: no two round counts give opposite verdicts for the same comparison.
-    for device in ("jakarta", "hanoi"):
-        cases = [summaries[f"{device}-{label}-N2"] for label in ("A1", "A3", "A5")]
-        assert verdicts_consistent([s.vs_fixed.verdict for s in cases]), device
-        assert verdicts_consistent([s.vs_average.verdict for s in cases]), device
-    section = report.split("## 5.")[1].split("## 6.")[0]
-    assert section.count("no two point in opposite directions") == 2
 
 
 def test_verdicts_consistent_rule() -> None:
@@ -227,38 +166,6 @@ def test_seed_breakdown_and_evidence_rule() -> None:
         seed_breakdown("indistinguishable", ["better", "worse", "indistinguishable"])
         == "better (1/3 seeds), worse (1/3 seeds), pooled: indistinguishable"
     )
-
-
-def test_rev4_claims_rest_on_pooled_verdicts(
-    summaries: dict[str, CaseSummary], report: str
-) -> None:
-    """SPEC.md rev 4: seed tally next to every headline verdict; gains only from pooled *better*."""
-
-    headline = report.split("## 1.")[1].split("## 2.")[0]
-    claims = [line for line in headline.splitlines() if line.startswith("- Fake")]
-    expected = 0
-    for s in _base(summaries, "N2"):
-        for comparison in ("vs_fixed", "vs_average"):
-            pooled = getattr(s, comparison).verdict
-            seeds = s.seed_verdicts(comparison)
-            assert (
-                seed_breakdown(pooled, seeds).replace(f"pooled: {pooled}", f"pooled: **{pooled}**")
-                in headline
-            )
-            if pooled != "indistinguishable":
-                expected += 1
-    assert len(claims) == expected
-    for line in claims:
-        label = line.split("**")[1]
-        pooled = line.split("pooled: ")[1].rstrip(")")
-        assert label.startswith("gain") == (pooled == "better")
-        assert ("weak evidence" in label) == (not line.count("(3/3 seeds)"))
-
-
-def test_t_p6_gain_vs_distance(report: str) -> None:
-    section = report.split("## 6.")[1].split("## 7.")[0]
-    assert all(f"| {d} |" in section for d in (3, 5, 7))
-    assert any(f"**{t}**" in section for t in ("grows", "shrinks", "flat"))
 
 
 def test_t_r2_verdict_same_across_seeds(summaries: dict[str, CaseSummary]) -> None:
@@ -289,40 +196,3 @@ def test_t_r3_provenance(summaries: dict[str, CaseSummary]) -> None:
             for ps in p["per_seed"]:
                 assert ps["chunk_seeds"]
         assert s.raw["wall_clock_seconds"] > 0
-
-
-def test_t_l1_sensitivity(summaries: dict[str, CaseSummary], report: str) -> None:
-    section = report.split("## 10.")[1].split("## 11.")[0]
-    for s in _base(summaries, "N2"):
-        for variant in L1_VARIANTS:
-            assert f"{s.case_id}-{variant}" in summaries
-    rows = [line for line in section.splitlines() if line.startswith("| Fake")]
-    assert len(rows) == len(L1_VARIANTS) * len(_base(summaries, "N2"))
-    assert all(line.rstrip().endswith(("| yes |", "| **no** |")) for line in rows)
-
-
-def test_t_l2_limitations_cover_constraints(report: str) -> None:
-    section = report.split("## 11.")[1].split("## 12.")[0]
-    for k in range(1, 9):
-        assert f"**K{k} " in section
-
-
-def test_r_r5_figures_exist(summaries: dict[str, CaseSummary], report: str) -> None:
-    for s in _base(summaries, "N2"):
-        name = f"results/figures/{s.case['device']}-{s.case['circuit']['label']}-N2.png"
-        assert (ROOT / name).exists()
-        assert f"]({name})" in report
-
-
-def test_r_r1_appendix_lists_every_placement(
-    summaries: dict[str, CaseSummary], report: str
-) -> None:
-    appendix = report.split("## Appendix")[1]
-    rows = [line for line in appendix.splitlines() if line.startswith("| (")]
-    assert len(rows) == sum(
-        len(s.placements) for s in summaries.values() if s.case["variant"] == "base"
-    )
-
-
-def test_report_states_noise_model_scope(report: str) -> None:
-    assert "under this noise model" in report

@@ -69,7 +69,8 @@ newer one, as someone who had not recalibrated would.
 - Summed error kept more of its gain than the decoder-graph score in 3 of 4 FakeFez circuits.
 - Choosing again on the new calibration restored the gain.
 
-Full v3 report: [reports/REPORT_V3.md](reports/REPORT_V3.md).
+Full v3 report: [REPORT_V3.md](REPORT_V3.md). The plan it was tested against, written and
+frozen before the held-out devices were converted: [SPEC_V3.md](SPEC_V3.md).
 
 ## How we got here
 
@@ -79,14 +80,14 @@ placement by 23–33% on FakeJakarta and 19–36% on FakeHanoi at distance 5 and
 found the first FakeHanoi numbers were inflated by two couplers IBM had marked uncalibrated.
 The converter now removes such couplers. A later check with realistic reset errors turned
 some of v1's small FakeHanoi wins into losses.
-[Report](reports/REPORT.md).
+[Report](https://github.com/KUQCI/noise-aware-compilation/blob/v3.0-results/REPORT.md).
 
 **v2: a better score and real competitors.** We added the decoder-graph score, Qiskit's
 layout as a baseline, synthetic calibration drift, and a held-out device (FakeAlgiers). The
 decoder-graph score beat the fixed placement in all 4 FakeAlgiers cases and was made the
 default. That decision rested mostly on one distance-7 case. In
 that case both methods had chosen the same qubits, and the gain came from running them in the
-mirror order. [Report](reports/REPORT_V2.md).
+mirror order. [Report](https://github.com/KUQCI/noise-aware-compilation/blob/v3.0-results/REPORT_V2.md).
 
 **v3: new hardware, honest settings.** v3 used CZ devices, square-lattice chips, realistic
 reset errors, real calibration drift, surface codes, stronger baselines (Qiskit's actual
@@ -107,4 +108,20 @@ v2 with corrected statistics:
   ancillas, and gate durations are averaged per device.
 - **Few devices.** The final claims rest on three devices.
 
-How the tests were designed and frozen: [methodology/](methodology/README.md).
+## The full record
+
+This repository keeps the v3 plan and report. Everything else from the study (the v1 and v2
+plans and reports, the decision logs for every version, and the review held before the
+held-out test) is kept exactly as written at the tag
+[`v3.0-results`](https://github.com/KUQCI/noise-aware-compilation/tree/v3.0-results), along with the checks that verify
+each freeze. The freezes themselves are git tags:
+
+| Tag | What it froze |
+| --- | --- |
+| `v3-score-freeze` | Both scores and the fast search (Nov 9) |
+| `v3-score-freeze-surface-k` | The surface-code score setting, k = 640 (Nov 10) |
+| `v3-held-out-config` | The held-out configuration, revision 5 (Nov 10), replaced before any run |
+| `v3-held-out-config-r6` | The held-out configuration and code the runs used (Nov 11) |
+
+All four come before the held-out calibration files were converted. `REPORT_V3.md` and
+`SPEC_V3.md` refer to other files of the record by name; those files are at the tag.
