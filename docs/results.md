@@ -69,8 +69,8 @@ newer one, as someone who had not recalibrated would.
 - Summed error kept more of its gain than the decoder-graph score in 3 of 4 FakeFez circuits.
 - Choosing again on the new calibration restored the gain.
 
-Full v3 report: [REPORT_V3.md](REPORT_V3.md). The plan it was tested against, written and
-frozen before the held-out devices were converted: [SPEC_V3.md](SPEC_V3.md).
+Full v3 report: [reports/REPORT_V3.md](reports/REPORT_V3.md). The plan it was tested against, written
+and frozen before the held-out devices were converted: [SPEC_V3.md](SPEC_V3.md).
 
 ## How we got here
 
@@ -81,7 +81,8 @@ at distance 5 and 7. An audit then found that our first FakeHanoi numbers were i
 two couplers IBM had marked uncalibrated, so the converter now removes such couplers. When we
 later re-checked v1 with stricter statistics, 7 of its 11 main comparisons held after Holm's
 correction. With reset errors set equal to readout errors, some of its small FakeHanoi
-distance-3 wins turned into losses ([REPORT_V3.md, section 5](REPORT_V3.md#5-the-reset-result)).
+distance-3 wins turned into losses ([reset study](reports/RESET.md)).
+[v1 report](reports/REPORT_V1.md).
 
 **v2: a better score and real competitors.** We added the decoder-graph score, Qiskit's
 layout as a baseline, synthetic calibration drift and a held-out device, FakeAlgiers. The
@@ -89,15 +90,19 @@ decoder-graph score beat the fixed placement in all 4 FakeAlgiers cases, and we 
 default. That decision rested mostly on one distance-7 case, where both methods had chosen
 the same qubits and the gain came from running them in mirror order. Re-checked with
 stricter statistics, 26 of v2's 40 main comparisons held after Holm's correction.
+[v2 report](reports/REPORT_V2.md).
 
 **v3: new hardware and stricter settings.** We moved to CZ devices and the square lattice,
 used realistic reset errors and real calibration drift, added surface codes and stronger
 baselines (Qiskit's actual default and mapomatic), and ran the frozen, pre-registered test
-above. Drift and the reset study are covered in
-[REPORT_V3.md](REPORT_V3.md#4-how-much-of-the-gain-survives-real-recalibration).
+above. Along the way we re-analysed v1 and v2 with stricter statistics
+([re-analysis](reports/REANALYSIS.md)), reran v2's cases with realistic reset errors
+([reset study](reports/RESET.md)) and measured real calibration drift
+([drift](reports/DRIFT.md)).
 
-The original v1 and v2 reports, and the detailed re-analysis, reset and drift reports, are
-kept unchanged at tag [`v3.0-results`](https://github.com/KUQCI/noise-aware-compilation/tree/v3.0-results).
+Every report in [reports/](reports/) is a readable rewrite. The originals, as our scripts
+generated them, are kept unchanged at tag
+[`v3.0-results`](https://github.com/KUQCI/noise-aware-compilation/tree/v3.0-results).
 
 ## Limitations
 
@@ -112,9 +117,9 @@ kept unchanged at tag [`v3.0-results`](https://github.com/KUQCI/noise-aware-comp
 
 ## The full record
 
-This repository keeps the v3 plan and report. Everything else from the study (the v1 and v2
-plans and reports, the decision logs for every version, and the review held before the
-held-out test) is kept exactly as written at the tag
+This repository keeps the v3 plan and readable versions of every report. Everything else
+from the study (the v1 and v2 plans, the decision logs for every version, the review held
+before the held-out test, and the reports as generated) is kept exactly as written at the tag
 [`v3.0-results`](https://github.com/KUQCI/noise-aware-compilation/tree/v3.0-results), along with the checks that verify
 each freeze. The freezes themselves are git tags:
 
@@ -125,5 +130,6 @@ each freeze. The freezes themselves are git tags:
 | `v3-held-out-config` | The held-out configuration, revision 5 (Nov 10), replaced before any run |
 | `v3-held-out-config-r6` | The held-out configuration and code the runs used (Nov 11) |
 
-All four come before the held-out calibration files were converted. `REPORT_V3.md` and
-`SPEC_V3.md` refer to other files of the record by name; those files are at the tag.
+All four come before the held-out calibration files were converted. The plan and reports
+refer to other files of the record by name, such as the decision log's P-numbers; those
+files are at the tag.

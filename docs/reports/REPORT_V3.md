@@ -1,6 +1,6 @@
 # v3 report: the held-out test
 
-This report gives the results of our final test. We froze the score, the code, the run configuration and every random seed first. Only then did we convert three IBM devices whose calibration had never been used to develop the method, and run every comparison. The plan we froze is [SPEC_V3.md](SPEC_V3.md).
+This report gives the results of our final test. We froze the score, the code, the run configuration and every random seed first. Only then did we convert three IBM devices whose calibration had never been used to develop the method, and run every comparison. The plan we froze is [SPEC_V3.md](../SPEC_V3.md).
 
 Everything here is simulation. We converted IBM's published calibration snapshots (the fake backends in `qiskit-ibm-runtime` 0.50.0) into Pauli noise models, simulated them with Nove and decoded with PyMatching. No result is a measurement on hardware, and each device is one day's calibration. Unless a table says otherwise, each qubit's reset error is set equal to its readout error.
 
@@ -40,7 +40,7 @@ We asked whether the decoder-graph score, which we developed on heavy-hex device
 
 † We had seen FakeBerlin's device-level summary figures before the freeze (see above). A robustness check keeps a claim's result when both its verdict and its counts are unchanged; section 2 shows what changes.
 
-![Forest plot of the 48 family comparisons](../benchmarks/results_v3/held_out/figures/forest.png)
+![Forest plot of the 48 family comparisons](../../benchmarks/results_v3/held_out/figures/forest.png)
 
 **Figure 1.** The 48 comparisons of the main family, held-out devices, reset = readout. Each row is one case and each panel one reference. Filled markers are better or worse after Holm; hollow diamonds are ties.
 
@@ -154,18 +154,18 @@ We missed our speed target, which was the whole distance-5 selection within 60 s
 
 ## 4. How much of the gain survives real recalibration?
 
-Most of it after a month, though less than summed error keeps, and sometimes none. These are exploratory runs on development devices with dated calibration snapshots ([DRIFT.md](../benchmarks/results_v3/drift/DRIFT.md)). Each method chooses on the older calibration, and we grade and decode the choice as someone who had not recalibrated would.
+Most of it after a month, though less than summed error keeps, and sometimes none. These are exploratory runs on development devices with dated calibration snapshots ([DRIFT.md](DRIFT.md)). Each method chooses on the older calibration, and we grade and decode the choice as someone who had not recalibrated would.
 
 - After a month on FakeFez, every old choice still beats the fixed placement. The score's old choice has 17% to 46% fewer logical errors than the fixed placement, but summed error's and mapomatic's old choices kept more of their gains in three of four circuits.
 - On FakeHanoi distance 7, the score's old choice became worse than the fixed placement: 127% worse after 14 days and 76% worse after 9 months. It stays worse when decoded with the new calibration, so the placement itself degraded.
-- After 12 months on FakeTorino, three of the score's four old choices use two couplers that have since become uncalibrated. Graded with those couplers at the converter's limit, they fail badly; at their older values, they are 31% to 81% better than the fixed placement ([UNCALIBRATED.md](../benchmarks/results_v3/drift/uncalibrated/UNCALIBRATED.md)). We cannot tell which is real.
+- After 12 months on FakeTorino, three of the score's four old choices use two couplers that have since become uncalibrated. Graded with those couplers at the converter's limit, they fail badly; at their older values, they are 31% to 81% better than the fixed placement ([UNCALIBRATED.md](DRIFT.md#2-faketorinos-uncalibrated-couplers-at-their-older-value)). We cannot tell which is real.
 - Choosing again is what matters. A fresh choice beats the fixed placement by 27% to 96%, except in FakeHanoi's distance-3 circuits. Re-grading v2's synthetic drift with stale decoder weights leaves the score's result standing and lowers summed error's and Qiskit's on FakeJakarta A.
 
 ## 5. The reset result
 
 IBM publishes no reset error, and v1's main results assumed it was 0. With reset error equal to readout error instead, the v1 score lost to the fixed placement on v1's seeds in three FakeHanoi distance-3 circuits: 3 rounds, 5 rounds and the X basis. The 5-round case had been v1's −15.2% gain at reset 0. On fresh seeds, the loss replicates (by its Newcombe interval) in one of the three, the 3-round circuit at +10.5%, and the other two are ties.
 
-The decoder-graph score is better than the fixed placement by its Newcombe interval in the 3- and 5-round circuits at both settings. The 3-round result at reset = readout does not hold after Holm (adjusted p = 0.41), and its reset-0 figure is v2's committed run ([RESET.md](../benchmarks/results_v3/reset/RESET.md), section 2). Because of this, every v3 case runs at both settings. The main results use reset = readout, and Table 4 gives reset 0.
+The decoder-graph score is better than the fixed placement by its Newcombe interval in the 3- and 5-round circuits at both settings. The 3-round result at reset = readout does not hold after Holm (adjusted p = 0.41), and its reset-0 figure is v2's committed run ([RESET.md](RESET.md), section 2). Because of this, every v3 case runs at both settings. The main results use reset = readout, and Table 4 gives reset 0.
 
 ## 6. Can someone outside the project run it?
 

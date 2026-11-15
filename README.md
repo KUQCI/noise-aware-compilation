@@ -120,7 +120,7 @@ Full summary, including what earlier versions found and what changed:
 ```
 src/noise_aware_compilation/   the package (the Nove extension)
 tests/                         unit tests for the package
-docs/                          how it works, results summary, the v3 plan and report
+docs/                          how it works, results summary, the v3 plan, and every report
 benchmarks/                    benchmark code, configs, raw results and their tests
 ```
 
