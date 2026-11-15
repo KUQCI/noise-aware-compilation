@@ -24,9 +24,9 @@ This page is a rewrite, for readability, of the report our script generated at t
 | Method | Cases where its δ = 0 choice beat fixed | Mean kept gain M6 at δ = 0.5 [95%] | Draws worse than fixed (M7) at δ = 0.5 (δ = 0) |
 | --- | --- | --- | --- |
 | v1 score | 2 of 6 | FakeJakartaV2 A 0.9574 [0.8237, 1.06]<br>FakeHanoiV2 D5 0.8587 [0.6801, 1.04] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 6/20 (0/20)<br>FakeHanoiV2 A 5/20 (0/20)<br>FakeHanoiV2 B 10/20 (0/20)<br>FakeHanoiV2 D5 0/20 (0/20)<br>FakeHanoiV2 D7 4/20 (0/20) |
-| decoder-graph score | 4 of 6 | FakeJakartaV2 A 0.9322 [0.8014, 1.03]<br>FakeHanoiV2 A 0.3514 [-6.75e-03, 0.6454]<br>FakeHanoiV2 D5 0.7491 [0.5523, 0.9083]<br>FakeHanoiV2 D7 0.1659 [-0.4645, 0.5719] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 6/20 (0/20)<br>FakeHanoiV2 A 1/20 (0/20)<br>FakeHanoiV2 B 8/20 (0/20)<br>FakeHanoiV2 D5 2/20 (0/20)<br>FakeHanoiV2 D7 3/20 (0/20) |
-| lowest summed error | 3 of 6 | FakeJakartaV2 A 3.05 [1.91, 4.85]<br>FakeHanoiV2 A 0.0739 [-0.4426, 0.4219]<br>FakeHanoiV2 D5 1.63 [0.7956, 3.61] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 20/20 (20/20)<br>FakeHanoiV2 A 3/20 (0/20)<br>FakeHanoiV2 B 19/20 (20/20)<br>FakeHanoiV2 D5 2/20 (0/20)<br>FakeHanoiV2 D7 8/20 (0/20) |
-| Qiskit VF2Layout | 3 of 6 | FakeJakartaV2 A 2.76 [1.74, 4.39]<br>FakeHanoiV2 A 0.1126 [-0.3977, 0.4715]<br>FakeHanoiV2 D5 0.6892 [0.2411, 1.15] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 20/20 (20/20)<br>FakeHanoiV2 A 4/20 (0/20)<br>FakeHanoiV2 B 19/20 (20/20)<br>FakeHanoiV2 D5 4/20 (0/20)<br>FakeHanoiV2 D7 9/20 (0/20) |
+| decoder-graph score | 4 of 6 | FakeJakartaV2 A 0.9322 [0.8014, 1.03]<br>FakeHanoiV2 A 0.3514 [−6.75e-03, 0.6454]<br>FakeHanoiV2 D5 0.7491 [0.5523, 0.9083]<br>FakeHanoiV2 D7 0.1659 [−0.4645, 0.5719] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 6/20 (0/20)<br>FakeHanoiV2 A 1/20 (0/20)<br>FakeHanoiV2 B 8/20 (0/20)<br>FakeHanoiV2 D5 2/20 (0/20)<br>FakeHanoiV2 D7 3/20 (0/20) |
+| lowest summed error | 3 of 6 | FakeJakartaV2 A 3.05 [1.91, 4.85]<br>FakeHanoiV2 A 0.0739 [−0.4426, 0.4219]<br>FakeHanoiV2 D5 1.63 [0.7956, 3.61] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 20/20 (20/20)<br>FakeHanoiV2 A 3/20 (0/20)<br>FakeHanoiV2 B 19/20 (20/20)<br>FakeHanoiV2 D5 2/20 (0/20)<br>FakeHanoiV2 D7 8/20 (0/20) |
+| Qiskit VF2Layout | 3 of 6 | FakeJakartaV2 A 2.76 [1.74, 4.39]<br>FakeHanoiV2 A 0.1126 [−0.3977, 0.4715]<br>FakeHanoiV2 D5 0.6892 [0.2411, 1.15] | FakeJakartaV2 A 0/20 (0/20)<br>FakeJakartaV2 B 20/20 (20/20)<br>FakeHanoiV2 A 4/20 (0/20)<br>FakeHanoiV2 B 19/20 (20/20)<br>FakeHanoiV2 D5 4/20 (0/20)<br>FakeHanoiV2 D7 9/20 (0/20) |
 
 M6 above 1 means the choices made on the perturbed models were on average better than the method's own choice on the true model, which happens when that choice is far from the best placement.
 
@@ -47,133 +47,133 @@ M6 above 1 means the choices made on the perturbed models were on average better
 
 ### FakeJakartaV2 A (d=3 bit-flip, 3 rounds), development device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -0.0146 [-0.0154, -0.0138]; rel -23.7% [-24.8%, -22.5%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -5.96e-03 [-6.46e-03, -5.45e-03]; rel -11.2% [-12.2%, -10.3%] |
-| v1 score | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -0.0120 [-0.0128, -0.0112]; rel -20.3% [-21.5%, -19.1%] |
-| v1 score | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -0.0120 [-0.0128, -0.0112]; rel -20.3% [-21.5%, -19.1%] |
-| decoder-graph score (default) | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -0.0146 [-0.0154, -0.0138]; rel -23.7% [-24.8%, -22.5%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -5.96e-03 [-6.46e-03, -5.45e-03]; rel -11.2% [-12.2%, -10.3%] |
-| decoder-graph score (default) | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -0.0120 [-0.0128, -0.0112]; rel -20.3% [-21.5%, -19.1%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -0.0120 [-0.0128, -0.0112]; rel -20.3% [-21.5%, -19.1%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | **better** | 3 of 3 seeds | −23.7% [−24.8%, −22.5%] | −0.0146 [−0.0154, −0.0138] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −11.2% [−12.2%, −10.3%] | −5.96e-03 [−6.46e-03, −5.45e-03] |
+| v1 score | lowest summed error | **better** | 3 of 3 seeds | −20.3% [−21.5%, −19.1%] | −0.0120 [−0.0128, −0.0112] |
+| v1 score | Qiskit VF2Layout | **better** | 3 of 3 seeds | −20.3% [−21.5%, −19.1%] | −0.0120 [−0.0128, −0.0112] |
+| decoder-graph score (default) | fixed | **better** | 3 of 3 seeds | −23.7% [−24.8%, −22.5%] | −0.0146 [−0.0154, −0.0138] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −11.2% [−12.2%, −10.3%] | −5.96e-03 [−6.46e-03, −5.45e-03] |
+| decoder-graph score (default) | lowest summed error | **better** | 3 of 3 seeds | −20.3% [−21.5%, −19.1%] | −0.0120 [−0.0128, −0.0112] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better** | 3 of 3 seeds | −20.3% [−21.5%, −19.1%] | −0.0120 [−0.0128, −0.0112] |
 
 ### FakeJakartaV2 B (d=3 phase-flip, 3 rounds), development device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -0.0513 [-0.0522, -0.0505]; rel -26.5% [-26.9%, -26.0%] |
-| v1 score | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -0.0594 [-0.0607, -0.0580]; rel -29.4% [-29.9%, -28.8%] |
-| v1 score | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -0.0594 [-0.0607, -0.0580]; rel -29.4% [-29.9%, -28.8%] |
-| decoder-graph score (default) | fixed (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -0.0513 [-0.0522, -0.0505]; rel -26.5% [-26.9%, -26.0%] |
-| decoder-graph score (default) | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -0.0594 [-0.0607, -0.0580]; rel -29.4% [-29.9%, -28.8%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -0.0594 [-0.0607, -0.0580]; rel -29.4% [-29.9%, -28.8%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −26.5% [−26.9%, −26.0%] | −0.0513 [−0.0522, −0.0505] |
+| v1 score | lowest summed error | **better** | 3 of 3 seeds | −29.4% [−29.9%, −28.8%] | −0.0594 [−0.0607, −0.0580] |
+| v1 score | Qiskit VF2Layout | **better** | 3 of 3 seeds | −29.4% [−29.9%, −28.8%] | −0.0594 [−0.0607, −0.0580] |
+| decoder-graph score (default) | fixed (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −26.5% [−26.9%, −26.0%] | −0.0513 [−0.0522, −0.0505] |
+| decoder-graph score (default) | lowest summed error | **better** | 3 of 3 seeds | −29.4% [−29.9%, −28.8%] | −0.0594 [−0.0607, −0.0580] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better** | 3 of 3 seeds | −29.4% [−29.9%, −28.8%] | −0.0594 [−0.0607, −0.0580] |
 
 ### FakeHanoiV2 A (d=3 bit-flip, 3 rounds), development device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 4.50e-05 [-1.98e-04, 2.88e-04]; rel +1.0% [-4.2%, +6.4%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -3.84e-03 [-4.01e-03, -3.67e-03]; rel -45.3% [-47.3%, -43.2%] |
-| v1 score | lowest summed error | worse (2/3 seeds), pooled: worse | *loss, weak evidence*; Δ 7.38e-04 [5.05e-04, 9.72e-04]; rel +18.9% [+12.6%, +25.6%] |
-| v1 score | Qiskit VF2Layout | worse (2/3 seeds), pooled: worse | *loss, weak evidence*; Δ 7.38e-04 [5.05e-04, 9.72e-04]; rel +18.9% [+12.6%, +25.6%] |
-| decoder-graph score (default) | fixed | better (1/3 seeds), pooled: better | *gain, weak evidence*; Δ -6.93e-04 [-9.26e-04, -4.61e-04]; rel -15.1% [-19.6%, -10.3%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -4.58e-03 [-4.73e-03, -4.42e-03]; rel -54.0% [-55.8%, -52.1%] |
-| decoder-graph score (default) | lowest summed error (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
-| decoder-graph score (default) | Qiskit VF2Layout (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | indistinguishable | 3 of 3 seeds | +1.0% [−4.2%, +6.4%] | 4.50e-05 [−1.98e-04, 2.88e-04] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −45.3% [−47.3%, −43.2%] | −3.84e-03 [−4.01e-03, −3.67e-03] |
+| v1 score | lowest summed error | **worse (weak)** | 2 of 3 seeds | +18.9% [+12.6%, +25.6%] | 7.38e-04 [5.05e-04, 9.72e-04] |
+| v1 score | Qiskit VF2Layout | **worse (weak)** | 2 of 3 seeds | +18.9% [+12.6%, +25.6%] | 7.38e-04 [5.05e-04, 9.72e-04] |
+| decoder-graph score (default) | fixed | **better (weak)** | 1 of 3 seeds | −15.1% [−19.6%, −10.3%] | −6.93e-04 [−9.26e-04, −4.61e-04] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −54.0% [−55.8%, −52.1%] | −4.58e-03 [−4.73e-03, −4.42e-03] |
+| decoder-graph score (default) | lowest summed error (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
+| decoder-graph score (default) | Qiskit VF2Layout (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
 
 ### FakeHanoiV2 B (d=3 phase-flip, 3 rounds), development device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ -3.67e-05 [-2.41e-04, 1.67e-04]; rel -1.1% [-7.1%, +5.3%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -8.15e-03 [-8.30e-03, -8.01e-03]; rel -71.6% [-72.8%, -70.3%] |
-| v1 score | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -3.50e-03 [-3.75e-03, -3.25e-03]; rel -51.9% [-54.4%, -49.2%] |
-| v1 score | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -3.50e-03 [-3.75e-03, -3.25e-03]; rel -51.9% [-54.4%, -49.2%] |
-| decoder-graph score (default) | fixed (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -8.11e-03 [-8.26e-03, -7.97e-03]; rel -71.2% [-72.5%, -70.0%] |
-| decoder-graph score (default) | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -3.46e-03 [-3.71e-03, -3.21e-03]; rel -51.4% [-53.9%, -48.7%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -3.46e-03 [-3.71e-03, -3.21e-03]; rel -51.4% [-53.9%, -48.7%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | indistinguishable | 3 of 3 seeds | −1.1% [−7.1%, +5.3%] | −3.67e-05 [−2.41e-04, 1.67e-04] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −71.6% [−72.8%, −70.3%] | −8.15e-03 [−8.30e-03, −8.01e-03] |
+| v1 score | lowest summed error | **better** | 3 of 3 seeds | −51.9% [−54.4%, −49.2%] | −3.50e-03 [−3.75e-03, −3.25e-03] |
+| v1 score | Qiskit VF2Layout | **better** | 3 of 3 seeds | −51.9% [−54.4%, −49.2%] | −3.50e-03 [−3.75e-03, −3.25e-03] |
+| decoder-graph score (default) | fixed (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −71.2% [−72.5%, −70.0%] | −8.11e-03 [−8.26e-03, −7.97e-03] |
+| decoder-graph score (default) | lowest summed error | **better** | 3 of 3 seeds | −51.4% [−53.9%, −48.7%] | −3.46e-03 [−3.71e-03, −3.21e-03] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better** | 3 of 3 seeds | −51.4% [−53.9%, −48.7%] | −3.46e-03 [−3.71e-03, −3.21e-03] |
 
 ### FakeHanoiV2 D5 (d=5 bit-flip, 3 rounds), development device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -3.03e-04 [-3.73e-04, -2.32e-04]; rel -32.6% [-38.5%, -26.0%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -4.83e-04 [-5.28e-04, -4.38e-04]; rel -43.5% [-47.5%, -39.5%] |
-| v1 score | lowest summed error | better (2/3 seeds), pooled: better | *gain, weak evidence*; Δ -1.81e-04 [-2.49e-04, -1.13e-04]; rel -22.4% [-29.4%, -14.6%] |
-| v1 score | Qiskit VF2Layout | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ -5.50e-05 [-1.20e-04, 9.73e-06]; rel -8.1% [-16.7%, +1.5%] |
-| decoder-graph score (default) | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -5.01e-04 [-5.67e-04, -4.35e-04]; rel -53.9% [-58.5%, -48.8%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -6.81e-04 [-7.18e-04, -6.44e-04]; rel -61.4% [-64.7%, -58.1%] |
-| decoder-graph score (default) | lowest summed error | better (3/3 seeds), pooled: better | *gain*; Δ -3.79e-04 [-4.42e-04, -3.17e-04]; rel -47.0% [-52.3%, -41.0%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (3/3 seeds), pooled: better | *gain*; Δ -2.53e-04 [-3.13e-04, -1.94e-04]; rel -37.2% [-43.7%, -29.8%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | **better** | 3 of 3 seeds | −32.6% [−38.5%, −26.0%] | −3.03e-04 [−3.73e-04, −2.32e-04] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −43.5% [−47.5%, −39.5%] | −4.83e-04 [−5.28e-04, −4.38e-04] |
+| v1 score | lowest summed error | **better (weak)** | 2 of 3 seeds | −22.4% [−29.4%, −14.6%] | −1.81e-04 [−2.49e-04, −1.13e-04] |
+| v1 score | Qiskit VF2Layout | indistinguishable | 3 of 3 seeds | −8.1% [−16.7%, +1.5%] | −5.50e-05 [−1.20e-04, 9.73e-06] |
+| decoder-graph score (default) | fixed | **better** | 3 of 3 seeds | −53.9% [−58.5%, −48.8%] | −5.01e-04 [−5.67e-04, −4.35e-04] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −61.4% [−64.7%, −58.1%] | −6.81e-04 [−7.18e-04, −6.44e-04] |
+| decoder-graph score (default) | lowest summed error | **better** | 3 of 3 seeds | −47.0% [−52.3%, −41.0%] | −3.79e-04 [−4.42e-04, −3.17e-04] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better** | 3 of 3 seeds | −37.2% [−43.7%, −29.8%] | −2.53e-04 [−3.13e-04, −1.94e-04] |
 
 ### FakeHanoiV2 D7 (d=7 bit-flip, 3 rounds), development device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ -9.17e-06 [-1.64e-05, -1.98e-06]; rel -13.3% [-22.4%, -3.0%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -7.57e-05 [-8.06e-05, -7.07e-05]; rel -55.8% [-59.4%, -52.2%] |
-| v1 score | lowest summed error | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ -3.96e-06 [-1.10e-05, 3.09e-06]; rel -6.2% [-16.3%, +5.1%] |
-| v1 score | Qiskit VF2Layout | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ -3.96e-06 [-1.10e-05, 3.09e-06]; rel -6.2% [-16.3%, +5.1%] |
-| decoder-graph score (default) | fixed | better (2/3 seeds), pooled: better | *gain, weak evidence*; Δ -1.90e-05 [-2.59e-05, -1.21e-05]; rel -27.5% [-35.5%, -18.4%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -8.54e-05 [-8.99e-05, -8.09e-05]; rel -63.0% [-66.3%, -59.7%] |
-| decoder-graph score (default) | lowest summed error | better (1/3 seeds), pooled: better | *gain, weak evidence*; Δ -1.37e-05 [-2.05e-05, -7.00e-06]; rel -21.5% [-30.4%, -11.6%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (1/3 seeds), pooled: better | *gain, weak evidence*; Δ -1.37e-05 [-2.05e-05, -7.00e-06]; rel -21.5% [-30.4%, -11.6%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | indistinguishable | 3 of 3 seeds | −13.3% [−22.4%, −3.0%] | −9.17e-06 [−1.64e-05, −1.98e-06] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −55.8% [−59.4%, −52.2%] | −7.57e-05 [−8.06e-05, −7.07e-05] |
+| v1 score | lowest summed error | indistinguishable | 3 of 3 seeds | −6.2% [−16.3%, +5.1%] | −3.96e-06 [−1.10e-05, 3.09e-06] |
+| v1 score | Qiskit VF2Layout | indistinguishable | 3 of 3 seeds | −6.2% [−16.3%, +5.1%] | −3.96e-06 [−1.10e-05, 3.09e-06] |
+| decoder-graph score (default) | fixed | **better (weak)** | 2 of 3 seeds | −27.5% [−35.5%, −18.4%] | −1.90e-05 [−2.59e-05, −1.21e-05] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −63.0% [−66.3%, −59.7%] | −8.54e-05 [−8.99e-05, −8.09e-05] |
+| decoder-graph score (default) | lowest summed error | **better (weak)** | 1 of 3 seeds | −21.5% [−30.4%, −11.6%] | −1.37e-05 [−2.05e-05, −7.00e-06] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better (weak)** | 1 of 3 seeds | −21.5% [−30.4%, −11.6%] | −1.37e-05 [−2.05e-05, −7.00e-06] |
 
 ### FakeAlgiers A (d=3 bit-flip, 3 rounds), held-out device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -1.06e-03 [-1.30e-03, -8.22e-04]; rel -21.5% [-25.6%, -17.1%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -5.71e-03 [-5.86e-03, -5.55e-03]; rel -59.6% [-61.2%, -57.9%] |
-| v1 score | lowest summed error | better (1/3 seeds), pooled: indistinguishable | *no gain shown, seeds mixed*; Δ -3.15e-04 [-5.42e-04, -8.82e-05]; rel -7.5% [-12.6%, -2.2%] |
-| v1 score | Qiskit VF2Layout | better (1/3 seeds), pooled: indistinguishable | *no gain shown, seeds mixed*; Δ -3.15e-04 [-5.42e-04, -8.82e-05]; rel -7.5% [-12.6%, -2.2%] |
-| decoder-graph score (default) | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -1.23e-03 [-1.47e-03, -9.97e-04]; rel -25.0% [-29.0%, -20.7%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -5.88e-03 [-6.03e-03, -5.72e-03]; rel -61.4% [-63.0%, -59.8%] |
-| decoder-graph score (default) | lowest summed error | better (1/3 seeds), pooled: better | *gain, weak evidence*; Δ -4.88e-04 [-7.13e-04, -2.64e-04]; rel -11.7% [-16.5%, -6.5%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (1/3 seeds), pooled: better | *gain, weak evidence*; Δ -4.88e-04 [-7.13e-04, -2.64e-04]; rel -11.7% [-16.5%, -6.5%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | **better** | 3 of 3 seeds | −21.5% [−25.6%, −17.1%] | −1.06e-03 [−1.30e-03, −8.22e-04] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −59.6% [−61.2%, −57.9%] | −5.71e-03 [−5.86e-03, −5.55e-03] |
+| v1 score | lowest summed error | indistinguishable | 1 of 3 seeds better | −7.5% [−12.6%, −2.2%] | −3.15e-04 [−5.42e-04, −8.82e-05] |
+| v1 score | Qiskit VF2Layout | indistinguishable | 1 of 3 seeds better | −7.5% [−12.6%, −2.2%] | −3.15e-04 [−5.42e-04, −8.82e-05] |
+| decoder-graph score (default) | fixed | **better** | 3 of 3 seeds | −25.0% [−29.0%, −20.7%] | −1.23e-03 [−1.47e-03, −9.97e-04] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −61.4% [−63.0%, −59.8%] | −5.88e-03 [−6.03e-03, −5.72e-03] |
+| decoder-graph score (default) | lowest summed error | **better (weak)** | 1 of 3 seeds | −11.7% [−16.5%, −6.5%] | −4.88e-04 [−7.13e-04, −2.64e-04] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better (weak)** | 1 of 3 seeds | −11.7% [−16.5%, −6.5%] | −4.88e-04 [−7.13e-04, −2.64e-04] |
 
 ### FakeAlgiers B (d=3 phase-flip, 3 rounds), held-out device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | better (0/3 seeds), pooled: better | *gain, weak evidence*; Δ -5.07e-04 [-7.29e-04, -2.85e-04]; rel -12.3% [-17.2%, -7.1%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -0.0159 [-0.0161, -0.0158]; rel -81.5% [-82.3%, -80.7%] |
-| v1 score | lowest summed error | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 7.00e-05 [-1.44e-04, 2.84e-04]; rel +2.0% [-3.9%, +8.2%] |
-| v1 score | Qiskit VF2Layout | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 7.00e-05 [-1.44e-04, 2.84e-04]; rel +2.0% [-3.9%, +8.2%] |
-| decoder-graph score (default) | fixed | better (0/3 seeds), pooled: better | *gain, weak evidence*; Δ -5.07e-04 [-7.29e-04, -2.85e-04]; rel -12.3% [-17.2%, -7.1%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -0.0159 [-0.0161, -0.0158]; rel -81.5% [-82.3%, -80.7%] |
-| decoder-graph score (default) | lowest summed error | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 7.00e-05 [-1.44e-04, 2.84e-04]; rel +2.0% [-3.9%, +8.2%] |
-| decoder-graph score (default) | Qiskit VF2Layout | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 7.00e-05 [-1.44e-04, 2.84e-04]; rel +2.0% [-3.9%, +8.2%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | **better (weak)** | 0 of 3 seeds | −12.3% [−17.2%, −7.1%] | −5.07e-04 [−7.29e-04, −2.85e-04] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −81.5% [−82.3%, −80.7%] | −0.0159 [−0.0161, −0.0158] |
+| v1 score | lowest summed error | indistinguishable | 3 of 3 seeds | +2.0% [−3.9%, +8.2%] | 7.00e-05 [−1.44e-04, 2.84e-04] |
+| v1 score | Qiskit VF2Layout | indistinguishable | 3 of 3 seeds | +2.0% [−3.9%, +8.2%] | 7.00e-05 [−1.44e-04, 2.84e-04] |
+| decoder-graph score (default) | fixed | **better (weak)** | 0 of 3 seeds | −12.3% [−17.2%, −7.1%] | −5.07e-04 [−7.29e-04, −2.85e-04] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −81.5% [−82.3%, −80.7%] | −0.0159 [−0.0161, −0.0158] |
+| decoder-graph score (default) | lowest summed error | indistinguishable | 3 of 3 seeds | +2.0% [−3.9%, +8.2%] | 7.00e-05 [−1.44e-04, 2.84e-04] |
+| decoder-graph score (default) | Qiskit VF2Layout | indistinguishable | 3 of 3 seeds | +2.0% [−3.9%, +8.2%] | 7.00e-05 [−1.44e-04, 2.84e-04] |
 
 ### FakeAlgiers D5 (d=5 bit-flip, 3 rounds), held-out device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | better (0/3 seeds), pooled: better | *gain, weak evidence*; Δ -9.42e-05 [-1.53e-04, -3.58e-05]; rel -16.3% [-25.0%, -6.5%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -8.07e-04 [-8.46e-04, -7.67e-04]; rel -62.5% [-65.5%, -59.4%] |
-| v1 score | lowest summed error | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 3.33e-06 [-5.24e-05, 5.90e-05]; rel +0.7% [-10.3%, +13.0%] |
-| v1 score | Qiskit VF2Layout | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 3.33e-06 [-5.24e-05, 5.90e-05]; rel +0.7% [-10.3%, +13.0%] |
-| decoder-graph score (default) | fixed | better (0/3 seeds), pooled: better | *gain, weak evidence*; Δ -9.50e-05 [-1.54e-04, -3.67e-05]; rel -16.4% [-25.1%, -6.7%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -8.08e-04 [-8.47e-04, -7.68e-04]; rel -62.5% [-65.6%, -59.5%] |
-| decoder-graph score (default) | lowest summed error | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 2.50e-06 [-5.32e-05, 5.82e-05]; rel +0.5% [-10.4%, +12.8%] |
-| decoder-graph score (default) | Qiskit VF2Layout | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 2.50e-06 [-5.32e-05, 5.82e-05]; rel +0.5% [-10.4%, +12.8%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | **better (weak)** | 0 of 3 seeds | −16.3% [−25.0%, −6.5%] | −9.42e-05 [−1.53e-04, −3.58e-05] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −62.5% [−65.5%, −59.4%] | −8.07e-04 [−8.46e-04, −7.67e-04] |
+| v1 score | lowest summed error | indistinguishable | 3 of 3 seeds | +0.7% [−10.3%, +13.0%] | 3.33e-06 [−5.24e-05, 5.90e-05] |
+| v1 score | Qiskit VF2Layout | indistinguishable | 3 of 3 seeds | +0.7% [−10.3%, +13.0%] | 3.33e-06 [−5.24e-05, 5.90e-05] |
+| decoder-graph score (default) | fixed | **better (weak)** | 0 of 3 seeds | −16.4% [−25.1%, −6.7%] | −9.50e-05 [−1.54e-04, −3.67e-05] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −62.5% [−65.6%, −59.5%] | −8.08e-04 [−8.47e-04, −7.68e-04] |
+| decoder-graph score (default) | lowest summed error | indistinguishable | 3 of 3 seeds | +0.5% [−10.4%, +12.8%] | 2.50e-06 [−5.32e-05, 5.82e-05] |
+| decoder-graph score (default) | Qiskit VF2Layout | indistinguishable | 3 of 3 seeds | +0.5% [−10.4%, +12.8%] | 2.50e-06 [−5.32e-05, 5.82e-05] |
 
 ### FakeAlgiers D7 (d=7 bit-flip, 3 rounds), held-out device
 
-| Score | Reference | Verdict | Claim; difference |
-| --- | --- | --- | --- |
-| v1 score | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -3.04e-05 [-3.89e-05, -2.20e-05]; rel -29.3% [-35.8%, -22.1%] |
-| v1 score | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -9.16e-05 [-9.70e-05, -8.61e-05]; rel -55.5% [-58.8%, -52.2%] |
-| v1 score | lowest summed error (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
-| v1 score | Qiskit VF2Layout (same placement) | indistinguishable (3/3 seeds), pooled: indistinguishable | *no gain shown*; Δ 0 [0, 0]; rel +0.0% [+0.0%, +0.0%] |
-| decoder-graph score (default) | fixed | better (3/3 seeds), pooled: better | *gain*; Δ -4.21e-05 [-5.03e-05, -3.40e-05]; rel -40.5% [-46.3%, -34.2%] |
-| decoder-graph score (default) | all-placement average | better (3/3 seeds), pooled: better | *gain*; Δ -1.03e-04 [-1.08e-04, -9.82e-05]; rel -62.6% [-65.6%, -59.6%] |
-| decoder-graph score (default) | lowest summed error | better (0/3 seeds), pooled: better | *gain, weak evidence*; Δ -1.17e-05 [-1.90e-05, -4.31e-06]; rel -15.9% [-24.6%, -6.2%] |
-| decoder-graph score (default) | Qiskit VF2Layout | better (0/3 seeds), pooled: better | *gain, weak evidence*; Δ -1.17e-05 [-1.90e-05, -4.31e-06]; rel -15.9% [-24.6%, -6.2%] |
+| Score | Reference | Verdict | Seeds | Relative change [95%] | Δ P_L [95%] |
+| --- | --- | --- | --- | --- | --- |
+| v1 score | fixed | **better** | 3 of 3 seeds | −29.3% [−35.8%, −22.1%] | −3.04e-05 [−3.89e-05, −2.20e-05] |
+| v1 score | all-placement average | **better** | 3 of 3 seeds | −55.5% [−58.8%, −52.2%] | −9.16e-05 [−9.70e-05, −8.61e-05] |
+| v1 score | lowest summed error (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
+| v1 score | Qiskit VF2Layout (same placement) | indistinguishable | 3 of 3 seeds | +0.0% [+0.0%, +0.0%] | 0 [0, 0] |
+| decoder-graph score (default) | fixed | **better** | 3 of 3 seeds | −40.5% [−46.3%, −34.2%] | −4.21e-05 [−5.03e-05, −3.40e-05] |
+| decoder-graph score (default) | all-placement average | **better** | 3 of 3 seeds | −62.6% [−65.6%, −59.6%] | −1.03e-04 [−1.08e-04, −9.82e-05] |
+| decoder-graph score (default) | lowest summed error | **better (weak)** | 0 of 3 seeds | −15.9% [−24.6%, −6.2%] | −1.17e-05 [−1.90e-05, −4.31e-06] |
+| decoder-graph score (default) | Qiskit VF2Layout | **better (weak)** | 0 of 3 seeds | −15.9% [−24.6%, −6.2%] | −1.17e-05 [−1.90e-05, −4.31e-06] |
 
 ### Every claim
 
@@ -181,63 +181,63 @@ Every pooled *better* or *worse*, with how many of the three seeds show it on th
 
 | Case | Score | Against | Result | Relative change [95%] | Seeds showing it |
 | --- | --- | --- | --- | --- | --- |
-| FakeJakartaV2 A (d=3 bit-flip) | v1 score | fixed | gain | -23.7% [-24.8%, -22.5%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | v1 score | all-placement average | gain | -11.2% [-12.2%, -10.3%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | v1 score | lowest summed error | gain | -20.3% [-21.5%, -19.1%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | v1 score | Qiskit VF2Layout | gain | -20.3% [-21.5%, -19.1%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | fixed | gain | -23.7% [-24.8%, -22.5%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | all-placement average | gain | -11.2% [-12.2%, -10.3%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | lowest summed error | gain | -20.3% [-21.5%, -19.1%] | 3 of 3 |
-| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain | -20.3% [-21.5%, -19.1%] | 3 of 3 |
-| FakeJakartaV2 B (d=3 phase-flip) | v1 score | all-placement average | gain | -26.5% [-26.9%, -26.0%] | 3 of 3 |
-| FakeJakartaV2 B (d=3 phase-flip) | v1 score | lowest summed error | gain | -29.4% [-29.9%, -28.8%] | 3 of 3 |
-| FakeJakartaV2 B (d=3 phase-flip) | v1 score | Qiskit VF2Layout | gain | -29.4% [-29.9%, -28.8%] | 3 of 3 |
-| FakeJakartaV2 B (d=3 phase-flip) | decoder-graph score | all-placement average | gain | -26.5% [-26.9%, -26.0%] | 3 of 3 |
-| FakeJakartaV2 B (d=3 phase-flip) | decoder-graph score | lowest summed error | gain | -29.4% [-29.9%, -28.8%] | 3 of 3 |
-| FakeJakartaV2 B (d=3 phase-flip) | decoder-graph score | Qiskit VF2Layout | gain | -29.4% [-29.9%, -28.8%] | 3 of 3 |
-| FakeHanoiV2 A (d=3 bit-flip) | v1 score | all-placement average | gain | -45.3% [-47.3%, -43.2%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | v1 score | fixed | gain | −23.7% [−24.8%, −22.5%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | v1 score | all-placement average | gain | −11.2% [−12.2%, −10.3%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | v1 score | lowest summed error | gain | −20.3% [−21.5%, −19.1%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | v1 score | Qiskit VF2Layout | gain | −20.3% [−21.5%, −19.1%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | fixed | gain | −23.7% [−24.8%, −22.5%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | all-placement average | gain | −11.2% [−12.2%, −10.3%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | lowest summed error | gain | −20.3% [−21.5%, −19.1%] | 3 of 3 |
+| FakeJakartaV2 A (d=3 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain | −20.3% [−21.5%, −19.1%] | 3 of 3 |
+| FakeJakartaV2 B (d=3 phase-flip) | v1 score | all-placement average | gain | −26.5% [−26.9%, −26.0%] | 3 of 3 |
+| FakeJakartaV2 B (d=3 phase-flip) | v1 score | lowest summed error | gain | −29.4% [−29.9%, −28.8%] | 3 of 3 |
+| FakeJakartaV2 B (d=3 phase-flip) | v1 score | Qiskit VF2Layout | gain | −29.4% [−29.9%, −28.8%] | 3 of 3 |
+| FakeJakartaV2 B (d=3 phase-flip) | decoder-graph score | all-placement average | gain | −26.5% [−26.9%, −26.0%] | 3 of 3 |
+| FakeJakartaV2 B (d=3 phase-flip) | decoder-graph score | lowest summed error | gain | −29.4% [−29.9%, −28.8%] | 3 of 3 |
+| FakeJakartaV2 B (d=3 phase-flip) | decoder-graph score | Qiskit VF2Layout | gain | −29.4% [−29.9%, −28.8%] | 3 of 3 |
+| FakeHanoiV2 A (d=3 bit-flip) | v1 score | all-placement average | gain | −45.3% [−47.3%, −43.2%] | 3 of 3 |
 | FakeHanoiV2 A (d=3 bit-flip) | v1 score | lowest summed error | loss (weak) | +18.9% [+12.6%, +25.6%] | 2 of 3 |
 | FakeHanoiV2 A (d=3 bit-flip) | v1 score | Qiskit VF2Layout | loss (weak) | +18.9% [+12.6%, +25.6%] | 2 of 3 |
-| FakeHanoiV2 A (d=3 bit-flip) | decoder-graph score | fixed | gain (weak) | -15.1% [-19.6%, -10.3%] | 1 of 3 |
-| FakeHanoiV2 A (d=3 bit-flip) | decoder-graph score | all-placement average | gain | -54.0% [-55.8%, -52.1%] | 3 of 3 |
-| FakeHanoiV2 B (d=3 phase-flip) | v1 score | all-placement average | gain | -71.6% [-72.8%, -70.3%] | 3 of 3 |
-| FakeHanoiV2 B (d=3 phase-flip) | v1 score | lowest summed error | gain | -51.9% [-54.4%, -49.2%] | 3 of 3 |
-| FakeHanoiV2 B (d=3 phase-flip) | v1 score | Qiskit VF2Layout | gain | -51.9% [-54.4%, -49.2%] | 3 of 3 |
-| FakeHanoiV2 B (d=3 phase-flip) | decoder-graph score | all-placement average | gain | -71.2% [-72.5%, -70.0%] | 3 of 3 |
-| FakeHanoiV2 B (d=3 phase-flip) | decoder-graph score | lowest summed error | gain | -51.4% [-53.9%, -48.7%] | 3 of 3 |
-| FakeHanoiV2 B (d=3 phase-flip) | decoder-graph score | Qiskit VF2Layout | gain | -51.4% [-53.9%, -48.7%] | 3 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | v1 score | fixed | gain | -32.6% [-38.5%, -26.0%] | 3 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | v1 score | all-placement average | gain | -43.5% [-47.5%, -39.5%] | 3 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | v1 score | lowest summed error | gain (weak) | -22.4% [-29.4%, -14.6%] | 2 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | fixed | gain | -53.9% [-58.5%, -48.8%] | 3 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | all-placement average | gain | -61.4% [-64.7%, -58.1%] | 3 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | lowest summed error | gain | -47.0% [-52.3%, -41.0%] | 3 of 3 |
-| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain | -37.2% [-43.7%, -29.8%] | 3 of 3 |
-| FakeHanoiV2 D (d=7 bit-flip) | v1 score | all-placement average | gain | -55.8% [-59.4%, -52.2%] | 3 of 3 |
-| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | fixed | gain (weak) | -27.5% [-35.5%, -18.4%] | 2 of 3 |
-| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | all-placement average | gain | -63.0% [-66.3%, -59.7%] | 3 of 3 |
-| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | lowest summed error | gain (weak) | -21.5% [-30.4%, -11.6%] | 1 of 3 |
-| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain (weak) | -21.5% [-30.4%, -11.6%] | 1 of 3 |
-| FakeAlgiers A (d=3 bit-flip) | v1 score | fixed | gain | -21.5% [-25.6%, -17.1%] | 3 of 3 |
-| FakeAlgiers A (d=3 bit-flip) | v1 score | all-placement average | gain | -59.6% [-61.2%, -57.9%] | 3 of 3 |
-| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | fixed | gain | -25.0% [-29.0%, -20.7%] | 3 of 3 |
-| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | all-placement average | gain | -61.4% [-63.0%, -59.8%] | 3 of 3 |
-| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | lowest summed error | gain (weak) | -11.7% [-16.5%, -6.5%] | 1 of 3 |
-| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain (weak) | -11.7% [-16.5%, -6.5%] | 1 of 3 |
-| FakeAlgiers B (d=3 phase-flip) | v1 score | fixed | gain (weak) | -12.3% [-17.2%, -7.1%] | 0 of 3 |
-| FakeAlgiers B (d=3 phase-flip) | v1 score | all-placement average | gain | -81.5% [-82.3%, -80.7%] | 3 of 3 |
-| FakeAlgiers B (d=3 phase-flip) | decoder-graph score | fixed | gain (weak) | -12.3% [-17.2%, -7.1%] | 0 of 3 |
-| FakeAlgiers B (d=3 phase-flip) | decoder-graph score | all-placement average | gain | -81.5% [-82.3%, -80.7%] | 3 of 3 |
-| FakeAlgiers D (d=5 bit-flip) | v1 score | fixed | gain (weak) | -16.3% [-25.0%, -6.5%] | 0 of 3 |
-| FakeAlgiers D (d=5 bit-flip) | v1 score | all-placement average | gain | -62.5% [-65.5%, -59.4%] | 3 of 3 |
-| FakeAlgiers D (d=5 bit-flip) | decoder-graph score | fixed | gain (weak) | -16.4% [-25.1%, -6.7%] | 0 of 3 |
-| FakeAlgiers D (d=5 bit-flip) | decoder-graph score | all-placement average | gain | -62.5% [-65.6%, -59.5%] | 3 of 3 |
-| FakeAlgiers D (d=7 bit-flip) | v1 score | fixed | gain | -29.3% [-35.8%, -22.1%] | 3 of 3 |
-| FakeAlgiers D (d=7 bit-flip) | v1 score | all-placement average | gain | -55.5% [-58.8%, -52.2%] | 3 of 3 |
-| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | fixed | gain | -40.5% [-46.3%, -34.2%] | 3 of 3 |
-| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | all-placement average | gain | -62.6% [-65.6%, -59.6%] | 3 of 3 |
-| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | lowest summed error | gain (weak) | -15.9% [-24.6%, -6.2%] | 0 of 3 |
-| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain (weak) | -15.9% [-24.6%, -6.2%] | 0 of 3 |
+| FakeHanoiV2 A (d=3 bit-flip) | decoder-graph score | fixed | gain (weak) | −15.1% [−19.6%, −10.3%] | 1 of 3 |
+| FakeHanoiV2 A (d=3 bit-flip) | decoder-graph score | all-placement average | gain | −54.0% [−55.8%, −52.1%] | 3 of 3 |
+| FakeHanoiV2 B (d=3 phase-flip) | v1 score | all-placement average | gain | −71.6% [−72.8%, −70.3%] | 3 of 3 |
+| FakeHanoiV2 B (d=3 phase-flip) | v1 score | lowest summed error | gain | −51.9% [−54.4%, −49.2%] | 3 of 3 |
+| FakeHanoiV2 B (d=3 phase-flip) | v1 score | Qiskit VF2Layout | gain | −51.9% [−54.4%, −49.2%] | 3 of 3 |
+| FakeHanoiV2 B (d=3 phase-flip) | decoder-graph score | all-placement average | gain | −71.2% [−72.5%, −70.0%] | 3 of 3 |
+| FakeHanoiV2 B (d=3 phase-flip) | decoder-graph score | lowest summed error | gain | −51.4% [−53.9%, −48.7%] | 3 of 3 |
+| FakeHanoiV2 B (d=3 phase-flip) | decoder-graph score | Qiskit VF2Layout | gain | −51.4% [−53.9%, −48.7%] | 3 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | v1 score | fixed | gain | −32.6% [−38.5%, −26.0%] | 3 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | v1 score | all-placement average | gain | −43.5% [−47.5%, −39.5%] | 3 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | v1 score | lowest summed error | gain (weak) | −22.4% [−29.4%, −14.6%] | 2 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | fixed | gain | −53.9% [−58.5%, −48.8%] | 3 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | all-placement average | gain | −61.4% [−64.7%, −58.1%] | 3 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | lowest summed error | gain | −47.0% [−52.3%, −41.0%] | 3 of 3 |
+| FakeHanoiV2 D (d=5 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain | −37.2% [−43.7%, −29.8%] | 3 of 3 |
+| FakeHanoiV2 D (d=7 bit-flip) | v1 score | all-placement average | gain | −55.8% [−59.4%, −52.2%] | 3 of 3 |
+| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | fixed | gain (weak) | −27.5% [−35.5%, −18.4%] | 2 of 3 |
+| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | all-placement average | gain | −63.0% [−66.3%, −59.7%] | 3 of 3 |
+| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | lowest summed error | gain (weak) | −21.5% [−30.4%, −11.6%] | 1 of 3 |
+| FakeHanoiV2 D (d=7 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain (weak) | −21.5% [−30.4%, −11.6%] | 1 of 3 |
+| FakeAlgiers A (d=3 bit-flip) | v1 score | fixed | gain | −21.5% [−25.6%, −17.1%] | 3 of 3 |
+| FakeAlgiers A (d=3 bit-flip) | v1 score | all-placement average | gain | −59.6% [−61.2%, −57.9%] | 3 of 3 |
+| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | fixed | gain | −25.0% [−29.0%, −20.7%] | 3 of 3 |
+| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | all-placement average | gain | −61.4% [−63.0%, −59.8%] | 3 of 3 |
+| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | lowest summed error | gain (weak) | −11.7% [−16.5%, −6.5%] | 1 of 3 |
+| FakeAlgiers A (d=3 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain (weak) | −11.7% [−16.5%, −6.5%] | 1 of 3 |
+| FakeAlgiers B (d=3 phase-flip) | v1 score | fixed | gain (weak) | −12.3% [−17.2%, −7.1%] | 0 of 3 |
+| FakeAlgiers B (d=3 phase-flip) | v1 score | all-placement average | gain | −81.5% [−82.3%, −80.7%] | 3 of 3 |
+| FakeAlgiers B (d=3 phase-flip) | decoder-graph score | fixed | gain (weak) | −12.3% [−17.2%, −7.1%] | 0 of 3 |
+| FakeAlgiers B (d=3 phase-flip) | decoder-graph score | all-placement average | gain | −81.5% [−82.3%, −80.7%] | 3 of 3 |
+| FakeAlgiers D (d=5 bit-flip) | v1 score | fixed | gain (weak) | −16.3% [−25.0%, −6.5%] | 0 of 3 |
+| FakeAlgiers D (d=5 bit-flip) | v1 score | all-placement average | gain | −62.5% [−65.5%, −59.4%] | 3 of 3 |
+| FakeAlgiers D (d=5 bit-flip) | decoder-graph score | fixed | gain (weak) | −16.4% [−25.1%, −6.7%] | 0 of 3 |
+| FakeAlgiers D (d=5 bit-flip) | decoder-graph score | all-placement average | gain | −62.5% [−65.6%, −59.5%] | 3 of 3 |
+| FakeAlgiers D (d=7 bit-flip) | v1 score | fixed | gain | −29.3% [−35.8%, −22.1%] | 3 of 3 |
+| FakeAlgiers D (d=7 bit-flip) | v1 score | all-placement average | gain | −55.5% [−58.8%, −52.2%] | 3 of 3 |
+| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | fixed | gain | −40.5% [−46.3%, −34.2%] | 3 of 3 |
+| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | all-placement average | gain | −62.6% [−65.6%, −59.6%] | 3 of 3 |
+| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | lowest summed error | gain (weak) | −15.9% [−24.6%, −6.2%] | 0 of 3 |
+| FakeAlgiers D (d=7 bit-flip) | decoder-graph score | Qiskit VF2Layout | gain (weak) | −15.9% [−24.6%, −6.2%] | 0 of 3 |
 
 No comparison has opposite verdicts on different seeds.
 
@@ -304,15 +304,15 @@ We used drift strengths δ of 0, 0.1, 0.25 and 0.5, with 20 perturbed models per
 | decoder-graph score | 0 | 1 [1, 1] | 0/20 = 0 [0, 0.1611] | 1 | 0 |
 | decoder-graph score | 0.1 | 0.8315 [0.6668, 1] | 0/20 = 0 [0, 0.1611] | 6 | 0 |
 | decoder-graph score | 0.25 | 0.6482 [0.3933, 0.8714] | 0/20 = 0 [0, 0.1611] | 9 | 0 |
-| decoder-graph score | 0.5 | 0.3514 [-6.75e-03, 0.6454] | 1/20 = 0.0500 [8.88e-03, 0.2361] | 14 | 0 |
+| decoder-graph score | 0.5 | 0.3514 [−6.75e-03, 0.6454] | 1/20 = 0.0500 [8.88e-03, 0.2361] | 14 | 0 |
 | lowest summed error | 0 | 1 [1, 1] | 0/20 = 0 [0, 0.1611] | 1 | 0 |
 | lowest summed error | 0.1 | 0.8935 [0.7121, 1] | 0/20 = 0 [0, 0.1611] | 2 | 0 |
 | lowest summed error | 0.25 | 0.4183 [0.0406, 0.6949] | 1/20 = 0.0500 [8.88e-03, 0.2361] | 5 | 0 |
-| lowest summed error | 0.5 | 0.0739 [-0.4426, 0.4219] | 3/20 = 0.1500 [0.0524, 0.3604] | 8 | 0 |
+| lowest summed error | 0.5 | 0.0739 [−0.4426, 0.4219] | 3/20 = 0.1500 [0.0524, 0.3604] | 8 | 0 |
 | Qiskit VF2Layout | 0 | 1 [1, 1] | 0/20 = 0 [0, 0.1611] | 1 | 0 |
 | Qiskit VF2Layout | 0.1 | 1 [0.9671, 1.06] | 0/20 = 0 [0, 0.1611] | 2 | 0 |
 | Qiskit VF2Layout | 0.25 | 0.4947 [0.1089, 0.7925] | 1/20 = 0.0500 [8.88e-03, 0.2361] | 7 | 0 |
-| Qiskit VF2Layout | 0.5 | 0.1126 [-0.3977, 0.4715] | 4/20 = 0.2000 [0.0807, 0.4160] | 13 | 0 |
+| Qiskit VF2Layout | 0.5 | 0.1126 [−0.3977, 0.4715] | 4/20 = 0.2000 [0.0807, 0.4160] | 13 | 0 |
 
 ### FakeHanoiV2 B (d=3 phase-flip, 3 rounds)
 
@@ -373,7 +373,7 @@ We used drift strengths δ of 0, 0.1, 0.25 and 0.5, with 20 perturbed models per
 | decoder-graph score | 0 | 1 [1, 1] | 0/20 = 0 [0, 0.1611] | 1 | 0 |
 | decoder-graph score | 0.1 | 0.9451 [0.8411, 1] | 0/20 = 0 [0, 0.1611] | 2 | 0 |
 | decoder-graph score | 0.25 | 0.7819 [0.5546, 0.9530] | 0/20 = 0 [0, 0.1611] | 5 | 0 |
-| decoder-graph score | 0.5 | 0.1659 [-0.4645, 0.5719] | 3/20 = 0.1500 [0.0524, 0.3604] | 11 | 0 |
+| decoder-graph score | 0.5 | 0.1659 [−0.4645, 0.5719] | 3/20 = 0.1500 [0.0524, 0.3604] | 11 | 0 |
 | lowest summed error | 0 | no gain to retain | 0/20 = 0 [0, 0.1611] | 1 | 0 |
 | lowest summed error | 0.1 | no gain to retain | 0/20 = 0 [0, 0.1611] | 1 | 0 |
 | lowest summed error | 0.25 | no gain to retain | 6/20 = 0.3000 [0.1455, 0.5190] | 3 | 0 |
@@ -389,23 +389,23 @@ We froze the decoder-graph score (the commit is recorded in `configs_v2/freeze.j
 
 | Case | Score | Choice | P_L | M4 | Rank (1 = best) | Regret (M5) | Relative regret |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| A (d=3 bit-flip, 3 rounds) | v1 score | (8,5,3,2,1) | 3.87e-03 [3.72e-03, 4.04e-03] | 0.9279 | 2 of 84 | 1.73e-04 [-4.65e-05, 3.93e-04] | 0.0468 |
-| A (d=3 bit-flip, 3 rounds) | decoder-graph score | (1,2,3,5,8) | 3.70e-03 [3.55e-03, 3.86e-03] | 0.9651 | 1 of 84 | 0 [-2.17e-04, 2.17e-04] | 0 |
-| B (d=3 phase-flip, 3 rounds) | v1 score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 0.9661 | 2 of 84 | 7.00e-05 [-1.44e-04, 2.84e-04] | 0.0197 |
-| B (d=3 phase-flip, 3 rounds) | decoder-graph score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 0.9834 | 2 of 84 | 7.00e-05 [-1.44e-04, 2.84e-04] | 0.0197 |
-| D (d=5 bit-flip, 3 rounds) | v1 score | (13,14,11,8,5,3,2,1,4) | 4.85e-04 [4.47e-04, 5.26e-04] | 0.8900 | 4 of 102 | 3.33e-06 [-5.24e-05, 5.90e-05] | 6.92e-03 |
-| D (d=5 bit-flip, 3 rounds) | decoder-graph score | (12,13,14,11,8,5,3,2,1) | 4.84e-04 [4.46e-04, 5.25e-04] | 0.9526 | 3 of 102 | 2.50e-06 [-5.32e-05, 5.82e-05] | 5.19e-03 |
+| A (d=3 bit-flip, 3 rounds) | v1 score | (8,5,3,2,1) | 3.87e-03 [3.72e-03, 4.04e-03] | 0.9279 | 2 of 84 | 1.73e-04 [−4.65e-05, 3.93e-04] | 0.0468 |
+| A (d=3 bit-flip, 3 rounds) | decoder-graph score | (1,2,3,5,8) | 3.70e-03 [3.55e-03, 3.86e-03] | 0.9651 | 1 of 84 | 0 [−2.17e-04, 2.17e-04] | 0 |
+| B (d=3 phase-flip, 3 rounds) | v1 score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 0.9661 | 2 of 84 | 7.00e-05 [−1.44e-04, 2.84e-04] | 0.0197 |
+| B (d=3 phase-flip, 3 rounds) | decoder-graph score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 0.9834 | 2 of 84 | 7.00e-05 [−1.44e-04, 2.84e-04] | 0.0197 |
+| D (d=5 bit-flip, 3 rounds) | v1 score | (13,14,11,8,5,3,2,1,4) | 4.85e-04 [4.47e-04, 5.26e-04] | 0.8900 | 4 of 102 | 3.33e-06 [−5.24e-05, 5.90e-05] | 6.92e-03 |
+| D (d=5 bit-flip, 3 rounds) | decoder-graph score | (12,13,14,11,8,5,3,2,1) | 4.84e-04 [4.46e-04, 5.25e-04] | 0.9526 | 3 of 102 | 2.50e-06 [−5.32e-05, 5.82e-05] | 5.19e-03 |
 | D (d=7 bit-flip, 3 rounds) | v1 score | (6,7,4,1,2,3,5,8,11,14,13,12,15) | 7.34e-05 [6.82e-05, 7.91e-05] | 0.9173 | 3 of 86 | 1.17e-05 [4.31e-06, 1.90e-05] | 0.1889 |
-| D (d=7 bit-flip, 3 rounds) | decoder-graph score | (15,12,13,14,11,8,5,3,2,1,4,7,6) | 6.18e-05 [5.70e-05, 6.69e-05] | 0.9159 | 1 of 86 | 0 [-7.04e-06, 7.04e-06] | 0 |
+| D (d=7 bit-flip, 3 rounds) | decoder-graph score | (15,12,13,14,11,8,5,3,2,1,4,7,6) | 6.18e-05 [5.70e-05, 6.69e-05] | 0.9159 | 1 of 86 | 0 [−7.04e-06, 7.04e-06] | 0 |
 
 **The R-G7 rule.** Per case, the difference in relative regret (decoder-graph − v1) = (P_L of the decoder-graph choice − P_L of the v1 choice) ÷ best P_L:
 
 | Case | Relative regret, v1 | Relative regret, decoder-graph | Difference |
 | --- | --- | --- | --- |
-| v2-algiers-A | 0.0468 | 0 | -0.0468 |
+| v2-algiers-A | 0.0468 | 0 | −0.0468 |
 | v2-algiers-B | 0.0197 | 0.0197 | 0 |
-| v2-algiers-D5 | 6.92e-03 | 5.19e-03 | -1.73e-03 |
-| v2-algiers-D7 | 0.1889 | 0 | -0.1889 |
+| v2-algiers-D5 | 6.92e-03 | 5.19e-03 | −1.73e-03 |
+| v2-algiers-D7 | 0.1889 | 0 | −0.1889 |
 
 The mean difference over the four cases is −0.0594 [−0.1054, −0.0133] (a 95% delta-method interval from shot noise only; the cases are fixed). We had decided in advance that the decoder-graph score becomes the default only if this interval lies wholly below zero. It does, so the decoder-graph score is the package's default. This verdict covers only these four cases.
 
@@ -415,8 +415,8 @@ The best placement is the one with the lowest measured P_L, so a score that pick
 
 | Case | Valid placements | Shots per seed | Best P_L | Worst P_L | Headroom | Fixed P_L | Average P_L | M4 v1 / graph / summed |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| FakeJakartaV2 A (d=3 bit-flip, 3 rounds) | 8 | 200,000 | 0.0459 [0.0454, 0.0465] | 0.0617 [0.0611, 0.0623] | placement matters | 0.0617 [0.0611, 0.0623] | 0.0530 [0.0528, 0.0532] | 0.6905 / 0.7619 / -0.3904 |
-| FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | 8 | 200,000 | 0.1427 [0.1418, 0.1436] | 0.2579 [0.2568, 0.2590] | placement matters | 0.1427 [0.1419, 0.1436] | 0.1941 [0.1937, 0.1944] | 0.9524 / 0.9524 / -0.5855 |
+| FakeJakartaV2 A (d=3 bit-flip, 3 rounds) | 8 | 200,000 | 0.0459 [0.0454, 0.0465] | 0.0617 [0.0611, 0.0623] | placement matters | 0.0617 [0.0611, 0.0623] | 0.0530 [0.0528, 0.0532] | 0.6905 / 0.7619 / −0.3904 |
+| FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | 8 | 200,000 | 0.1427 [0.1418, 0.1436] | 0.2579 [0.2568, 0.2590] | placement matters | 0.1427 [0.1419, 0.1436] | 0.1941 [0.1937, 0.1944] | 0.9524 / 0.9524 / −0.5855 |
 | FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | 80 | 200,000 | 3.87e-03 [3.72e-03, 4.03e-03] | 0.0233 [0.0229, 0.0236] | placement matters | 4.60e-03 [4.43e-03, 4.77e-03] | 8.48e-03 [8.45e-03, 8.50e-03] | 0.6153 / 0.9808 / 0.5039 |
 | FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | 80 | 200,000 | 3.24e-03 [3.10e-03, 3.39e-03] | 0.0329 [0.0324, 0.0333] | placement matters | 3.28e-03 [3.14e-03, 3.42e-03] | 0.0114 [0.0114, 0.0114] | 0.7724 / 0.9584 / 0.5571 |
 | FakeHanoiV2 D (d=5 bit-flip, 3 rounds) | 102 | 400,000 | 3.97e-04 [3.63e-04, 4.34e-04] | 2.76e-03 [2.67e-03, 2.85e-03] | placement matters | 9.29e-04 [8.76e-04, 9.85e-04] | 1.11e-03 [1.10e-03, 1.12e-03] | 0.5493 / 0.8911 / 0.4389 |
@@ -434,40 +434,40 @@ M4 is the Spearman rank correlation between a score and simulated P_L (positive 
 | FakeJakartaV2 A (d=3 bit-flip, 3 rounds) | decoder-graph score | (6,5,3,1,2) | 0.0471 [0.0466, 0.0476] | 4 | 1.17e-03 [4.15e-04, 1.92e-03] |
 | FakeJakartaV2 A (d=3 bit-flip, 3 rounds) | lowest summed error **negative M4** | (0,1,3,5,6) | 0.0591 [0.0585, 0.0597] | 6 | 0.0132 [0.0124, 0.0140] |
 | FakeJakartaV2 A (d=3 bit-flip, 3 rounds) | Qiskit VF2Layout | (0,1,3,5,6) | 0.0591 [0.0585, 0.0597] | 6 | 0.0132 [0.0124, 0.0140] |
-| FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | v1 score | (0,1,3,5,4) | 0.1427 [0.1419, 0.1436] | 2 | 3.50e-05 [-1.22e-03, 1.29e-03] |
-| FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | decoder-graph score | (0,1,3,5,4) | 0.1427 [0.1419, 0.1436] | 2 | 3.50e-05 [-1.22e-03, 1.29e-03] |
+| FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | v1 score | (0,1,3,5,4) | 0.1427 [0.1419, 0.1436] | 2 | 3.50e-05 [−1.22e-03, 1.29e-03] |
+| FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | decoder-graph score | (0,1,3,5,4) | 0.1427 [0.1419, 0.1436] | 2 | 3.50e-05 [−1.22e-03, 1.29e-03] |
 | FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | lowest summed error **negative M4** | (0,1,3,5,6) | 0.2021 [0.2011, 0.2031] | 5 | 0.0594 [0.0581, 0.0608] |
 | FakeJakartaV2 B (d=3 phase-flip, 3 rounds) | Qiskit VF2Layout | (0,1,3,5,6) | 0.2021 [0.2011, 0.2031] | 5 | 0.0594 [0.0581, 0.0608] |
 | FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | v1 score | (16,19,22,25,26) | 4.64e-03 [4.47e-03, 4.82e-03] | 18 | 7.67e-04 [5.34e-04, 1.00e-03] |
-| FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | decoder-graph score | (4,1,2,3,5) | 3.90e-03 [3.75e-03, 4.06e-03] | 2 | 2.83e-05 [-1.94e-04, 2.51e-04] |
-| FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | lowest summed error | (4,1,2,3,5) | 3.90e-03 [3.75e-03, 4.06e-03] | 2 | 2.83e-05 [-1.94e-04, 2.51e-04] |
-| FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5) | 3.90e-03 [3.75e-03, 4.06e-03] | 2 | 2.83e-05 [-1.94e-04, 2.51e-04] |
-| FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | v1 score | (5,3,2,1,0) | 3.24e-03 [3.10e-03, 3.39e-03] | 1 | 0 [-2.03e-04, 2.03e-04] |
-| FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | decoder-graph score | (0,1,2,3,5) | 3.28e-03 [3.14e-03, 3.42e-03] | 2 | 3.67e-05 [-1.67e-04, 2.41e-04] |
+| FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | decoder-graph score | (4,1,2,3,5) | 3.90e-03 [3.75e-03, 4.06e-03] | 2 | 2.83e-05 [−1.94e-04, 2.51e-04] |
+| FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | lowest summed error | (4,1,2,3,5) | 3.90e-03 [3.75e-03, 4.06e-03] | 2 | 2.83e-05 [−1.94e-04, 2.51e-04] |
+| FakeHanoiV2 A (d=3 bit-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5) | 3.90e-03 [3.75e-03, 4.06e-03] | 2 | 2.83e-05 [−1.94e-04, 2.51e-04] |
+| FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | v1 score | (5,3,2,1,0) | 3.24e-03 [3.10e-03, 3.39e-03] | 1 | 0 [−2.03e-04, 2.03e-04] |
+| FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | decoder-graph score | (0,1,2,3,5) | 3.28e-03 [3.14e-03, 3.42e-03] | 2 | 3.67e-05 [−1.67e-04, 2.41e-04] |
 | FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | lowest summed error | (4,1,2,3,5) | 6.74e-03 [6.53e-03, 6.95e-03] | 19 | 3.50e-03 [3.25e-03, 3.75e-03] |
 | FakeHanoiV2 B (d=3 phase-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5) | 6.74e-03 [6.53e-03, 6.95e-03] | 19 | 3.50e-03 [3.25e-03, 3.75e-03] |
 | FakeHanoiV2 D (d=5 bit-flip, 3 rounds) | v1 score | (9,8,11,14,16,19,22,25,26) | 6.27e-04 [5.83e-04, 6.73e-04] | 12 | 2.30e-04 [1.73e-04, 2.88e-04] |
-| FakeHanoiV2 D (d=5 bit-flip, 3 rounds) | decoder-graph score | (1,4,7,10,12,13,14,16,19) | 4.28e-04 [3.93e-04, 4.67e-04] | 3 | 3.17e-05 [-1.98e-05, 8.32e-05] |
+| FakeHanoiV2 D (d=5 bit-flip, 3 rounds) | decoder-graph score | (1,4,7,10,12,13,14,16,19) | 4.28e-04 [3.93e-04, 4.67e-04] | 3 | 3.17e-05 [−1.98e-05, 8.32e-05] |
 | FakeHanoiV2 D (d=5 bit-flip, 3 rounds) | lowest summed error | (5,3,2,1,4,7,10,12,13) | 8.07e-04 [7.58e-04, 8.60e-04] | 30 | 4.11e-04 [3.49e-04, 4.73e-04] |
 | FakeHanoiV2 D (d=5 bit-flip, 3 rounds) | Qiskit VF2Layout | (13,12,10,7,4,1,2,3,5) | 6.82e-04 [6.37e-04, 7.30e-04] | 17 | 2.85e-04 [2.26e-04, 3.44e-04] |
 | FakeHanoiV2 D (d=7 bit-flip, 3 rounds) | v1 score | (0,1,4,7,10,12,13,14,16,19,22,25,26) | 5.99e-05 [5.52e-05, 6.50e-05] | 4 | 1.52e-05 [8.75e-06, 2.17e-05] |
-| FakeHanoiV2 D (d=7 bit-flip, 3 rounds) | decoder-graph score | (3,2,1,4,7,10,12,13,14,16,19,22,25) | 5.01e-05 [4.58e-05, 5.48e-05] | 2 | 5.42e-06 [-7.47e-07, 1.16e-05] |
+| FakeHanoiV2 D (d=7 bit-flip, 3 rounds) | decoder-graph score | (3,2,1,4,7,10,12,13,14,16,19,22,25) | 5.01e-05 [4.58e-05, 5.48e-05] | 2 | 5.42e-06 [−7.47e-07, 1.16e-05] |
 | FakeHanoiV2 D (d=7 bit-flip, 3 rounds) | lowest summed error | (2,1,4,7,10,12,13,14,16,19,22,25,26) | 6.39e-05 [5.90e-05, 6.91e-05] | 7 | 1.92e-05 [1.26e-05, 2.58e-05] |
 | FakeHanoiV2 D (d=7 bit-flip, 3 rounds) | Qiskit VF2Layout | (2,1,4,7,10,12,13,14,16,19,22,25,26) | 6.39e-05 [5.90e-05, 6.91e-05] | 7 | 1.92e-05 [1.26e-05, 2.58e-05] |
-| FakeAlgiers A (d=3 bit-flip, 3 rounds) | v1 score | (8,5,3,2,1) | 3.87e-03 [3.72e-03, 4.04e-03] | 2 | 1.73e-04 [-4.65e-05, 3.93e-04] |
-| FakeAlgiers A (d=3 bit-flip, 3 rounds) | decoder-graph score | (1,2,3,5,8) | 3.70e-03 [3.55e-03, 3.86e-03] | 1 | 0 [-2.17e-04, 2.17e-04] |
+| FakeAlgiers A (d=3 bit-flip, 3 rounds) | v1 score | (8,5,3,2,1) | 3.87e-03 [3.72e-03, 4.04e-03] | 2 | 1.73e-04 [−4.65e-05, 3.93e-04] |
+| FakeAlgiers A (d=3 bit-flip, 3 rounds) | decoder-graph score | (1,2,3,5,8) | 3.70e-03 [3.55e-03, 3.86e-03] | 1 | 0 [−2.17e-04, 2.17e-04] |
 | FakeAlgiers A (d=3 bit-flip, 3 rounds) | lowest summed error | (4,1,2,3,5) | 4.19e-03 [4.03e-03, 4.36e-03] | 3 | 4.88e-04 [2.64e-04, 7.13e-04] |
 | FakeAlgiers A (d=3 bit-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5) | 4.19e-03 [4.03e-03, 4.36e-03] | 3 | 4.88e-04 [2.64e-04, 7.13e-04] |
-| FakeAlgiers B (d=3 phase-flip, 3 rounds) | v1 score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 2 | 7.00e-05 [-1.44e-04, 2.84e-04] |
-| FakeAlgiers B (d=3 phase-flip, 3 rounds) | decoder-graph score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 2 | 7.00e-05 [-1.44e-04, 2.84e-04] |
-| FakeAlgiers B (d=3 phase-flip, 3 rounds) | lowest summed error | (4,1,2,3,5) | 3.55e-03 [3.40e-03, 3.70e-03] | 1 | 0 [-2.13e-04, 2.13e-04] |
-| FakeAlgiers B (d=3 phase-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5) | 3.55e-03 [3.40e-03, 3.70e-03] | 1 | 0 [-2.13e-04, 2.13e-04] |
-| FakeAlgiers D (d=5 bit-flip, 3 rounds) | v1 score | (13,14,11,8,5,3,2,1,4) | 4.85e-04 [4.47e-04, 5.26e-04] | 4 | 3.33e-06 [-5.24e-05, 5.90e-05] |
-| FakeAlgiers D (d=5 bit-flip, 3 rounds) | decoder-graph score | (12,13,14,11,8,5,3,2,1) | 4.84e-04 [4.46e-04, 5.25e-04] | 3 | 2.50e-06 [-5.32e-05, 5.82e-05] |
-| FakeAlgiers D (d=5 bit-flip, 3 rounds) | lowest summed error | (4,1,2,3,5,8,11,14,13) | 4.82e-04 [4.44e-04, 5.23e-04] | 1 | 0 [-5.56e-05, 5.56e-05] |
-| FakeAlgiers D (d=5 bit-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5,8,11,14,13) | 4.82e-04 [4.44e-04, 5.23e-04] | 1 | 0 [-5.56e-05, 5.56e-05] |
+| FakeAlgiers B (d=3 phase-flip, 3 rounds) | v1 score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 2 | 7.00e-05 [−1.44e-04, 2.84e-04] |
+| FakeAlgiers B (d=3 phase-flip, 3 rounds) | decoder-graph score | (5,3,2,1,4) | 3.62e-03 [3.47e-03, 3.77e-03] | 2 | 7.00e-05 [−1.44e-04, 2.84e-04] |
+| FakeAlgiers B (d=3 phase-flip, 3 rounds) | lowest summed error | (4,1,2,3,5) | 3.55e-03 [3.40e-03, 3.70e-03] | 1 | 0 [−2.13e-04, 2.13e-04] |
+| FakeAlgiers B (d=3 phase-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5) | 3.55e-03 [3.40e-03, 3.70e-03] | 1 | 0 [−2.13e-04, 2.13e-04] |
+| FakeAlgiers D (d=5 bit-flip, 3 rounds) | v1 score | (13,14,11,8,5,3,2,1,4) | 4.85e-04 [4.47e-04, 5.26e-04] | 4 | 3.33e-06 [−5.24e-05, 5.90e-05] |
+| FakeAlgiers D (d=5 bit-flip, 3 rounds) | decoder-graph score | (12,13,14,11,8,5,3,2,1) | 4.84e-04 [4.46e-04, 5.25e-04] | 3 | 2.50e-06 [−5.32e-05, 5.82e-05] |
+| FakeAlgiers D (d=5 bit-flip, 3 rounds) | lowest summed error | (4,1,2,3,5,8,11,14,13) | 4.82e-04 [4.44e-04, 5.23e-04] | 1 | 0 [−5.56e-05, 5.56e-05] |
+| FakeAlgiers D (d=5 bit-flip, 3 rounds) | Qiskit VF2Layout | (4,1,2,3,5,8,11,14,13) | 4.82e-04 [4.44e-04, 5.23e-04] | 1 | 0 [−5.56e-05, 5.56e-05] |
 | FakeAlgiers D (d=7 bit-flip, 3 rounds) | v1 score | (6,7,4,1,2,3,5,8,11,14,13,12,15) | 7.34e-05 [6.82e-05, 7.91e-05] | 3 | 1.17e-05 [4.31e-06, 1.90e-05] |
-| FakeAlgiers D (d=7 bit-flip, 3 rounds) | decoder-graph score | (15,12,13,14,11,8,5,3,2,1,4,7,6) | 6.18e-05 [5.70e-05, 6.69e-05] | 1 | 0 [-7.04e-06, 7.04e-06] |
+| FakeAlgiers D (d=7 bit-flip, 3 rounds) | decoder-graph score | (15,12,13,14,11,8,5,3,2,1,4,7,6) | 6.18e-05 [5.70e-05, 6.69e-05] | 1 | 0 [−7.04e-06, 7.04e-06] |
 | FakeAlgiers D (d=7 bit-flip, 3 rounds) | lowest summed error | (6,7,4,1,2,3,5,8,11,14,13,12,15) | 7.34e-05 [6.82e-05, 7.91e-05] | 3 | 1.17e-05 [4.31e-06, 1.90e-05] |
 | FakeAlgiers D (d=7 bit-flip, 3 rounds) | Qiskit VF2Layout | (6,7,4,1,2,3,5,8,11,14,13,12,15) | 7.34e-05 [6.82e-05, 7.91e-05] | 3 | 1.17e-05 [4.31e-06, 1.90e-05] |
 
