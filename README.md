@@ -136,15 +136,11 @@ To reproduce the benchmark results, see [benchmarks/README.md](benchmarks/README
 
 ## Next work
 
-- **Choose the gate order as well as the qubits.** In repetition codes, running the same
-  qubits in mirror order changes the result, and part of the measured gains came from that.
-  The tool should try both orders and report which one it picked.
-- **Hold up as calibration drifts.** Score each placement over several perturbed or older
-  calibrations and pick the one that does best on average, so a choice keeps its advantage
-  until the next recalibration.
-- **Offer the simpler scores alongside.** Idle-aware summed error is much cheaper to compute,
-  and users should be able to compare it with the decoder-graph score.
-- **A more faithful noise model** where it changes the choice: per-coupler gate durations,
-  readout errors by direction, and circuits that don't reset every round.
+- **Hold up as calibration drifts.** A choice made on a weeks-old calibration can lose its
+  advantage. Scoring each placement over several perturbed or older calibrations, and picking
+  the one that does best on average, should keep a choice good until the next recalibration.
+- **A more faithful noise model** where it changes the choice: readout errors by direction
+  (v3 showed this flips most heavy-hex comparisons), per-coupler gate durations, and circuits
+  that don't reset every round.
 - **Run on real hardware.** Every result so far is from simulation. A few runs on an IBM device
   would show whether the gains hold up outside the model.
