@@ -30,8 +30,8 @@ information):
 | FakePittsburgh | 4 of 4 | 79–93% |
 | FakeBerlin | 4 of 4 | 45–68% |
 
-The fixed placement happened to be a poor draw on the heavy-hex devices (81st–92nd percentile)
-and a good one on FakeBerlin (1st–7th percentile). The decoder-graph's choice was in the best
+The fixed placement happened to be a poor draw on the heavy-hex devices (81st to 92nd percentile)
+and a good one on FakeBerlin (1st to 7th percentile). The decoder-graph's choice was in the best
 1% of all placements in every case.
 
 **Against the tools people use** (better / worse after correction, of 8 heavy-hex or 4
@@ -74,28 +74,30 @@ frozen before the held-out devices were converted: [SPEC_V3.md](SPEC_V3.md).
 
 ## How we got here
 
-**v1: does placement matter at all?** Two devices (FakeJakarta, 7 qubits; FakeHanoi, 27
-qubits) and a simple score: the expected number of detectable faults. It beat the fixed
-placement by 23–33% on FakeJakarta and 19–36% on FakeHanoi at distance 5 and 7. An audit then
-found the first FakeHanoi numbers were inflated by two couplers IBM had marked uncalibrated.
-The converter now removes such couplers. A later check with realistic reset errors turned
-some of v1's small FakeHanoi wins into losses.
-[Report](https://github.com/KUQCI/noise-aware-compilation/blob/v3.0-results/REPORT.md).
+**v1: does placement matter at all?** We started with two devices, FakeJakarta (7 qubits)
+and FakeHanoi (27 qubits), and a simple score: the expected number of detectable faults per
+shot. It beat the fixed placement by 23% to 33% on FakeJakarta and by 19% to 36% on FakeHanoi
+at distance 5 and 7. An audit then found that our first FakeHanoi numbers were inflated by
+two couplers IBM had marked uncalibrated, so the converter now removes such couplers. When we
+later re-checked v1 with stricter statistics, 7 of its 11 main comparisons held after Holm's
+correction. With reset errors set equal to readout errors, some of its small FakeHanoi
+distance-3 wins turned into losses ([REPORT_V3.md, section 5](REPORT_V3.md#5-the-reset-result)).
 
 **v2: a better score and real competitors.** We added the decoder-graph score, Qiskit's
-layout as a baseline, synthetic calibration drift, and a held-out device (FakeAlgiers). The
-decoder-graph score beat the fixed placement in all 4 FakeAlgiers cases and was made the
-default. That decision rested mostly on one distance-7 case. In
-that case both methods had chosen the same qubits, and the gain came from running them in the
-mirror order. [Report](https://github.com/KUQCI/noise-aware-compilation/blob/v3.0-results/REPORT_V2.md).
+layout as a baseline, synthetic calibration drift and a held-out device, FakeAlgiers. The
+decoder-graph score beat the fixed placement in all 4 FakeAlgiers cases, and we made it the
+default. That decision rested mostly on one distance-7 case, where both methods had chosen
+the same qubits and the gain came from running them in mirror order. Re-checked with
+stricter statistics, 26 of v2's 40 main comparisons held after Holm's correction.
 
-**v3: new hardware, honest settings.** v3 used CZ devices, square-lattice chips, realistic
-reset errors, real calibration drift, surface codes, stronger baselines (Qiskit's actual
-default and mapomatic) and a frozen, pre-registered test (above). It also re-analysed v1 and
-v2 with corrected statistics:
-[re-analysis](../benchmarks/results_v3/reanalysis/REANALYSIS.md),
-[reset study](../benchmarks/results_v3/reset/RESET.md),
-[drift](../benchmarks/results_v3/drift/DRIFT.md).
+**v3: new hardware and stricter settings.** We moved to CZ devices and the square lattice,
+used realistic reset errors and real calibration drift, added surface codes and stronger
+baselines (Qiskit's actual default and mapomatic), and ran the frozen, pre-registered test
+above. Drift and the reset study are covered in
+[REPORT_V3.md](REPORT_V3.md#4-how-much-of-the-gain-survives-real-recalibration).
+
+The original v1 and v2 reports, and the detailed re-analysis, reset and drift reports, are
+kept unchanged at tag [`v3.0-results`](https://github.com/KUQCI/noise-aware-compilation/tree/v3.0-results).
 
 ## Limitations
 
